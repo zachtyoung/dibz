@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MapPin, Plus, Search, Tag } from "lucide-react";
 import { useCityContext } from "@/components/CityProvider";
 import { CityPrompt } from "@/components/CityPrompt";
@@ -9,6 +9,14 @@ import { CityPrompt } from "@/components/CityPrompt";
 export function Header() {
   const { city, setCity } = useCityContext();
   const [picking, setPicking] = useState(false);
+  const [query, setQuery] = useState("");
+  const router = useRouter();
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = query.trim();
+    router.push(q ? `/map?q=${encodeURIComponent(q)}` : "/map");
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -29,14 +37,16 @@ export function Header() {
           <NavLink href="/dashboard">Dashboard</NavLink>
         </nav>
 
-        <div className="relative ml-auto hidden flex-1 max-w-md md:block">
+        <form onSubmit={handleSearch} className="relative ml-auto hidden flex-1 max-w-md md:block">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Search couches, bikes, garage sales…"
             className="w-full rounded-full border border-border bg-surface py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
-        </div>
+        </form>
 
         {picking && <CityPrompt onCity={(c) => { setCity(c); setPicking(false); }} />}
         <button
