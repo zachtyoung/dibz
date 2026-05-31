@@ -1,18 +1,123 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Header } from "@/components/Header";
 import { ListingsMap } from "@/components/ListingsMap";
 import { getListings } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import { getCityBySlug } from "@/lib/cities";
-import { Calendar, Check, Clock, MapPin, Navigation, Plus, Users, X } from "lucide-react";
+import {
+  Calendar, Check, Clock, Crosshair, Loader2,
+  MapPin, Navigation, Plus, Route, Users, X, Car,
+} from "lucide-react";
 import type { RouteStep } from "@/components/RouteMap";
+import type { Listing } from "@/lib/listings";
 
 const RouteMap = dynamic(() => import("@/components/RouteMap").then((m) => m.RouteMap), { ssr: false });
 
 const SF = getCityBySlug("san-francisco-ca")!;
 const STORAGE_KEY = "dibz-route";
+const KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!;
+
+type StartLocation = { lat: number; lng: number; label: string };
+
+function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) => void; onSkip: () => void }) {
+  const [input, setInput] = useState("");
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+  useEffect(() => {
+    function initAutocomplete() {
+      if (!inputRef.current || autocompleteRef.current) return;
+      autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, { types: ["geocode"] });
+      autocompleteRef.current.addListener("place_changed", () => {
+        const place = autocompleteRef.current!.getPlace();
+        if (place.geometry?.location) {
+          onConfirm({
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+            label: place.formatted_address ?? place.name ?? input,
+          });
+        }
+      });
+    }
+
+    if (typeof google !== "undefined" && google.maps?.places) { initAutocomplete(); return; }
+
+    const existing = document.getElementById("gmaps-script");
+    if (existing) { existing.addEventListener("load", initAutocomplete); return () => existing.removeEventListener("load", initAutocomplete); }
+
+    const script = document.createElement("script");
+    script.id = "gmaps-script";
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${KEY}&libraries=places`;
+    script.async = true;
+    script.onload = initAutocomplete;
+    document.head.appendChild(script);
+  }, []);
+
+  function useGeo() {
+    setGeoError("");
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        let label = "Your location";
+        try {
+          const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${KEY}`);
+          const data = await res.json();
+          label = data.results?.[0]?.formatted_address ?? label;
+        } catch {}
+        setGeoLoading(false);
+        onConfirm({ lat, lng, label });
+      },
+      () => { setGeoLoading(false); setGeoError("Location access denied — type your address below."); }
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-3xl">
+      <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl mx-4">
+        <div className="mb-1 flex items-center gap-2">
+          <Route className="h-5 w-5 text-accent" />
+          <h3 className="font-display text-xl tracking-wide">Where are you starting?</h3>
+        </div>
+        <p className="mb-5 text-sm text-muted-foreground">We'll calculate your total drive time and route from door to door.</p>
+
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={useGeo}
+            disabled={geoLoading}
+            className="flex items-center gap-3 rounded-xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm font-semibold text-accent transition hover:bg-accent/20 disabled:opacity-60"
+          >
+            {geoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+            <span>Use my current location</span>
+          </button>
+
+          {geoError && <p className="text-xs text-red-400">{geoError}</p>}
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="h-px flex-1 bg-border" /> or <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your address…"
+            className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+
+          <button onClick={onSkip} className="text-center text-xs text-muted-foreground hover:text-foreground transition">
+            Skip — show route without start point
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function GarageSales() {
   const { city } = useCityContext();
@@ -24,6 +129,9 @@ export default function GarageSales() {
   const [route, setRoute] = useState<string[]>([]);
   const [steps, setSteps] = useState<RouteStep[]>([]);
   const [showRoute, setShowRoute] = useState(false);
+  const [startLoc, setStartLoc] = useState<StartLocation | null>(null);
+  const [askingStart, setAskingStart] = useState(false);
+  const [returnHome, setReturnHome] = useState(true);
 
   useEffect(() => {
     try {
@@ -40,9 +148,35 @@ export default function GarageSales() {
     });
   }
 
+  function handleViewRoute() {
+    setShowRoute(true);
+    if (!startLoc) setAskingStart(true);
+  }
+
   const routeSales = route.map((id) => sales.find((s) => s.id === id)).filter(Boolean) as typeof sales;
 
-  const totalMin = Math.round(steps.reduce((acc, s) => acc + s.durationSec, 0) / 60);
+  const startAsListing: Listing | null = startLoc
+    ? { id: "__start__", title: "Starting point", price: 0, category: "", location: startLoc.label, distance: "", seller: "", image: "", lat: startLoc.lat, lng: startLoc.lng }
+    : null;
+  const homeAsListing: Listing | null = startLoc && returnHome
+    ? { id: "__home__", title: "Home", price: 0, category: "", location: startLoc.label, distance: "", seller: "", image: "", lat: startLoc.lat, lng: startLoc.lng }
+    : null;
+  const allStops: Listing[] = [
+    ...(startAsListing ? [startAsListing] : []),
+    ...routeSales,
+    ...(homeAsListing ? [homeAsListing] : []),
+  ];
+
+  const totalSec = steps.reduce((acc, s) => acc + s.durationSec, 0);
+  const totalMin = Math.round(totalSec / 60);
+  const totalDistanceMi = steps.reduce((acc, s) => {
+    const m = parseFloat(s.distanceText.replace(/[^\d.]/g, ""));
+    return acc + (s.distanceText.includes("km") ? m * 0.621 : m);
+  }, 0);
+
+  const hours = Math.floor(totalMin / 60);
+  const mins = totalMin % 60;
+  const totalTimeLabel = hours > 0 ? `${hours}h ${mins}m` : `${mins} min`;
 
   return (
     <div className="min-h-screen">
@@ -66,7 +200,7 @@ export default function GarageSales() {
             </button>
             {routeSales.length > 0 && (
               <button
-                onClick={() => setShowRoute(true)}
+                onClick={handleViewRoute}
                 className="inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/10 px-5 py-3 font-semibold text-accent transition hover:bg-accent/20"
               >
                 <Navigation className="h-4 w-4" /> View my route · {routeSales.length} stop{routeSales.length !== 1 ? "s" : ""}
@@ -76,80 +210,221 @@ export default function GarageSales() {
         </div>
       </section>
 
-      {/* Route view */}
-      {showRoute && routeSales.length > 0 ? (
+      {/* ── Route planner ── */}
+      {showRoute && routeSales.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
-          <div className="mb-4 flex items-center justify-between">
+
+          {/* Trip summary bar */}
+          <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 className="font-display text-2xl tracking-wide">Your route</h2>
-              {totalMin > 0 && (
-                <p className="text-sm text-muted-foreground">
-                  <Clock className="mr-1 inline h-3 w-3" />
-                  ~{totalMin} min driving · {routeSales.length} stops
-                </p>
-              )}
+              <h2 className="font-display text-3xl tracking-wide">Your garage sale route</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {startLoc ? `Starting from ${startLoc.label.split(",")[0]}` : "Add a start location for door-to-door directions"}
+              </p>
             </div>
             <button onClick={() => setShowRoute(false)} className="rounded-full border border-border p-2 hover:border-accent">
               <X className="h-4 w-4" />
             </button>
           </div>
 
+          {/* Stats strip */}
+          {totalMin > 0 && (
+            <div className="mb-6 grid grid-cols-3 gap-3 rounded-2xl border border-border bg-card p-4">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-accent">{totalTimeLabel}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">total drive time</p>
+              </div>
+              <div className="text-center border-x border-border">
+                <p className="text-2xl font-bold">{totalDistanceMi.toFixed(1)} mi</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">total distance</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold">{routeSales.length}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">stop{routeSales.length !== 1 ? "s" : ""}</p>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-6 lg:flex-row">
             {/* Map */}
-            <div className="h-[480px] overflow-hidden rounded-3xl border border-border lg:flex-1">
-              <RouteMap stops={routeSales} onRouteReady={setSteps} />
+            <div className="relative h-[500px] overflow-hidden rounded-3xl border border-border lg:flex-1">
+              {askingStart && (
+                <StartPrompt
+                  onConfirm={(loc) => { setStartLoc(loc); setAskingStart(false); }}
+                  onSkip={() => setAskingStart(false)}
+                />
+              )}
+              <RouteMap stops={allStops} onRouteReady={setSteps} startIsFirst={!!startLoc} />
             </div>
 
-            {/* Timeline */}
-            <div className="flex w-full flex-col gap-0 lg:w-72">
-              {routeSales.map((stop, i) => {
-                const leg = steps[i - 1];
-                return (
-                  <div key={stop.id}>
-                    {leg && (
-                      <div className="flex items-center gap-2 py-1 pl-[22px] text-xs text-muted-foreground">
-                        <div className="h-6 w-px bg-accent/30" />
-                        <Clock className="h-3 w-3 text-accent" />
-                        {leg.durationText} · {leg.distanceText}
+            {/* Timeline panel */}
+            <div className="flex w-full flex-col lg:w-80">
+              {/* Start location row */}
+              <div className="mb-2">
+                {startLoc && !askingStart ? (
+                  <div className="flex items-center gap-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-white">
+                      <Crosshair className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Your start</p>
+                      <p className="truncate text-sm font-medium">{startLoc.label.split(",").slice(0, 2).join(",")}</p>
+                    </div>
+                    <button
+                      onClick={() => { setStartLoc(null); setAskingStart(true); }}
+                      className="shrink-0 rounded-full p-1 text-muted-foreground hover:text-foreground"
+                      title="Change start location"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : !askingStart ? (
+                  <button
+                    onClick={() => setAskingStart(true)}
+                    className="flex w-full items-center gap-2 rounded-xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground transition hover:border-accent hover:text-accent"
+                  >
+                    <Crosshair className="h-4 w-4" />
+                    Add your start location for total drive time
+                  </button>
+                ) : null}
+              </div>
+
+              {/* Stop timeline */}
+              <div className="flex flex-col">
+                {routeSales.map((stop, i) => {
+                  const legIdx = startLoc ? i : i - 1;
+                  const leg = steps[legIdx];
+                  return (
+                    <div key={stop.id}>
+                      {/* Drive connector */}
+                      {(leg || i > 0) && (
+                        <div className="flex items-center gap-2 py-2 pl-3">
+                          <div className="flex flex-col items-center">
+                            <div className="h-1 w-px bg-accent/20" />
+                            <div className="h-4 w-px bg-accent/40" />
+                            <div className="h-1 w-px bg-accent/20" />
+                          </div>
+                          {leg ? (
+                            <div className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs">
+                              <Car className="h-3 w-3 text-accent" />
+                              <span className="font-semibold text-foreground">{leg.durationText}</span>
+                              <span className="text-muted-foreground">· {leg.distanceText}</span>
+                            </div>
+                          ) : (
+                            <div className="text-xs text-muted-foreground">↓</div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Stop card */}
+                      <div className="rounded-xl border border-border bg-card p-3 transition hover:border-accent/40">
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
+                            {i + 1}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold leading-snug">{stop.title}</p>
+                            {stop.date && (
+                              <div className="mt-1 flex items-center gap-1 text-xs text-accent">
+                                <Calendar className="h-3 w-3" />
+                                {stop.date}
+                              </div>
+                            )}
+                            <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                              <MapPin className="h-3 w-3 shrink-0" />
+                              {stop.location} · {stop.distance}
+                            </p>
+                            {stop.description && (
+                              <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{stop.description}</p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => toggleRoute(stop.id)}
+                            className="shrink-0 rounded-full p-1 text-muted-foreground hover:text-red-400 transition"
+                            title="Remove stop"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
-                    )}
-                    <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-white">
-                        {i + 1}
+                    </div>
+                  );
+                })}
+
+                {/* Return home */}
+                {startLoc && (
+                  <>
+                    {/* Return leg connector */}
+                    <div className="flex items-center gap-2 py-2 pl-3">
+                      <div className="flex flex-col items-center">
+                        <div className="h-1 w-px bg-accent/20" />
+                        <div className="h-4 w-px bg-accent/40" />
+                        <div className="h-1 w-px bg-accent/20" />
                       </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{stop.title}</p>
-                        <p className="text-xs text-muted-foreground">{stop.date}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          <MapPin className="mr-0.5 inline h-2.5 w-2.5" />{stop.location}
+                      {returnHome && steps.length >= routeSales.length ? (
+                        <div className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs">
+                          <Car className="h-3 w-3 text-accent" />
+                          <span className="font-semibold text-foreground">{steps[steps.length - 1]?.durationText}</span>
+                          <span className="text-muted-foreground">· {steps[steps.length - 1]?.distanceText}</span>
+                        </div>
+                      ) : (
+                        <div className="h-px w-4 bg-border" />
+                      )}
+                    </div>
+
+                    {/* Return home toggle card */}
+                    <button
+                      onClick={() => setReturnHome((v) => !v)}
+                      className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+                        returnHome
+                          ? "border-indigo-500/40 bg-indigo-500/10"
+                          : "border-dashed border-border hover:border-indigo-400/40 hover:bg-indigo-500/5"
+                      }`}
+                    >
+                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white ${returnHome ? "bg-indigo-500" : "bg-border"}`}>
+                        <MapPin className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-sm font-semibold ${returnHome ? "text-indigo-300" : "text-muted-foreground"}`}>
+                          {returnHome ? "Return home" : "Add return home"}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {startLoc.label.split(",").slice(0, 2).join(",")}
                         </p>
                       </div>
-                      <button
-                        onClick={() => toggleRoute(stop.id)}
-                        className="ml-auto shrink-0 rounded-full p-1 text-muted-foreground hover:text-destructive"
-                        title="Remove from route"
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                      <div className={`h-4 w-4 shrink-0 rounded-full border-2 transition ${returnHome ? "border-indigo-400 bg-indigo-400" : "border-border"}`}>
+                        {returnHome && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                      </div>
+                    </button>
+                  </>
+                )}
+              </div>
 
-              {routeSales.length > 0 && (
+              {/* CTA */}
+              <div className="mt-4 flex flex-col gap-2">
                 <a
-                  href={`https://www.google.com/maps/dir/${routeSales.map((s) => `${s.lat},${s.lng}`).join("/")}`}
+                  href={`https://www.google.com/maps/dir/${allStops.map((s) => `${s.lat},${s.lng}`).join("/")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:shadow-glow"
+                  className="flex items-center justify-center gap-2 rounded-full bg-accent py-3 text-sm font-bold text-white shadow-lg transition hover:shadow-glow"
                 >
-                  <Navigation className="h-4 w-4" /> Open in Google Maps
+                  <Navigation className="h-4 w-4" />
+                  Start navigation in Google Maps
                 </a>
-              )}
+                {totalMin > 0 && (
+                  <p className="text-center text-xs text-muted-foreground">
+                    ~{totalTimeLabel} driving · {totalDistanceMi.toFixed(1)} mi total
+                    {returnHome && startLoc ? " · round trip" : ""}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </section>
-      ) : (
+      )}
+
+      {/* Browsing map */}
+      {!showRoute && (
         <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
           <div className="h-[420px] overflow-hidden rounded-3xl border border-border">
             <ListingsMap listings={sales} center={center} zoom={12} />
@@ -157,21 +432,37 @@ export default function GarageSales() {
         </section>
       )}
 
+      {/* Sales grid */}
       <section className="mx-auto max-w-7xl px-4 pb-16 md:px-8">
-        <h2 className="mb-6 font-display text-3xl tracking-wide md:text-4xl">
-          {sales.length} sales in {activeCity.name}
-        </h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="font-display text-3xl tracking-wide md:text-4xl">
+            {sales.length} sales in {activeCity.name}
+          </h2>
+          {routeSales.length === 0 && (
+            <p className="hidden text-sm text-muted-foreground md:block">
+              Tap <strong>Add to my route</strong> to build your trip
+            </p>
+          )}
+        </div>
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {sales.map((s) => {
             const inRoute = route.includes(s.id);
+            const stopNum = routeSales.findIndex((r) => r.id === s.id) + 1;
             return (
               <article
                 key={s.id}
-                className="group overflow-hidden rounded-2xl border border-border bg-card transition hover:border-accent/50 hover:shadow-card"
+                className={`group overflow-hidden rounded-2xl border bg-card transition hover:shadow-card ${
+                  inRoute ? "border-accent/50" : "border-border hover:border-accent/30"
+                }`}
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img src={s.image} alt={s.title} className="h-full w-full object-cover transition group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+                  {inRoute && (
+                    <div className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-bold text-white shadow">
+                      {stopNum}
+                    </div>
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-accent">
                       <Calendar className="h-3 w-3" /> {s.date}
@@ -193,15 +484,19 @@ export default function GarageSales() {
                     onClick={() => toggleRoute(s.id)}
                     className={`w-full rounded-full border py-2 text-sm font-semibold transition ${
                       inRoute
-                        ? "border-accent bg-accent/10 text-accent"
+                        ? "border-accent bg-accent/10 text-accent hover:bg-red-500/10 hover:border-red-400 hover:text-red-400"
                         : "border-border bg-surface text-foreground hover:border-accent hover:text-accent"
                     }`}
                   >
                     {inRoute ? (
                       <span className="inline-flex items-center justify-center gap-1.5">
-                        <Check className="h-3.5 w-3.5" /> On my route
+                        <Check className="h-3.5 w-3.5" /> Stop #{stopNum} — tap to remove
                       </span>
-                    ) : "Add to my route"}
+                    ) : (
+                      <span className="inline-flex items-center justify-center gap-1.5">
+                        <Plus className="h-3.5 w-3.5" /> Add to my route
+                      </span>
+                    )}
                   </button>
                 </div>
               </article>

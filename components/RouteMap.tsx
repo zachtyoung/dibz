@@ -15,6 +15,7 @@ export type RouteStep = {
 type Props = {
   stops: Listing[];
   onRouteReady?: (steps: RouteStep[]) => void;
+  startIsFirst?: boolean;
 };
 
 const DARK_STYLES: google.maps.MapTypeStyle[] = [
@@ -37,6 +38,7 @@ function placeMarkersAndRoute(
   markersRef: React.MutableRefObject<google.maps.Marker[]>,
   stops: Listing[],
   onRouteReady?: (steps: RouteStep[]) => void,
+  startIsFirst?: boolean,
 ) {
   markersRef.current.forEach((m) => m.setMap(null));
   markersRef.current = [];
@@ -47,15 +49,18 @@ function placeMarkersAndRoute(
   }
 
   stops.forEach((stop, i) => {
+    const isStart = startIsFirst && i === 0;
     const marker = new google.maps.Marker({
       map,
       position: { lat: stop.lat, lng: stop.lng },
       title: stop.title,
-      label: { text: String(i + 1), color: "#ffffff", fontSize: "12px", fontWeight: "700" },
+      label: isStart
+        ? { text: "★", color: "#ffffff", fontSize: "13px", fontWeight: "700" }
+        : { text: String(startIsFirst ? i : i + 1), color: "#ffffff", fontSize: "12px", fontWeight: "700" },
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 14,
-        fillColor: "#f97316",
+        fillColor: isStart ? "#6366f1" : "#f97316",
         fillOpacity: 1,
         strokeColor: "#ffffff",
         strokeWeight: 2,
@@ -101,7 +106,7 @@ function placeMarkersAndRoute(
   );
 }
 
-export function RouteMap({ stops, onRouteReady }: Props) {
+export function RouteMap({ stops, onRouteReady, startIsFirst }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const rendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
@@ -144,7 +149,7 @@ export function RouteMap({ stops, onRouteReady }: Props) {
 
     const script = document.createElement("script");
     script.id = "gmaps-script";
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${KEY}`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${KEY}&libraries=places`;
     script.async = true;
     script.onload = initMap;
     script.onerror = () => setError("Failed to load Google Maps");
@@ -156,9 +161,9 @@ export function RouteMap({ stops, onRouteReady }: Props) {
   const stopKey = stops.map((s) => s.id).join(",");
   useEffect(() => {
     if (!ready || !mapRef.current || !rendererRef.current) return;
-    placeMarkersAndRoute(mapRef.current, rendererRef.current, markersRef, stops, onRouteReadyRef.current);
+    placeMarkersAndRoute(mapRef.current, rendererRef.current, markersRef, stops, onRouteReadyRef.current, startIsFirst);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, stopKey]);
+  }, [ready, stopKey, startIsFirst]);
 
   if (error) return (
     <div className="flex h-full items-center justify-center text-sm text-muted-foreground">{error}</div>
