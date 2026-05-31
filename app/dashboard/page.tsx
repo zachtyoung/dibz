@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
 import { LISTINGS, CATEGORIES, type Listing } from "@/lib/listings";
 import {
@@ -18,6 +19,9 @@ import {
   CheckCircle2,
   Search,
   ArrowUpRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   X,
   Send,
   Image as ImageIcon,
@@ -95,7 +99,17 @@ const SEED_THREADS: Thread[] = [
 
 const STOCK_IMG = "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&h=800&fit=crop&auto=format&q=70";
 
-export default function Dashboard() {
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <Dashboard />
+    </Suspense>
+  );
+}
+
+function Dashboard() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [listings, setListings] = useState<SellerListing[]>(SEED_LISTINGS);
   const [threads, setThreads] = useState<Thread[]>(SEED_THREADS);
   const [tab, setTab] = useState<"listings" | "messages" | "sales">("listings");
@@ -104,6 +118,15 @@ export default function Dashboard() {
   const [editor, setEditor] = useState<{ open: boolean; listing: SellerListing | null }>({ open: false, listing: null });
   const [activeThread, setActiveThread] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<"title" | "status" | "views" | "saves" | "messages" | "price">("views");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  useEffect(() => {
+    if (searchParams.get("new") === "1") {
+      setEditor({ open: true, listing: null });
+      router.replace("/dashboard");
+    }
+  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -125,13 +148,26 @@ export default function Dashboard() {
     };
   }, [listings, threads]);
 
-  const filtered = useMemo(
-    () =>
-      listings
-        .filter((l) => filter === "all" || l.status === filter)
-        .filter((l) => !query || l.title.toLowerCase().includes(query.toLowerCase())),
-    [listings, filter, query],
-  );
+  const filtered = useMemo(() => {
+    const base = listings
+      .filter((l) => filter === "all" || l.status === filter)
+      .filter((l) => !query || l.title.toLowerCase().includes(query.toLowerCase()));
+    return [...base].sort((a, b) => {
+      let av: string | number, bv: string | number;
+      if (sortKey === "price") { av = a.price; bv = b.price; }
+      else if (sortKey === "title") { av = a.title.toLowerCase(); bv = b.title.toLowerCase(); }
+      else if (sortKey === "status") { av = a.status; bv = b.status; }
+      else { av = a[sortKey]; bv = b[sortKey]; }
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [listings, filter, query, sortKey, sortDir]);
+
+  function toggleSort(key: typeof sortKey) {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("desc"); }
+  }
 
   // ---- Listing actions ----
   function openNew() {
@@ -210,12 +246,17 @@ export default function Dashboard() {
       <Header />
 
       {/* Title bar */}
-      <section className="border-b border-border/60">
+      <section style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 py-8 md:px-8">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Seller dashboard</p>
-            <h1 className="mt-1 font-display text-5xl tracking-wide md:text-6xl">
-              Hey, Maya<span className="text-primary">.</span>
+            <p
+              className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-primary px-3 py-1"
+              style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+            >
+              Seller dashboard
+            </p>
+            <h1 className="mt-3 font-display text-5xl tracking-wide md:text-6xl">
+              Hey, Zach<span className="text-primary">.</span>
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               You have <span className="text-foreground">{stats.unread} new messages</span> and{" "}
@@ -225,13 +266,15 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <Link
               href="/garage-sales"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold hover:border-primary"
+              className="inline-flex items-center gap-2 bg-surface px-4 py-2 text-sm font-semibold transition hover:border-primary hover:-translate-x-px hover:-translate-y-px"
+              style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
             >
               <Calendar className="h-4 w-4 text-primary" /> Host a sale
             </Link>
             <button
               onClick={openNew}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-accent hover:shadow-glow"
+              className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
+              style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
             >
               <Plus className="h-4 w-4" strokeWidth={3} /> New listing
             </button>
@@ -258,14 +301,20 @@ export default function Dashboard() {
 
       {/* Tabs */}
       <section className="mx-auto max-w-7xl px-4 pt-10 md:px-8">
-        <div className="flex flex-wrap items-center gap-1 border-b border-border/60">
+        <div
+          className="flex flex-wrap items-stretch"
+          style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}
+        >
           <TabBtn active={tab === "listings"} onClick={() => setTab("listings")}>
             Listings <span className="ml-1.5 text-xs text-muted-foreground">{listings.length}</span>
           </TabBtn>
           <TabBtn active={tab === "messages"} onClick={() => setTab("messages")}>
             Messages
             {stats.unread > 0 && (
-              <span className="ml-1.5 rounded-full bg-accent px-1.5 text-[10px] font-bold text-accent-foreground">
+              <span
+                className="ml-1.5 bg-accent px-1.5 text-[10px] font-bold text-accent-foreground"
+                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+              >
                 {stats.unread}
               </span>
             )}
@@ -287,7 +336,8 @@ export default function Dashboard() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search your listings…"
-                  className="w-full rounded-full border border-border bg-surface py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full bg-surface py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  style={{ border: "2px solid oklch(0.14 0.02 240)" }}
                 />
               </div>
               <div className="flex items-center gap-1.5">
@@ -295,11 +345,12 @@ export default function Dashboard() {
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
+                    className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
                       filter === f
                         ? "bg-primary text-primary-foreground"
-                        : "border border-border bg-surface text-muted-foreground hover:text-foreground"
+                        : "bg-surface text-muted-foreground hover:text-foreground"
                     }`}
+                    style={{ border: "2px solid oklch(0.14 0.02 240)" }}
                   >
                     {f}
                   </button>
@@ -307,42 +358,85 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
-              <div className="hidden grid-cols-[1.7fr_0.7fr_0.5fr_0.5fr_0.5fr_0.6fr_auto] gap-4 border-b border-border/60 px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground md:grid">
-                <div>Item</div>
-                <div>Status</div>
-                <div className="text-right">Views</div>
-                <div className="text-right">Saves</div>
-                <div className="text-right">Msgs</div>
-                <div className="text-right">Price</div>
-                <div />
-              </div>
-              {filtered.length === 0 ? (
-                <div className="px-5 py-16 text-center text-sm text-muted-foreground">
-                  No listings match your filters.{" "}
-                  <button onClick={openNew} className="font-semibold text-primary hover:underline">
-                    Post your first one →
-                  </button>
-                </div>
-              ) : (
-                filtered.map((l) => (
-                  <ListingRow
-                    key={l.id}
-                    l={l}
-                    onEdit={() => openEdit(l)}
-                    onDelete={() => deleteListing(l.id)}
-                    onToggleSold={() => toggleSold(l.id)}
-                    onPublish={() => publishDraft(l.id)}
-                  />
-                ))
-              )}
+            <div
+              className="overflow-x-auto bg-card"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            >
+              <table className="w-full border-collapse text-sm" style={{ tableLayout: "fixed" }}>
+                <colgroup>
+                  <col style={{ width: "34%" }} />
+                  <col style={{ width: "13%" }} />
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "10%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "11%" }} />
+                </colgroup>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
+                    {(
+                      [
+                        { key: "title", label: "Item", align: "left" },
+                        { key: "status", label: "Status", align: "left" },
+                        { key: "views", label: "Views", align: "left", icon: Eye },
+                        { key: "saves", label: "Saves", align: "left", icon: Heart },
+                        { key: "messages", label: "Msgs", align: "left", icon: MessageCircle },
+                        { key: "price", label: "Price", align: "left" },
+                      ] as { key: typeof sortKey; label: string; align: "left" | "right"; icon?: React.ElementType }[]
+                    ).map(({ key, label, align, icon: ColIcon }) => {
+                      const active = sortKey === key;
+                      const SortIcon = active ? (sortDir === "asc" ? ArrowUp : ArrowDown) : ArrowUpDown;
+                      return (
+                        <th
+                          key={key}
+                          onClick={() => toggleSort(key)}
+                          className={`select-none px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition ${align === "right" ? "text-right" : "text-left"}`}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            {ColIcon && <ColIcon className="h-3.5 w-3.5 shrink-0" />}
+                            {label}
+                            <SortIcon className="h-3 w-3 shrink-0" />
+                          </span>
+                        </th>
+                      );
+                    })}
+                    <th className="px-4 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-5 py-16 text-center text-sm text-muted-foreground">
+                        No listings match your filters.{" "}
+                        <button onClick={openNew} className="font-semibold text-primary hover:underline">
+                          Post your first one →
+                        </button>
+                      </td>
+                    </tr>
+                  ) : (
+                    filtered.map((l) => (
+                      <ListingRow
+                        key={l.id}
+                        l={l}
+                        onEdit={() => openEdit(l)}
+                        onDelete={() => deleteListing(l.id)}
+                        onToggleSold={() => toggleSold(l.id)}
+                        onPublish={() => publishDraft(l.id)}
+                      />
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </>
         )}
 
         {tab === "messages" && (
           <div className="grid gap-4 md:grid-cols-[1fr_1.4fr]">
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div
+              className="overflow-hidden bg-card"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            >
               {threads.length === 0 && (
                 <div className="px-5 py-16 text-center text-sm text-muted-foreground">No messages yet.</div>
               )}
@@ -353,11 +447,15 @@ export default function Dashboard() {
                   <button
                     key={m.id}
                     onClick={() => openThread(m.id)}
-                    className={`flex w-full items-start gap-4 border-b border-border/60 px-5 py-4 text-left transition hover:bg-surface-elevated ${
-                      i === threads.length - 1 ? "border-b-0" : ""
+                    className={`flex w-full items-start gap-4 px-5 py-4 text-left transition hover:bg-surface-elevated ${
+                      i === threads.length - 1 ? "" : ""
                     } ${activeThread === m.id ? "bg-surface-elevated" : ""}`}
+                    style={i !== threads.length - 1 ? { borderBottom: "2px solid oklch(0.14 0.02 240)" } : undefined}
                   >
-                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/15 font-display text-lg text-primary">
+                    <div
+                      className="grid h-10 w-10 shrink-0 place-items-center bg-primary/15 font-display text-lg text-primary"
+                      style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                    >
                       {m.from.charAt(0)}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -365,7 +463,7 @@ export default function Dashboard() {
                         <span className={`text-sm ${m.unread ? "font-bold text-foreground" : "font-semibold text-muted-foreground"}`}>
                           {m.from}
                         </span>
-                        {m.unread && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}
+                        {m.unread && <span className="h-1.5 w-1.5 bg-accent" />}
                         <span className="ml-auto text-xs text-muted-foreground">{last?.time}</span>
                       </div>
                       <div className="mt-0.5 truncate text-xs uppercase tracking-wider text-primary">
@@ -381,7 +479,10 @@ export default function Dashboard() {
               })}
             </div>
 
-            <div className="rounded-2xl border border-border bg-card">
+            <div
+              className="bg-card"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            >
               {activeThreadObj ? (
                 <ThreadView
                   thread={activeThreadObj}
@@ -399,7 +500,10 @@ export default function Dashboard() {
 
         {tab === "sales" && (
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div
+              className="bg-card p-6"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            >
               <h3 className="font-display text-2xl tracking-wide">Top performers</h3>
               <p className="text-xs text-muted-foreground">By views, last 30 days</p>
               <div className="mt-5 space-y-4">
@@ -418,9 +522,9 @@ export default function Dashboard() {
                           </span>
                           <span className="font-display text-lg text-primary">{l.views.toLocaleString()}</span>
                         </div>
-                        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                        <div className="h-1.5 overflow-hidden bg-muted">
                           <div
-                            className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                            className="h-full bg-gradient-to-r from-primary to-accent"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -430,7 +534,10 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
+            <div
+              className="bg-card p-6"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            >
               <h3 className="font-display text-2xl tracking-wide">Recent activity</h3>
               <p className="text-xs text-muted-foreground">Buyers interacting with your listings</p>
               <ul className="mt-5 space-y-4 text-sm">
@@ -455,7 +562,10 @@ export default function Dashboard() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full border border-primary/40 bg-surface-elevated px-5 py-2.5 text-sm font-semibold text-foreground shadow-glow">
+        <div
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 bg-surface-elevated px-5 py-2.5 text-sm font-semibold text-foreground"
+          style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+        >
           <CheckCircle2 className="mr-2 inline h-4 w-4 text-primary" />
           {toast}
         </div>
@@ -473,16 +583,26 @@ function StatCard({
   return (
     <Comp
       onClick={onClick}
-      className={`relative overflow-hidden rounded-2xl border p-5 text-left transition ${onClick ? "hover:-translate-y-0.5" : ""} ${
-        highlight ? "border-accent/50 bg-accent/5 shadow-glow" : "border-border bg-card"
+      className={`relative overflow-hidden p-5 text-left transition hover:-translate-x-px hover:-translate-y-px ${
+        highlight ? "bg-accent/5" : "bg-card"
       }`}
+      style={{
+        border: "2px solid oklch(0.14 0.02 240)",
+        boxShadow: "3px 3px 0 oklch(0.14 0.02 240)",
+      }}
     >
       <div className="flex items-start justify-between">
-        <div className={`grid h-10 w-10 place-items-center rounded-xl ${highlight ? "bg-accent text-accent-foreground" : "bg-primary/15 text-primary"}`}>
+        <div
+          className={`grid h-10 w-10 place-items-center ${highlight ? "bg-accent text-accent-foreground" : "bg-primary/15 text-primary"}`}
+          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+        >
           <Icon className="h-5 w-5" strokeWidth={2.5} />
         </div>
         {trend && (
-          <span className="flex items-center gap-0.5 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+          <span
+            className="flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary"
+            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+          >
             <ArrowUpRight className="h-3 w-3" /> {trend}
           </span>
         )}
@@ -498,12 +618,18 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className={`relative inline-flex items-center px-4 py-3 text-sm font-semibold transition ${
-        active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+      className={`relative inline-flex items-center px-5 py-3 text-sm font-semibold transition ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:text-foreground"
       }`}
+      style={
+        active
+          ? { border: "2px solid oklch(0.14 0.02 240)", borderBottom: "2px solid transparent", marginBottom: "-2px" }
+          : { borderBottom: "none" }
+      }
     >
       {children}
-      {active && <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-primary" />}
     </button>
   );
 }
@@ -519,75 +645,86 @@ function ListingRow({
     : "bg-accent/15 text-accent";
 
   return (
-    <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-border/60 px-5 py-4 transition last:border-b-0 hover:bg-surface-elevated md:grid-cols-[1.7fr_0.7fr_0.5fr_0.5fr_0.5fr_0.6fr_auto]">
-      <div className="flex min-w-0 items-center gap-3 md:col-span-1 col-span-2">
-        <img src={l.image} alt={l.title} className="h-14 w-14 shrink-0 rounded-lg object-cover" />
-        <div className="min-w-0">
-          <div className={`truncate text-sm font-semibold ${l.status === "sold" ? "text-muted-foreground line-through" : "text-foreground"}`}>{l.title}</div>
-          <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="h-3 w-3" /> {l.location}
-            <span>·</span>
-            <span>{l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}</span>
+    <tr
+      className="transition hover:bg-surface-elevated"
+      style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}
+    >
+      {/* Item */}
+      <td className="px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <img
+            src={l.image}
+            alt={l.title}
+            className="h-12 w-12 shrink-0 object-cover"
+            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+          />
+          <div className="min-w-0">
+            <div className={`truncate text-sm font-semibold ${l.status === "sold" ? "text-muted-foreground line-through" : "text-foreground"}`}>{l.title}</div>
+            <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate">{l.location}</span>
+              <span>·</span>
+              <span>{l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}</span>
+            </div>
           </div>
         </div>
-      </div>
+      </td>
 
-      <div className="hidden md:block">
-        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${statusStyle}`}>
-          {l.status}
-        </span>
-      </div>
-
-      <Metric value={l.views} icon={Eye} />
-      <Metric value={l.saves} icon={Heart} />
-      <Metric value={l.messages} icon={MessageCircle} />
-
-      <div className="hidden text-right font-display text-xl text-primary md:block">${l.price}</div>
-
-      <div className="flex items-center gap-1">
+      {/* Status */}
+      <td className="px-4 py-3">
         {l.status === "draft" ? (
           <button
             onClick={onPublish}
-            className="rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-accent"
+            className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground hover:bg-accent transition"
+            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
           >
             Publish
           </button>
         ) : (
-          <button
-            onClick={onToggleSold}
-            title={l.status === "sold" ? "Mark active" : "Mark sold"}
-            className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-surface hover:text-primary"
+          <span
+            className={`inline-block w-16 py-1 text-center text-[10px] font-bold uppercase tracking-wider ${statusStyle}`}
+            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
           >
-            {l.status === "sold" ? <RotateCcw className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
-          </button>
+            {l.status}
+          </span>
         )}
-        <button onClick={onEdit} className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-surface hover:text-foreground" aria-label="Edit">
-          <Edit3 className="h-4 w-4" />
-        </button>
-        <button onClick={onDelete} className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-surface hover:text-destructive" aria-label="Delete">
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
+      </td>
 
-      <div className="col-span-3 -mt-2 flex items-center justify-between gap-3 text-xs text-muted-foreground md:hidden">
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${statusStyle}`}>{l.status}</span>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{l.views}</span>
-          <span className="flex items-center gap-1"><Heart className="h-3 w-3" />{l.saves}</span>
-          <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" />{l.messages}</span>
+      {/* Views */}
+      <td className="px-4 py-3 text-sm text-foreground">{l.views.toLocaleString()}</td>
+
+      {/* Saves */}
+      <td className="px-4 py-3 text-sm text-foreground">{l.saves.toLocaleString()}</td>
+
+      {/* Messages */}
+      <td className="px-4 py-3 text-sm text-foreground">{l.messages.toLocaleString()}</td>
+
+      {/* Price */}
+      <td className="px-4 py-3 font-display text-xl text-primary">
+        ${l.price.toLocaleString()}
+      </td>
+
+      {/* Actions */}
+      <td className="px-4 py-3">
+        <div className="flex items-center justify-end gap-1">
+          {l.status !== "draft" && (
+            <button
+              onClick={onToggleSold}
+              title={l.status === "sold" ? "Mark active" : "Mark sold"}
+              className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-primary"
+            >
+              {l.status === "sold" ? <RotateCcw className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+            </button>
+          )}
+          <button onClick={onEdit} className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-foreground" aria-label="Edit">
+            <Edit3 className="h-4 w-4" />
+          </button>
+          <button onClick={onDelete} className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-destructive" aria-label="Delete">
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
-        <span className="font-display text-base text-primary">${l.price}</span>
-      </div>
-    </div>
-  );
-}
-
-function Metric({ value, icon: Icon }: { value: number; icon: React.ElementType }) {
-  return (
-    <div className="hidden items-center justify-end gap-1 text-sm text-foreground md:flex">
-      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-      {value.toLocaleString()}
-    </div>
+      </td>
+    </tr>
   );
 }
 
@@ -625,8 +762,11 @@ function ThreadView({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
-        <div className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 font-display text-lg text-primary">
+      <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
+        <div
+          className="grid h-10 w-10 place-items-center bg-primary/15 font-display text-lg text-primary"
+          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+        >
           {thread.from.charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
@@ -635,7 +775,12 @@ function ThreadView({
         </div>
         {listing && (
           <div className="flex items-center gap-2">
-            <img src={listing.image} alt="" className="h-10 w-10 rounded-lg object-cover" />
+            <img
+              src={listing.image}
+              alt=""
+              className="h-10 w-10 object-cover"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            />
             <span className="hidden font-display text-lg text-primary sm:block">${listing.price}</span>
           </div>
         )}
@@ -645,11 +790,12 @@ function ThreadView({
         {thread.messages.map((m) => (
           <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
+              className={`max-w-[80%] px-4 py-2 text-sm ${
                 m.from === "me"
-                  ? "rounded-br-sm bg-primary text-primary-foreground"
-                  : "rounded-bl-sm bg-surface-elevated text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-surface-elevated text-foreground"
               }`}
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
             >
               {m.text}
               <div className={`mt-0.5 text-[10px] ${m.from === "me" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
@@ -660,18 +806,20 @@ function ThreadView({
         ))}
       </div>
 
-      <form onSubmit={submit} className="flex items-center gap-2 border-t border-border/60 px-3 py-3">
+      <form onSubmit={submit} className="flex items-center gap-2 px-3 py-3" style={{ borderTop: "2px solid oklch(0.14 0.02 240)" }}>
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           maxLength={1000}
           placeholder="Type a reply…"
-          className="flex-1 rounded-full border border-border bg-surface px-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="flex-1 bg-surface px-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
         />
         <button
           type="submit"
           disabled={!draft.trim()}
-          className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground transition hover:bg-accent disabled:opacity-40"
+          className="grid h-10 w-10 place-items-center bg-primary text-primary-foreground transition hover:bg-accent disabled:opacity-40 hover:-translate-x-px hover:-translate-y-px"
+          style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
         >
           <Send className="h-4 w-4" />
         </button>
@@ -721,19 +869,28 @@ function ListingEditor({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={submit}
-        className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+        className="w-full max-w-lg overflow-hidden bg-card shadow-2xl"
+        style={{ border: "2px solid oklch(0.14 0.02 240)" }}
       >
-        <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
+        <div
+          className="flex items-center justify-between px-5 py-4"
+          style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}
+        >
           <h2 className="font-display text-2xl tracking-wide">{initial ? "Edit listing" : "Post something for sale"}</h2>
-          <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-surface hover:text-foreground">
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-8 w-8 place-items-center text-muted-foreground hover:bg-surface hover:text-foreground"
+            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div className="max-h-[70vh] space-y-4 overflow-y-auto px-5 py-5">
-          <div className="relative h-40 overflow-hidden rounded-xl bg-muted">
+          <div className="relative h-40 overflow-hidden bg-muted" style={{ border: "2px solid oklch(0.14 0.02 240)" }}>
             <img src={image || STOCK_IMG} alt="" className="h-full w-full object-cover" />
-            <label className="absolute bottom-3 right-3 inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-background">
+            <label className="absolute bottom-3 right-3 inline-flex cursor-pointer items-center gap-1.5 bg-background/80 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-background" style={{ border: "2px solid oklch(0.14 0.02 240)" }}>
               <ImageIcon className="h-3.5 w-3.5" />
               Photo URL
               <input
@@ -752,7 +909,8 @@ function ListingEditor({
               onChange={(e) => setTitle(e.target.value)}
               maxLength={120}
               placeholder="e.g. Mid-Century Walnut Dresser"
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
             />
           </Field>
 
@@ -763,14 +921,16 @@ function ListingEditor({
                 value={price}
                 onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
                 placeholder="0"
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
               />
             </Field>
             <Field label="Category">
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
               >
                 {CATEGORIES.filter((c) => c !== "All").map((c) => (
                   <option key={c}>{c}</option>
@@ -784,7 +944,8 @@ function ListingEditor({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               maxLength={80}
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
             />
           </Field>
 
@@ -795,7 +956,8 @@ function ListingEditor({
               rows={3}
               maxLength={1000}
               placeholder="Condition, pickup details, etc."
-              className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full resize-none bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
             />
             <div className="mt-1 text-right text-[10px] text-muted-foreground">{description.length}/1000</div>
           </Field>
@@ -807,11 +969,12 @@ function ListingEditor({
                   type="button"
                   key={s}
                   onClick={() => setStatus(s)}
-                  className={`flex-1 rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                  className={`flex-1 px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
                     status === s
                       ? "bg-primary text-primary-foreground"
-                      : "border border-border bg-surface text-muted-foreground hover:text-foreground"
+                      : "bg-surface text-muted-foreground hover:text-foreground"
                   }`}
+                  style={{ border: "2px solid oklch(0.14 0.02 240)" }}
                 >
                   {s}
                 </button>
@@ -820,17 +983,32 @@ function ListingEditor({
           </Field>
 
           {error && (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <div
+              className="bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            >
               {error}
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 border-t border-border/60 bg-surface/50 px-5 py-4">
-          <button type="button" onClick={onClose} className="rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold hover:border-primary">
+        <div
+          className="flex items-center justify-end gap-2 bg-surface/50 px-5 py-4"
+          style={{ borderTop: "2px solid oklch(0.14 0.02 240)" }}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-surface px-4 py-2 text-sm font-semibold hover:border-primary transition"
+            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+          >
             Cancel
           </button>
-          <button type="submit" className="rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:bg-accent hover:shadow-glow">
+          <button
+            type="submit"
+            className="bg-primary px-5 py-2 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
+            style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+          >
             {initial ? "Save changes" : "Post listing"}
           </button>
         </div>

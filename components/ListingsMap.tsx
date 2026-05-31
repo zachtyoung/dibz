@@ -31,6 +31,7 @@ function MapInner({ listings, center, userCenter, zoom, height }: {
   height: string;
 }) {
   const [Comps, setComps] = useState<any>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -43,16 +44,60 @@ function MapInner({ listings, center, userCenter, zoom, height }: {
 
   if (!Comps) return <div className="grid h-full min-h-[320px] place-items-center text-muted-foreground">Loading map…</div>;
 
-  const { MapContainer, TileLayer, Marker, Popup, L } = Comps;
+  const { MapContainer, TileLayer, Marker, Popup, L, useMapEvents } = Comps;
 
-  const pinIcon = (sale: boolean) =>
-    L.divIcon({
+  function MapClickClear() {
+    useMapEvents({ click: () => setSelectedId(null) });
+    return null;
+  }
+
+  const pinIcon = (sale: boolean, saleType: string | undefined, selected: boolean) => {
+    const opacity = selected ? "1" : "0.75";
+
+    if (!sale) {
+      return L.divIcon({
+        className: "",
+        html: `<div style="width:10px;height:10px;border-radius:50%;background:#1a9e82;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.35);opacity:${opacity};"></div>`,
+        iconSize: [10, 10],
+        iconAnchor: [5, 5],
+        popupAnchor: [0, -8],
+      });
+    }
+
+    const isEstate = saleType === "estate";
+    const pinBg = isEstate ? "#ffffff" : "#1a9e82";
+    const scale = selected ? "scale(1.15)" : "scale(1)";
+    const innerContent = isEstate
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a9e82" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>`
+      : `<span style="font-size:15px;font-weight:900;color:#0f3d31;font-family:sans-serif;line-height:1;">$</span>`;
+
+    return L.divIcon({
       className: "",
-      html: `<div style="width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${sale ? "#73ffb8" : "#2dd4a8"};border:2px solid #0d1b2a;box-shadow:0 4px 12px rgba(45,212,168,.6);display:grid;place-items:center;"><span style="transform:rotate(45deg);font-weight:900;color:#0d1b2a;font-size:14px;font-family:'Bebas Neue',sans-serif">${sale ? "★" : "$"}</span></div>`,
-      iconSize: [34, 34],
-      iconAnchor: [17, 34],
-      popupAnchor: [0, -32],
+      html: `
+        <div style="position:relative;width:36px;height:44px;opacity:${opacity};transform:${scale};transform-origin:bottom center;transition:transform 0.15s,opacity 0.15s;">
+          <div style="
+            width:36px;height:36px;border-radius:50% 50% 50% 0;
+            transform:rotate(-45deg);
+            background:${pinBg};
+            box-shadow:0 4px 16px rgba(0,0,0,0.55), 0 0 0 2px rgba(45,212,168,0.3);
+            display:grid;place-items:center;
+          ">
+            <div style="transform:rotate(45deg);display:grid;place-items:center;">
+              ${innerContent}
+            </div>
+          </div>
+          <div style="
+            position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+            width:6px;height:6px;border-radius:50%;
+            background:#1a9e82;
+            box-shadow:0 2px 4px rgba(0,0,0,0.4);
+          "></div>
+        </div>`,
+      iconSize: [36, 44],
+      iconAnchor: [18, 44],
+      popupAnchor: [0, -46],
     });
+  };
 
   const youIcon = L.divIcon({
     className: "",
@@ -64,6 +109,7 @@ function MapInner({ listings, center, userCenter, zoom, height }: {
   return (
     <MapContainer center={center} zoom={zoom} scrollWheelZoom style={{ height, width: "100%", borderRadius: "inherit" }}>
       <TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <MapClickClear />
       {userCenter && (
         <Marker position={userCenter} icon={youIcon}>
           <Popup>
@@ -72,12 +118,19 @@ function MapInner({ listings, center, userCenter, zoom, height }: {
         </Marker>
       )}
       {listings.map((l: Listing) => (
-        <Marker key={l.id} position={[l.lat, l.lng]} icon={pinIcon(!!l.isGarageSale)}>
-          <Popup>
+        <Marker
+          key={l.id}
+          position={[l.lat, l.lng]}
+          icon={pinIcon(!!l.isGarageSale, l.saleType, selectedId === l.id)}
+          eventHandlers={{ click: () => setSelectedId(l.id) }}
+        >
+          <Popup onClose={() => setSelectedId(null)}>
             <div style={{ minWidth: 180 }}>
               <img src={l.image} alt={l.title} style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 8 }} />
               <div style={{ marginTop: 8, fontWeight: 700, fontSize: 14 }}>{l.title}</div>
-              <div style={{ marginTop: 4, color: "#2dd4a8", fontWeight: 800 }}>{l.isGarageSale ? "Garage Sale" : `$${l.price}`}</div>
+              <div style={{ marginTop: 4, color: "#1a9e82", fontWeight: 800 }}>
+                {l.isGarageSale ? (l.saleType === "estate" ? "Estate Sale" : "Garage Sale") : `$${l.price}`}
+              </div>
               <div style={{ fontSize: 11, opacity: 0.7 }}>{l.location} · {l.distance}</div>
             </div>
           </Popup>

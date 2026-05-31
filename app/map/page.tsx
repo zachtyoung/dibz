@@ -42,16 +42,17 @@ function MapContent() {
               ? "Finding your city…"
               : `${filtered.length} ${filtered.length === 1 ? "result" : "results"} in ${activeCity.name}`}
           </p>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
             {CATEGORIES.map((c) => (
               <button
                 key={c}
                 onClick={() => setCat(c)}
-                className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition ${
+                className={`whitespace-nowrap px-3 py-1 text-xs font-semibold transition ${
                   cat === c
                     ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-surface text-muted-foreground hover:text-foreground"
+                    : "bg-surface text-muted-foreground hover:text-foreground"
                 }`}
+                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
               >
                 {c}
               </button>

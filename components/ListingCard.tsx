@@ -1,10 +1,44 @@
-import { Heart, MapPin, Calendar } from "lucide-react";
+"use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Heart, MapPin, Calendar, Clock } from "lucide-react";
+import { timeAgo } from "@/lib/listings";
 import type { Listing } from "@/lib/listings";
 
+const FAVS_KEY = "dibz-favorites";
+
+function useFavorite(id: string) {
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    try {
+      const favs: string[] = JSON.parse(localStorage.getItem(FAVS_KEY) ?? "[]");
+      setSaved(favs.includes(id));
+    } catch {}
+  }, [id]);
+  function toggle(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setSaved((prev) => {
+      const next = !prev;
+      try {
+        const favs: string[] = JSON.parse(localStorage.getItem(FAVS_KEY) ?? "[]");
+        const updated = next ? [...favs, id] : favs.filter((f) => f !== id);
+        localStorage.setItem(FAVS_KEY, JSON.stringify(updated));
+      } catch {}
+      return next;
+    });
+  }
+  return { saved, toggle };
+}
+
 export function ListingCard({ listing }: { listing: Listing }) {
-  const isSale = listing.isGarageSale;
+  const { saved, toggle } = useFavorite(listing.id);
+  const isBlock = listing.isGarageSale;
+  const isEstate = listing.saleType === "estate";
+
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:border-primary/50 hover:shadow-card">
+    <Link href={`/listing/${listing.id}`} className="flex">
+    <article className="group relative flex w-full flex-col overflow-hidden bg-card transition hover:-translate-x-px hover:-translate-y-px" style={{border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)"}}>
       <div className="relative aspect-square overflow-hidden bg-muted">
         <img
           src={listing.image}
@@ -12,40 +46,51 @@ export function ListingCard({ listing }: { listing: Listing }) {
           loading="lazy"
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
-        {isSale && (
-          <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 font-display text-xs tracking-widest text-accent-foreground shadow-glow">
-            GARAGE SALE
+        {isBlock && (
+          <span
+            className={`absolute left-2 top-2 px-2 py-0.5 font-display text-xs tracking-widest ${
+              isEstate ? "bg-amber-400 text-amber-950" : "bg-primary text-primary-foreground"
+            }`}
+            style={{border: "1.5px solid oklch(0.14 0.02 240)", boxShadow: "2px 2px 0 oklch(0.14 0.02 240)"}}
+          >
+            {isEstate ? "ESTATE" : "GARAGE"}
           </span>
         )}
         <button
-          aria-label="Save"
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur transition hover:bg-primary hover:text-primary-foreground"
+          aria-label={saved ? "Unsave" : "Save"}
+          onClick={toggle}
+          className={`absolute right-2 top-2 grid h-8 w-8 place-items-center transition ${
+            saved ? "bg-primary text-primary-foreground" : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground"
+          }`}
+          style={{border: "1.5px solid oklch(0.14 0.02 240)"}}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
         </button>
       </div>
 
-      <div className="p-4">
+      <div className="flex flex-1 flex-col p-4">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="font-display text-2xl text-primary">
-            {isSale ? "FREE ENTRY" : `$${listing.price}`}
+          <span className={`font-display text-2xl tracking-wide ${isBlock ? (isEstate ? "text-amber-600" : "text-primary") : "text-primary"}`}>
+            {isBlock ? "FREE ENTRY" : `$${listing.price.toLocaleString()}`}
           </span>
-          <span className="text-xs text-muted-foreground">{listing.distance}</span>
+          <span className="text-xs font-medium text-muted-foreground">{listing.distance}</span>
         </div>
-        <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-tight text-foreground">
+        <h3 className="mt-1 flex-1 line-clamp-2 text-sm font-bold leading-snug text-foreground">
           {listing.title}
         </h3>
-        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="h-3 w-3" />
+        <div className="mt-2 flex items-center gap-1 text-xs font-medium text-muted-foreground">
+          <MapPin className="h-3 w-3 shrink-0" />
           {listing.location}
         </div>
-        {isSale && listing.date && (
-          <div className="mt-1 flex items-center gap-1 text-xs font-medium text-accent">
-            <Calendar className="h-3 w-3" />
-            {listing.date}
-          </div>
-        )}
+        <div className={`mt-1 flex items-center gap-1 text-xs font-semibold ${isEstate ? "text-amber-600" : isBlock ? "text-primary" : "text-muted-foreground"}`}>
+          {isBlock && listing.date ? (
+            <><Calendar className="h-3 w-3 shrink-0" /><span>{listing.date}</span></>
+          ) : (
+            <><Clock className="h-3 w-3 shrink-0" /><span>{listing.postedHoursAgo != null ? timeAgo(listing.postedHoursAgo) : ""}</span></>
+          )}
+        </div>
       </div>
     </article>
+    </Link>
   );
 }

@@ -3,91 +3,115 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 0px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-xl: 4px;
 
   --font-display: "Bebas Neue", "Impact", sans-serif;
   --font-sans: "Barlow", system-ui, sans-serif;
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-primary: var(--primary);
+  --color-background:         var(--background);
+  --color-foreground:         var(--foreground);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-foreground);
+  --color-primary:            var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-surface: var(--surface);
-  --color-surface-elevated: var(--surface-elevated);
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-foreground);
+  --color-accent:             var(--accent);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               var(--ring);
+  --color-surface:            var(--surface);
+  --color-surface-elevated:   var(--surface-elevated);
 
-  --shadow-glow: 0 0 40px -8px var(--mint-bright);
-  --shadow-card: 0 8px 32px -12px oklch(0 0 0 / 0.6);
+  /* Flat ink shadow — offset block, no blur */
+  --shadow-glow: 3px 3px 0px var(--teal-dark);
+  --shadow-card: 3px 3px 0px oklch(0.22 0.02 240);
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 3px;
 
-  --mint: oklch(0.78 0.17 170);
-  --mint-bright: oklch(0.92 0.18 165);
+  --teal:      oklch(0.52 0.14 178);
+  --teal-dark: oklch(0.38 0.12 178);
+  --ink:       oklch(0.14 0.02 240);
 
-  --background: oklch(0.14 0.035 250);
-  --foreground: oklch(0.97 0.01 170);
-  --surface: oklch(0.20 0.04 250);
-  --surface-elevated: oklch(0.25 0.045 245);
+  /* Warm cream — close to Tavus's exact base */
+  --background:       oklch(0.955 0.016 84);
+  --foreground:       var(--ink);
 
-  --card: var(--surface);
-  --card-foreground: var(--foreground);
+  --surface:          oklch(0.975 0.010 80);
+  --surface-elevated: oklch(0.96  0.018 82);
 
-  --primary: var(--mint);
-  --primary-foreground: oklch(0.12 0.04 250);
+  --card:           var(--surface);
+  --card-foreground: var(--ink);
 
-  --muted: oklch(0.24 0.03 248);
-  --muted-foreground: oklch(0.72 0.02 200);
+  --primary:             var(--teal);
+  --primary-foreground:  oklch(0.975 0.010 80);
 
-  --accent: var(--mint-bright);
-  --accent-foreground: oklch(0.12 0.04 250);
+  --muted:            oklch(0.91 0.018 82);
+  --muted-foreground: oklch(0.40 0.025 220);
 
-  --destructive: oklch(0.6 0.22 25);
+  --accent:            var(--teal);
+  --accent-foreground: oklch(0.975 0.010 80);
 
-  --border: oklch(0.3 0.03 245 / 0.5);
-  --input: oklch(0.28 0.03 245);
-  --ring: var(--mint);
+  --destructive: oklch(0.58 0.22 25);
+
+  --border: var(--ink);
+  --input:  oklch(0.93 0.014 80);
+  --ring:   var(--teal);
 }
 
 @layer base {
   * { border-color: var(--color-border); }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans);
+
+    /* Stipple dot halftone — the Tavus signature texture */
     background-image:
-      radial-gradient(ellipse at top right, oklch(0.32 0.07 160 / 0.3), transparent 60%),
-      radial-gradient(ellipse at bottom left, oklch(0.78 0.17 170 / 0.08), transparent 50%);
+      radial-gradient(circle, oklch(0.60 0.04 70 / 0.22) 1.1px, transparent 1.1px),
+      radial-gradient(circle, oklch(0.60 0.04 70 / 0.10) 1.1px, transparent 1.1px);
+    background-size: 12px 12px, 6px 6px;
+    background-position: 0 0, 3px 3px;
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: 0.02em; }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
 }
 
 @utility font-display { font-family: var(--font-display); }
 
-.leaflet-container { background: var(--surface) !important; }
-.leaflet-tile { filter: brightness(0.7) invert(1) contrast(1.1) hue-rotate(180deg) saturate(0.4) brightness(0.9); }
+/* Hide horizontal scrollbars entirely */
+.overflow-x-auto { scrollbar-width: none; -ms-overflow-style: none; }
+.overflow-x-auto::-webkit-scrollbar { display: none; }
+
+/* Hide all scrollbars */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
+
+/* Leaflet — natural map tiles, warm tint */
+.leaflet-container { background: oklch(0.91 0.018 82) !important; }
+.leaflet-tile { filter: saturate(0.75) brightness(1.04) sepia(0.08); }
 .leaflet-control-attribution, .leaflet-control-zoom a {
-  background: var(--surface-elevated) !important;
+  background: var(--surface) !important;
   color: var(--foreground) !important;
-  border-color: var(--border) !important;
+  border: 1px solid var(--border) !important;
 }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-  background: var(--surface-elevated) !important;
+  background: var(--surface) !important;
   color: var(--foreground) !important;
-  border: 1px solid var(--border);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink) !important;
+  border-radius: 3px !important;
 }
+.leaflet-popup-close-button { display: none !important; }

@@ -6,6 +6,8 @@ import { MapPin, Plus, Search, Tag } from "lucide-react";
 import { useCityContext } from "@/components/CityProvider";
 import { CityPrompt } from "@/components/CityPrompt";
 
+const INK = "oklch(0.14 0.02 240)";
+
 export function Header() {
   const { city, setCity } = useCityContext();
   const [picking, setPicking] = useState(false);
@@ -19,54 +21,73 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 md:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary text-primary-foreground">
-            <Tag className="h-5 w-5" strokeWidth={2.5} />
+    <header className="sticky top-0 z-40 bg-surface" style={{borderBottom: `2px solid ${INK}`}}>
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:px-8">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <div
+            className="grid h-8 w-8 place-items-center bg-primary text-primary-foreground"
+            style={{border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}`}}
+          >
+            <Tag className="h-4 w-4" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-2xl tracking-wider">
-            DIBZ<span className="text-primary">.</span>
+          <span className="font-display text-2xl tracking-wider" style={{color: INK}}>
+            DIBZ
           </span>
         </Link>
 
-        <nav className="ml-4 hidden items-center gap-1 md:flex">
+        {/* Desktop nav */}
+        <nav className="ml-3 hidden items-center gap-0.5 md:flex">
           <NavLink href="/">Browse</NavLink>
           <NavLink href="/map">Map</NavLink>
-          <NavLink href="/garage-sales">Garage Sales</NavLink>
+          <NavLink href="/garage-sales">Sales</NavLink>
           <NavLink href="/dashboard">Dashboard</NavLink>
         </nav>
 
-        <form onSubmit={handleSearch} className="relative ml-auto hidden flex-1 max-w-md md:block">
+        {/* Search */}
+        <form onSubmit={handleSearch} className="relative ml-auto hidden flex-1 max-w-sm md:block">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search couches, bikes, garage sales…"
-            className="w-full rounded-full border border-border bg-surface py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="Search couches, bikes, estate sales…"
+            className="w-full bg-background py-2 pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none"
+            style={{border: `2px solid ${INK}`}}
           />
         </form>
 
         {picking && <CityPrompt onCity={(c) => { setCity(c); setPicking(false); }} />}
+
+        {/* City picker */}
         <button
           onClick={() => setPicking(true)}
-          className="hidden items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm text-foreground hover:border-primary md:flex"
+          className="hidden items-center gap-1.5 bg-background px-3 py-1.5 text-sm font-semibold text-foreground md:flex"
+          style={{border: `2px solid ${INK}`}}
         >
-          <MapPin className="h-4 w-4 text-primary" />
+          <MapPin className="h-3.5 w-3.5 text-primary" />
           {city ? city.name : "Pick city"}
         </button>
 
-        <button className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-accent hover:shadow-glow">
+        {/* Sell CTA */}
+        <button
+          onClick={() => router.push("/dashboard?new=1")}
+          className="flex items-center gap-1.5 bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-teal-600"
+          style={{border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}`}}
+        >
           <Plus className="h-4 w-4" strokeWidth={3} />
           <span className="hidden sm:inline">Sell</span>
         </button>
       </div>
 
-      <nav className="flex items-center gap-1 overflow-x-auto border-t border-border/60 px-4 py-2 md:hidden">
+      {/* Mobile nav */}
+      <nav
+        className="flex items-center gap-0 overflow-x-auto px-4 py-0 md:hidden"
+        style={{borderTop: `2px solid ${INK}`}}
+      >
         <NavLink href="/">Browse</NavLink>
         <NavLink href="/map">Map</NavLink>
-        <NavLink href="/garage-sales">Garage Sales</NavLink>
+        <NavLink href="/garage-sales">Sales</NavLink>
         <NavLink href="/dashboard">Dashboard</NavLink>
       </nav>
     </header>
@@ -79,11 +100,10 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link
       href={href}
-      className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
-        active
-          ? "bg-surface font-semibold text-primary"
-          : "text-muted-foreground hover:bg-surface hover:text-foreground"
+      className={`px-3 py-2 text-sm font-bold tracking-wide transition ${
+        active ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"
       }`}
+      style={active ? {borderRight: `2px solid ${INK}`, borderLeft: `2px solid ${INK}`} : {}}
     >
       {children}
     </Link>
