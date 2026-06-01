@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
@@ -387,37 +388,38 @@ export function ListingClient({ listing }: { listing: Listing }) {
 }
 
 function MiniMap({ lat, lng }: { lat: number; lng: number }) {
-  const [Comps, setComps] = useState<any>(null);
-
-  useEffect(() => {
-    Promise.all([import("react-leaflet"), import("leaflet")]).then(([rl, L]) => {
-      setComps({ ...rl, L: L.default });
-    });
-  }, []);
-
-  if (!Comps) return <div className="grid h-full place-items-center text-xs text-muted-foreground">Loading map…</div>;
-
-  const { MapContainer, TileLayer, Marker } = Comps;
-  const { L } = Comps;
-
-  const pin = L.divIcon({
-    className: "",
-    html: `<div style="width:16px;height:16px;background:oklch(0.52 0.14 178);border:3px solid oklch(0.14 0.02 240);box-shadow:2px 2px 0 oklch(0.14 0.02 240);"></div>`,
-    iconSize: [16, 16],
-    iconAnchor: [8, 8],
-  });
-
   return (
-    <MapContainer
-      center={[lat, lng]}
-      zoom={14}
-      scrollWheelZoom={false}
-      zoomControl={false}
-      dragging={false}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[lat, lng]} icon={pin} />
-    </MapContainer>
+    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!}>
+      <Map
+        style={{ width: "100%", height: "100%" }}
+        mapId="18620e62c3fd6cbf63eb5904"
+        defaultCenter={{ lat, lng }}
+        defaultZoom={15}
+        styles={MINI_MAP_STYLES}
+        disableDefaultUI
+        gestureHandling="none"
+        draggable={false}
+      >
+        <AdvancedMarker position={{ lat, lng }}>
+          <div style={{
+            width: 16, height: 16,
+            background: "oklch(0.52 0.14 178)",
+            border: "3px solid oklch(0.14 0.02 240)",
+            boxShadow: "2px 2px 0 oklch(0.14 0.02 240)",
+          }} />
+        </AdvancedMarker>
+      </Map>
+    </APIProvider>
   );
 }
+
+const MINI_MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry",           stylers: [{ color: "#f5efe0" }] },
+  { elementType: "labels.text.fill",   stylers: [{ color: "#3d3520" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#f5efe0" }] },
+  { featureType: "road",               elementType: "geometry",        stylers: [{ color: "#e8dfc8" }] },
+  { featureType: "road.highway",       elementType: "geometry",        stylers: [{ color: "#d4c89a" }] },
+  { featureType: "water",              elementType: "geometry",        stylers: [{ color: "#c5d8d1" }] },
+  { featureType: "poi",                elementType: "labels",          stylers: [{ visibility: "off" }] },
+  { featureType: "transit",            stylers: [{ visibility: "off" }] },
+];

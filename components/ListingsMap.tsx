@@ -1,6 +1,130 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  InfoWindow,
+  Pin,
+} from "@vis.gl/react-google-maps";
+import Link from "next/link";
 import type { Listing } from "@/lib/listings";
+
+const KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!;
+
+/* Warm cream map style matching the Dibz aesthetic */
+const MAP_STYLES: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry",            stylers: [{ color: "#f5efe0" }] },
+  { elementType: "labels.text.fill",    stylers: [{ color: "#3d3520" }] },
+  { elementType: "labels.text.stroke",  stylers: [{ color: "#f5efe0" }] },
+  { featureType: "road",                elementType: "geometry",           stylers: [{ color: "#e8dfc8" }] },
+  { featureType: "road.arterial",       elementType: "geometry",           stylers: [{ color: "#ddd4b8" }] },
+  { featureType: "road.highway",        elementType: "geometry",           stylers: [{ color: "#d4c89a" }] },
+  { featureType: "road.highway",        elementType: "geometry.stroke",    stylers: [{ color: "#c8b870" }] },
+  { featureType: "water",               elementType: "geometry",           stylers: [{ color: "#c5d8d1" }] },
+  { featureType: "poi.park",            elementType: "geometry",           stylers: [{ color: "#d8e8c8" }] },
+  { featureType: "poi",                 elementType: "labels",             stylers: [{ visibility: "off" }] },
+  { featureType: "transit",             stylers: [{ visibility: "off" }] },
+  { featureType: "administrative",      elementType: "geometry.stroke",    stylers: [{ color: "#c8b870" }] },
+];
+
+function SaleMarker({ listing, selected, onClick }: {
+  listing: Listing;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const isEstate = listing.saleType === "estate";
+
+  if (listing.isGarageSale) {
+    return (
+      <AdvancedMarker
+        position={{ lat: listing.lat, lng: listing.lng }}
+        onClick={onClick}
+        zIndex={selected ? 10 : 1}
+      >
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            background: isEstate ? "#fbbf24" : "#0f6b55",
+            border: `3px solid oklch(0.14 0.02 240)`,
+            boxShadow: selected ? "3px 3px 0 oklch(0.14 0.02 240)" : "2px 2px 0 oklch(0.14 0.02 240)",
+            display: "grid",
+            placeItems: "center",
+            transform: selected ? "scale(1.15) translateY(-2px)" : "scale(1)",
+            transition: "transform 0.15s",
+            cursor: "pointer",
+          }}
+        >
+          <span style={{
+            fontFamily: "Bebas Neue, Impact, sans-serif",
+            fontSize: 13,
+            color: isEstate ? "#451a03" : "#d1fae5",
+            letterSpacing: "0.05em",
+          }}>
+            {isEstate ? "EST" : "SALE"}
+          </span>
+        </div>
+      </AdvancedMarker>
+    );
+  }
+
+  return (
+    <AdvancedMarker
+      position={{ lat: listing.lat, lng: listing.lng }}
+      onClick={onClick}
+      zIndex={selected ? 10 : 1}
+    >
+      <Pin
+        background={selected ? "#0f6b55" : "#2dd4a8"}
+        borderColor="oklch(0.14 0.02 240)"
+        glyphColor={selected ? "#d1fae5" : "#0f3d31"}
+        scale={selected ? 1.2 : 1}
+      />
+    </AdvancedMarker>
+  );
+}
+
+function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => void }) {
+  const INK = "oklch(0.14 0.02 240)";
+  return (
+    <InfoWindow
+      position={{ lat: listing.lat, lng: listing.lng }}
+      onCloseClick={onClose}
+      pixelOffset={[0, listing.isGarageSale ? -42 : -46]}
+    >
+      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: 200, textDecoration: "none" }}>
+        <img
+          src={listing.image}
+          alt={listing.title}
+          style={{ width: "100%", height: 110, objectFit: "cover", border: `2px solid ${INK}`, display: "block" }}
+        />
+        <div style={{ padding: "8px 0 2px" }}>
+          <div style={{ fontWeight: 800, fontSize: 13, color: "oklch(0.14 0.02 240)", lineHeight: 1.3 }}>
+            {listing.title}
+          </div>
+          <div style={{ marginTop: 4, fontFamily: "Bebas Neue, Impact, sans-serif", fontSize: 18, color: "#0f6b55" }}>
+            {listing.isGarageSale
+              ? (listing.saleType === "estate" ? "Estate Sale" : "Garage Sale")
+              : `$${listing.price.toLocaleString()}`}
+          </div>
+          <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
+            {listing.location} · {listing.distance}
+          </div>
+          {listing.condition && (
+            <div style={{
+              display: "inline-block", marginTop: 4, padding: "1px 6px",
+              border: `1.5px solid ${INK}`, fontSize: 10, fontWeight: 700,
+              textTransform: "uppercase", letterSpacing: "0.05em", color: "#6b7280",
+            }}>
+              {listing.condition}
+            </div>
+          )}
+        </div>
+      </Link>
+    </InfoWindow>
+  );
+}
 
 export function ListingsMap({
   listings,
@@ -13,129 +137,53 @@ export function ListingsMap({
   zoom?: number;
   height?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  const resolvedCenter = center ?? [37.7699, -122.4304] as [number, number];
-
-  if (!mounted) return <div className="grid h-full min-h-[320px] place-items-center text-muted-foreground">Loading map…</div>;
-
-  return <MapInner listings={listings} center={resolvedCenter} userCenter={center} zoom={zoom} height={height} />;
-}
-
-function MapInner({ listings, center, userCenter, zoom, height }: {
-  listings: Listing[];
-  center: [number, number];
-  userCenter?: [number, number];
-  zoom: number;
-  height: string;
-}) {
-  const [Comps, setComps] = useState<any>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const resolvedCenter = center ?? [37.6872, -97.3301] as [number, number];
+  const selectedListing = listings.find((l) => l.id === selectedId) ?? null;
 
-  useEffect(() => {
-    Promise.all([
-      import("react-leaflet"),
-      import("leaflet"),
-    ]).then(([rl, L]) => {
-      setComps({ ...rl, L: L.default });
-    });
+  const handleMarkerClick = useCallback((id: string) => {
+    setSelectedId((prev) => (prev === id ? null : id));
   }, []);
 
-  if (!Comps) return <div className="grid h-full min-h-[320px] place-items-center text-muted-foreground">Loading map…</div>;
-
-  const { MapContainer, TileLayer, Marker, Popup, L, useMapEvents } = Comps;
-
-  function MapClickClear() {
-    useMapEvents({ click: () => setSelectedId(null) });
-    return null;
-  }
-
-  const pinIcon = (sale: boolean, saleType: string | undefined, selected: boolean) => {
-    const opacity = selected ? "1" : "0.75";
-
-    if (!sale) {
-      return L.divIcon({
-        className: "",
-        html: `<div style="width:10px;height:10px;border-radius:50%;background:#1a9e82;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.35);opacity:${opacity};"></div>`,
-        iconSize: [10, 10],
-        iconAnchor: [5, 5],
-        popupAnchor: [0, -8],
-      });
-    }
-
-    const isEstate = saleType === "estate";
-    const pinBg = isEstate ? "#ffffff" : "#1a9e82";
-    const scale = selected ? "scale(1.15)" : "scale(1)";
-    const innerContent = isEstate
-      ? `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1a9e82" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>`
-      : `<span style="font-size:15px;font-weight:900;color:#0f3d31;font-family:sans-serif;line-height:1;">$</span>`;
-
-    return L.divIcon({
-      className: "",
-      html: `
-        <div style="position:relative;width:36px;height:44px;opacity:${opacity};transform:${scale};transform-origin:bottom center;transition:transform 0.15s,opacity 0.15s;">
-          <div style="
-            width:36px;height:36px;border-radius:50% 50% 50% 0;
-            transform:rotate(-45deg);
-            background:${pinBg};
-            box-shadow:0 4px 16px rgba(0,0,0,0.55), 0 0 0 2px rgba(45,212,168,0.3);
-            display:grid;place-items:center;
-          ">
-            <div style="transform:rotate(45deg);display:grid;place-items:center;">
-              ${innerContent}
-            </div>
-          </div>
-          <div style="
-            position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-            width:6px;height:6px;border-radius:50%;
-            background:#1a9e82;
-            box-shadow:0 2px 4px rgba(0,0,0,0.4);
-          "></div>
-        </div>`,
-      iconSize: [36, 44],
-      iconAnchor: [18, 44],
-      popupAnchor: [0, -46],
-    });
-  };
-
-  const youIcon = L.divIcon({
-    className: "",
-    html: `<div style="width:18px;height:18px;border-radius:50%;background:#3b82f6;border:3px solid #fff;box-shadow:0 0 0 4px rgba(59,130,246,0.35),0 2px 8px rgba(0,0,0,0.4)"></div>`,
-    iconSize: [18, 18],
-    iconAnchor: [9, 9],
-  });
-
   return (
-    <MapContainer center={center} zoom={zoom} scrollWheelZoom style={{ height, width: "100%", borderRadius: "inherit" }}>
-      <TileLayer attribution="&copy; OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <MapClickClear />
-      {userCenter && (
-        <Marker position={userCenter} icon={youIcon}>
-          <Popup>
-            <div style={{ fontWeight: 700, fontSize: 13 }}>You are here</div>
-          </Popup>
-        </Marker>
-      )}
-      {listings.map((l: Listing) => (
-        <Marker
-          key={l.id}
-          position={[l.lat, l.lng]}
-          icon={pinIcon(!!l.isGarageSale, l.saleType, selectedId === l.id)}
-          eventHandlers={{ click: () => setSelectedId(l.id) }}
-        >
-          <Popup onClose={() => setSelectedId(null)}>
-            <div style={{ minWidth: 180 }}>
-              <img src={l.image} alt={l.title} style={{ width: "100%", height: 100, objectFit: "cover", borderRadius: 8 }} />
-              <div style={{ marginTop: 8, fontWeight: 700, fontSize: 14 }}>{l.title}</div>
-              <div style={{ marginTop: 4, color: "#1a9e82", fontWeight: 800 }}>
-                {l.isGarageSale ? (l.saleType === "estate" ? "Estate Sale" : "Garage Sale") : `$${l.price}`}
-              </div>
-              <div style={{ fontSize: 11, opacity: 0.7 }}>{l.location} · {l.distance}</div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    <APIProvider apiKey={KEY}>
+      <Map
+        style={{ width: "100%", height }}
+        mapId="18620e62c3fd6cbf63eb5904"
+        defaultCenter={{ lat: resolvedCenter[0], lng: resolvedCenter[1] }}
+        defaultZoom={zoom}
+        styles={MAP_STYLES}
+        disableDefaultUI={false}
+        gestureHandling="greedy"
+        onClick={() => setSelectedId(null)}
+      >
+        {/* User location dot */}
+        {center && (
+          <AdvancedMarker position={{ lat: center[0], lng: center[1] }} zIndex={20}>
+            <div style={{
+              width: 18, height: 18, borderRadius: "50%",
+              background: "#3b82f6", border: "3px solid #fff",
+              boxShadow: "0 0 0 4px rgba(59,130,246,0.35), 0 2px 8px rgba(0,0,0,0.4)",
+            }} />
+          </AdvancedMarker>
+        )}
+
+        {listings.map((l) => (
+          <SaleMarker
+            key={l.id}
+            listing={l}
+            selected={selectedId === l.id}
+            onClick={() => handleMarkerClick(l.id)}
+          />
+        ))}
+
+        {selectedListing && (
+          <ListingPopup
+            listing={selectedListing}
+            onClose={() => setSelectedId(null)}
+          />
+        )}
+      </Map>
+    </APIProvider>
   );
 }

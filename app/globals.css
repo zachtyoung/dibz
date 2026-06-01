@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
 
 @theme inline {
   --radius-sm: 0px;
@@ -99,19 +98,14 @@
 * { scrollbar-width: none; -ms-overflow-style: none; }
 *::-webkit-scrollbar { display: none; }
 
-/* Leaflet — natural map tiles, warm tint */
-.leaflet-container { background: oklch(0.91 0.018 82) !important; }
-.leaflet-tile { filter: saturate(0.75) brightness(1.04) sepia(0.08); }
-.leaflet-control-attribution, .leaflet-control-zoom a {
-  background: var(--surface) !important;
-  color: var(--foreground) !important;
-  border: 1px solid var(--border) !important;
+/* Google Maps — style the info window to match Dibz aesthetic */
+.gm-style .gm-style-iw-c {
+  background: oklch(0.975 0.010 80) !important;
+  border: 2px solid oklch(0.14 0.02 240) !important;
+  box-shadow: 3px 3px 0 oklch(0.14 0.02 240) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
 }
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
-  background: var(--surface) !important;
-  color: var(--foreground) !important;
-  border: 2px solid var(--ink);
-  box-shadow: 3px 3px 0 var(--ink) !important;
-  border-radius: 3px !important;
-}
-.leaflet-popup-close-button { display: none !important; }
+.gm-style .gm-style-iw-d { overflow: hidden !important; padding: 12px !important; }
+.gm-style .gm-style-iw-t::after { display: none !important; }
+.gm-style .gm-ui-hover-effect { display: none !important; }
