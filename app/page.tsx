@@ -69,7 +69,7 @@ export default function Browse() {
             </div>
           </div>
 
-          <div className="relative grid grid-cols-2 gap-3">
+          <div className="relative grid grid-cols-2 gap-3 pb-8">
             {listings.slice(0, 4).map((l, i) => (
               <div
                 key={l.id}
