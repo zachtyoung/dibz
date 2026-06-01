@@ -16,6 +16,13 @@ export type SellerTrust = {
   vouched: boolean;
 };
 
+export type PickupPhoto = {
+  src: string;
+  source: "seller" | "buyer";
+  submittedBy?: string;
+  caption?: string;
+};
+
 export type Listing = {
   id: string;
   title: string;
@@ -34,6 +41,7 @@ export type Listing = {
   description?: string;
   date?: string;
   postedHoursAgo?: number;
+  pickupPhotos?: PickupPhoto[];
 };
 
 export function timeAgo(hours: number): string {
@@ -53,8 +61,8 @@ const T: Record<string, SellerTrust> = {
 };
 
 const TEMPLATES: (Omit<Listing, "lat" | "lng" | "distance"> & { dLat: number; dLng: number })[] = [
-  { id: "1",  title: "Craftsman Lawn Mower — Self-Propelled", price: 180,    category: "Outdoors",     condition: "good",      location: "your neighborhood", seller: "Mike D.",          sellerTrust: T.solid,  image: "/listings/lawnmower.png",      dLat: -0.010, dLng:  0.016, postedHoursAgo: 2,   description: "Runs great, tune-up last spring. Pick up only." },
-  { id: "2",  title: "Cedar Porch Bench w/ Cup Holders",      price: 275,    category: "Furniture",    condition: "like new",  location: "nearby",            seller: "Jordan K.",        sellerTrust: T.top,    image: "/listings/bench.png",          dLat: -0.027, dLng:  0.011, postedHoursAgo: 5,   description: "Handmade cedar bench. Built-in cup holders. Never been rained on." },
+  { id: "1",  title: "Craftsman Lawn Mower — Self-Propelled", price: 180,    category: "Outdoors",     condition: "good",      location: "your neighborhood", seller: "Mike D.",          sellerTrust: T.solid,  image: "/listings/lawnmower.png",      dLat: -0.010, dLng:  0.016, postedHoursAgo: 2,   description: "Runs great, tune-up last spring. Pick up only.", pickupPhotos: [{ src: "/listings/lawnmower.png", source: "seller", caption: "Curb pickup — look for the green mailbox" }] },
+  { id: "2",  title: "Cedar Porch Bench w/ Cup Holders",      price: 275,    category: "Furniture",    condition: "like new",  location: "nearby",            seller: "Jordan K.",        sellerTrust: T.top,    image: "/listings/bench.png",          dLat: -0.027, dLng:  0.011, postedHoursAgo: 5,   description: "Handmade cedar bench. Built-in cup holders. Never been rained on.", pickupPhotos: [{ src: "/listings/bench.png", source: "seller", caption: "On the front porch, tan house, white trim" }, { src: "/listings/bench.png", source: "buyer", submittedBy: "Alex R.", caption: "Easy to find, bench is right out front" }] },
   { id: "3",  title: "Neighborhood Garage Sale — Sat 9am",    price: 0,      category: "On the Block",                         location: "down the street",   seller: "Elm St Neighbors", sellerTrust: T.solid,  image: "/listings/grill.png",          dLat: -0.020, dLng: -0.015, isGarageSale: true, saleType: "garage", description: "8 households. Furniture, kids' toys, kitchenware, vinyl records, plants. Cash + Venmo.", date: "Sat, Jun 8 · 9am–3pm" },
   { id: "4",  title: "PS5 Digital Edition",                   price: 350,    category: "Electronics",  condition: "good",      location: "nearby",            seller: "Devon L.",         sellerTrust: T.new,    image: "/listings/ps5.png",            dLat:  0.009, dLng:  0.025, postedHoursAgo: 1,   description: "Works perfect. Selling because I upgraded." },
   { id: "5",  title: "TV Stand w/ Electric Fireplace",        price: 220,    category: "Furniture",    condition: "good",      location: "your area",         seller: "Priya S.",         sellerTrust: T.top,    image: "/listings/tv-stand.png",       dLat:  0.007, dLng: -0.009, postedHoursAgo: 11,  description: "Fits up to 65\". Fireplace insert lights up, heater works." },

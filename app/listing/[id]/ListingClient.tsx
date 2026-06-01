@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
 import { SellerTrustPanel, StarRating } from "@/components/SellerBadges";
+import { PickupPhotoPanel } from "@/components/PickupPhotoPanel";
 import {
   ArrowLeft, Calendar, Car, Check, Clock, Heart, MapPin,
   MessageCircle, Plus, Send, Share2, Shield, Tag, Users, Eye,
@@ -341,6 +342,13 @@ export function ListingClient({ listing }: { listing: Listing }) {
                 </a>
               </div>
             </div>
+
+            {/* Pickup photo panel */}
+            <PickupPhotoPanel
+              lat={listing.lat}
+              lng={listing.lng}
+              photos={listing.pickupPhotos}
+            />
 
             {/* Safety tip */}
             <div className="flex gap-3 bg-surface px-4 py-3 text-xs text-muted-foreground" style={{ border: `2px solid ${INK}` }}>
