@@ -69,18 +69,40 @@ function SaleMarker({ listing, selected, onClick }: {
     );
   }
 
+  const s = selected ? 1.2 : 1;
   return (
     <AdvancedMarker
       position={{ lat: listing.lat, lng: listing.lng }}
       onClick={onClick}
       zIndex={selected ? 10 : 1}
     >
-      <Pin
-        background={selected ? "#0f6b55" : "#2dd4a8"}
-        borderColor="oklch(0.14 0.02 240)"
-        glyphColor={selected ? "#d1fae5" : "#0f3d31"}
-        scale={selected ? 1.2 : 1}
-      />
+      {/* Monopoly house icon */}
+      <svg
+        width={36 * s}
+        height={34 * s}
+        viewBox="0 0 36 34"
+        style={{
+          filter: selected
+            ? "drop-shadow(3px 3px 0 oklch(0.14 0.02 240))"
+            : "drop-shadow(2px 2px 0 oklch(0.14 0.02 240))",
+          transition: "all 0.15s",
+          cursor: "pointer",
+          display: "block",
+        }}
+      >
+        {/* Chimney */}
+        <rect x="22" y="1" width="5" height="7" rx="1" fill={selected ? "#0f6b55" : "#2dd4a8"} stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
+        {/* Roof */}
+        <polygon points="2,17 18,3 34,17" fill={selected ? "#0a4f40" : "#1fa88a"} stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" strokeLinejoin="round" />
+        {/* Roof overhang shadow line */}
+        <polygon points="0,17 18,2 36,17 34,17 18,4 2,17" fill="oklch(0.14 0.02 240)" opacity="0.15" />
+        {/* Walls */}
+        <rect x="5" y="16" width="26" height="17" fill={selected ? "#0f6b55" : "#2dd4a8"} stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
+        {/* Door */}
+        <rect x="14" y="24" width="8" height="9" rx="1" fill="oklch(0.14 0.02 240)" opacity="0.55" />
+        {/* Door knob */}
+        <circle cx="21" cy="28.5" r="1" fill="oklch(0.14 0.02 240)" opacity="0.8" />
+      </svg>
     </AdvancedMarker>
   );
 }
