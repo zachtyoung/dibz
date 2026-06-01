@@ -409,12 +409,13 @@ function MiniMap({ lat, lng }: { lat: number; lng: number }) {
         draggable={false}
       >
         <AdvancedMarker position={{ lat, lng }}>
-          <div style={{
-            width: 16, height: 16,
-            background: "oklch(0.52 0.14 178)",
-            border: "3px solid oklch(0.14 0.02 240)",
-            boxShadow: "2px 2px 0 oklch(0.14 0.02 240)",
-          }} />
+          <svg width="36" height="34" viewBox="0 0 36 34" style={{ filter: "drop-shadow(2px 2px 0 oklch(0.14 0.02 240))", display: "block" }}>
+            <rect x="22" y="1" width="5" height="7" rx="1" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
+            <polygon points="2,17 18,3 34,17" fill="#1fa88a" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" strokeLinejoin="round" />
+            <rect x="5" y="16" width="26" height="17" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
+            <rect x="14" y="24" width="8" height="9" rx="1" fill="oklch(0.14 0.02 240)" opacity="0.55" />
+            <circle cx="21" cy="28.5" r="1" fill="oklch(0.14 0.02 240)" opacity="0.8" />
+          </svg>
         </AdvancedMarker>
       </Map>
     </APIProvider>
