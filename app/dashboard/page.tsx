@@ -26,6 +26,9 @@ import {
   Send,
   Image as ImageIcon,
   RotateCcw,
+  Upload,
+  Sparkles,
+  AlertCircle,
 } from "lucide-react";
 
 
@@ -116,6 +119,7 @@ function Dashboard() {
   const [filter, setFilter] = useState<"all" | Status>("all");
   const [query, setQuery] = useState("");
   const [editor, setEditor] = useState<{ open: boolean; listing: SellerListing | null }>({ open: false, listing: null });
+  const [importer, setImporter] = useState(false);
   const [activeThread, setActiveThread] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<"title" | "status" | "views" | "saves" | "messages" | "price">("views");
@@ -271,6 +275,13 @@ function Dashboard() {
             >
               <Calendar className="h-4 w-4 text-primary" /> Host a sale
             </Link>
+            <button
+              onClick={() => setImporter(true)}
+              className="inline-flex items-center gap-2 bg-surface px-4 py-2 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px"
+              style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+            >
+              <Upload className="h-4 w-4 text-primary" /> Import
+            </button>
             <button
               onClick={openNew}
               className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
@@ -551,6 +562,17 @@ function Dashboard() {
         )}
       </section>
 
+      {/* Import modal */}
+      {importer && (
+        <ImportModal
+          onClose={() => setImporter(false)}
+          onImport={(data) => {
+            setImporter(false);
+            setEditor({ open: true, listing: { ...data, views: 0, saves: 0, messages: 0, postedDays: 0, distance: "0.1 mi", seller: "Zach", lat: 37.6872, lng: -97.3301 } as SellerListing });
+          }}
+        />
+      )}
+
       {/* Editor modal */}
       {editor.open && (
         <ListingEditor
@@ -639,92 +661,112 @@ function ListingRow({
 }: {
   l: SellerListing; onEdit: () => void; onDelete: () => void; onToggleSold: () => void; onPublish: () => void;
 }) {
+  const INK = "oklch(0.14 0.02 240)";
   const statusStyle =
     l.status === "active" ? "bg-primary/15 text-primary"
     : l.status === "sold" ? "bg-muted text-muted-foreground"
     : "bg-accent/15 text-accent";
 
-  return (
-    <tr
-      className="transition hover:bg-surface-elevated"
-      style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}
+  const actions = (
+    <div className="flex items-center gap-1">
+      {l.status !== "draft" && (
+        <button
+          onClick={onToggleSold}
+          title={l.status === "sold" ? "Mark active" : "Mark sold"}
+          className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-primary"
+        >
+          {l.status === "sold" ? <RotateCcw className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+        </button>
+      )}
+      <button onClick={onEdit} className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-foreground" aria-label="Edit">
+        <Edit3 className="h-4 w-4" />
+      </button>
+      <button onClick={onDelete} className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-destructive" aria-label="Delete">
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
+  const statusBadge = l.status === "draft" ? (
+    <button
+      onClick={onPublish}
+      className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground hover:bg-accent transition"
+      style={{ border: `2px solid ${INK}` }}
     >
-      {/* Item */}
-      <td className="px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <img
-            src={l.image}
-            alt={l.title}
-            className="h-12 w-12 shrink-0 object-cover"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-          />
-          <div className="min-w-0">
-            <div className={`truncate text-sm font-semibold ${l.status === "sold" ? "text-muted-foreground line-through" : "text-foreground"}`}>{l.title}</div>
-            <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="h-3 w-3 shrink-0" />
-              <span className="truncate">{l.location}</span>
-              <span>·</span>
-              <span>{l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}</span>
+      Publish
+    </button>
+  ) : (
+    <span
+      className={`inline-block w-16 py-1 text-center text-[10px] font-bold uppercase tracking-wider ${statusStyle}`}
+      style={{ border: `2px solid ${INK}` }}
+    >
+      {l.status}
+    </span>
+  );
+
+  return (
+    <>
+      {/* Mobile card — hidden on md+ */}
+      <tr className="md:hidden" style={{ borderBottom: `2px solid ${INK}` }}>
+        <td colSpan={7} className="p-3">
+          <div className="flex gap-3">
+            <img
+              src={l.image}
+              alt={l.title}
+              className="h-16 w-16 shrink-0 object-cover"
+              style={{ border: `2px solid ${INK}` }}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <div className={`truncate text-sm font-semibold ${l.status === "sold" ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                  {l.title}
+                </div>
+                <span className="font-display text-lg text-primary shrink-0">${l.price.toLocaleString()}</span>
+              </div>
+              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3 shrink-0" />
+                <span className="truncate">{l.location}</span>
+                <span>·</span>
+                <span>{l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}</span>
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  {statusBadge}
+                  <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{l.views.toLocaleString()}</span>
+                  <span className="flex items-center gap-1"><Heart className="h-3 w-3" />{l.saves}</span>
+                  <span className="flex items-center gap-1"><MessageCircle className="h-3 w-3" />{l.messages}</span>
+                </div>
+                {actions}
+              </div>
             </div>
           </div>
-        </div>
-      </td>
+        </td>
+      </tr>
 
-      {/* Status */}
-      <td className="px-4 py-3">
-        {l.status === "draft" ? (
-          <button
-            onClick={onPublish}
-            className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground hover:bg-accent transition"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-          >
-            Publish
-          </button>
-        ) : (
-          <span
-            className={`inline-block w-16 py-1 text-center text-[10px] font-bold uppercase tracking-wider ${statusStyle}`}
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-          >
-            {l.status}
-          </span>
-        )}
-      </td>
-
-      {/* Views */}
-      <td className="px-4 py-3 text-sm text-foreground">{l.views.toLocaleString()}</td>
-
-      {/* Saves */}
-      <td className="px-4 py-3 text-sm text-foreground">{l.saves.toLocaleString()}</td>
-
-      {/* Messages */}
-      <td className="px-4 py-3 text-sm text-foreground">{l.messages.toLocaleString()}</td>
-
-      {/* Price */}
-      <td className="px-4 py-3 font-display text-xl text-primary">
-        ${l.price.toLocaleString()}
-      </td>
-
-      {/* Actions */}
-      <td className="px-4 py-3">
-        <div className="flex items-center justify-end gap-1">
-          {l.status !== "draft" && (
-            <button
-              onClick={onToggleSold}
-              title={l.status === "sold" ? "Mark active" : "Mark sold"}
-              className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-primary"
-            >
-              {l.status === "sold" ? <RotateCcw className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
-            </button>
-          )}
-          <button onClick={onEdit} className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-foreground" aria-label="Edit">
-            <Edit3 className="h-4 w-4" />
-          </button>
-          <button onClick={onDelete} className="grid h-8 w-8 place-items-center text-muted-foreground transition hover:bg-surface hover:text-destructive" aria-label="Delete">
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      </td>
-    </tr>
+      {/* Desktop row — hidden below md */}
+      <tr className="hidden md:table-row transition hover:bg-surface-elevated" style={{ borderBottom: `2px solid ${INK}` }}>
+        <td className="px-4 py-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <img src={l.image} alt={l.title} className="h-12 w-12 shrink-0 object-cover" style={{ border: `2px solid ${INK}` }} />
+            <div className="min-w-0">
+              <div className={`truncate text-sm font-semibold ${l.status === "sold" ? "text-muted-foreground line-through" : "text-foreground"}`}>{l.title}</div>
+              <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3 shrink-0" />
+                <span className="truncate">{l.location}</span>
+                <span>·</span>
+                <span>{l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}</span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td className="px-4 py-3">{statusBadge}</td>
+        <td className="px-4 py-3 text-sm text-foreground">{l.views.toLocaleString()}</td>
+        <td className="px-4 py-3 text-sm text-foreground">{l.saves.toLocaleString()}</td>
+        <td className="px-4 py-3 text-sm text-foreground">{l.messages.toLocaleString()}</td>
+        <td className="px-4 py-3 font-display text-xl text-primary">${l.price.toLocaleString()}</td>
+        <td className="px-4 py-3"><div className="flex items-center justify-end gap-1">{actions}</div></td>
+      </tr>
+    </>
   );
 }
 
@@ -1023,5 +1065,220 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
       {children}
     </label>
+  );
+}
+
+type ParsedListing = Pick<SellerListing, "id" | "title" | "price" | "category" | "location" | "image" | "status" | "description">;
+
+const MOCK_PARSED: ParsedListing = {
+  id: `import-${Date.now()}`,
+  title: "Mid-Century Walnut Coffee Table",
+  price: 120,
+  category: "Furniture",
+  location: "College Hill",
+  image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=800&fit=crop&auto=format&q=70",
+  description: "Beautiful solid walnut coffee table from the 1960s. Some light scratches on the surface but overall great condition. Pick up only, cash or Venmo.",
+  status: "active",
+};
+
+function ImportModal({
+  onClose,
+  onImport,
+}: {
+  onClose: () => void;
+  onImport: (data: ParsedListing) => void;
+}) {
+  const INK = "oklch(0.14 0.02 240)";
+  const [step, setStep] = useState<"upload" | "parsing" | "preview">("upload");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [parsed, setParsed] = useState<ParsedListing | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreview(e.target?.result as string);
+      setStep("parsing");
+      // Simulate AI parse delay
+      setTimeout(() => {
+        setParsed({ ...MOCK_PARSED, id: `import-${Date.now()}` });
+        setStep("preview");
+      }, 2200);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-background/80 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-lg overflow-hidden bg-card"
+        style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `2px solid ${INK}` }}>
+          <div>
+            <h2 className="font-display text-2xl tracking-wide">Import listing</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Screenshot from Facebook, Craigslist, OfferUp — anything</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="grid h-8 w-8 place-items-center text-muted-foreground hover:bg-surface hover:text-foreground"
+            style={{ border: `2px solid ${INK}` }}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="px-5 py-5">
+          {step === "upload" && (
+            <>
+              {/* Platform badges */}
+              <div className="mb-4 flex items-center gap-2">
+                {["Facebook", "Craigslist", "OfferUp", "Any screenshot"].map((p, i) => (
+                  <span
+                    key={p}
+                    className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                    style={{ border: `2px solid ${INK}`, background: i === 0 ? "oklch(0.52 0.14 178 / 0.1)" : undefined }}
+                  >
+                    {p}
+                  </span>
+                ))}
+              </div>
+
+              {/* Drop zone */}
+              <div
+                className="relative flex flex-col items-center justify-center gap-3 bg-surface py-12 text-center transition hover:bg-muted cursor-pointer"
+                style={{ border: `2px dashed ${INK}` }}
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
+                onClick={() => fileRef.current?.click()}
+              >
+                <div
+                  className="grid h-14 w-14 place-items-center bg-primary/15 text-primary"
+                  style={{ border: `2px solid ${INK}` }}
+                >
+                  <Upload className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="font-bold text-foreground">Drop a screenshot here</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">or click to browse — JPG, PNG, WEBP</p>
+                </div>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+                />
+              </div>
+
+              {/* How it works */}
+              <div className="mt-4 space-y-2">
+                {[
+                  { n: "1", text: "Screenshot your listing on Facebook Marketplace or anywhere else" },
+                  { n: "2", text: "Drop it above — AI reads the title, price, photos, and description" },
+                  { n: "3", text: "Review and publish to Dibz in one click" },
+                ].map(({ n, text }) => (
+                  <div key={n} className="flex items-start gap-3 text-xs text-muted-foreground">
+                    <span
+                      className="grid h-5 w-5 shrink-0 place-items-center font-display text-sm text-primary"
+                      style={{ border: `2px solid ${INK}` }}
+                    >
+                      {n}
+                    </span>
+                    {text}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {step === "parsing" && (
+            <div className="flex flex-col items-center gap-5 py-10">
+              {preview && (
+                <div className="relative h-40 w-40 overflow-hidden" style={{ border: `2px solid ${INK}` }}>
+                  <img src={preview} alt="" className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-background/60 grid place-items-center">
+                    <Sparkles className="h-8 w-8 text-primary animate-pulse" />
+                  </div>
+                </div>
+              )}
+              <div className="text-center">
+                <p className="font-display text-2xl tracking-wide">Reading your listing…</p>
+                <p className="mt-1 text-xs text-muted-foreground">AI is extracting title, price, and description</p>
+              </div>
+              {/* Animated progress bar */}
+              <div className="w-full bg-muted h-1.5" style={{ border: `1px solid ${INK}` }}>
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{ width: "100%", animation: "progress 2.2s linear forwards" }}
+                />
+              </div>
+              <style>{`@keyframes progress { from { width: 0% } to { width: 100% } }`}</style>
+            </div>
+          )}
+
+          {step === "preview" && parsed && (
+            <div className="space-y-4">
+              <div
+                className="flex gap-3 bg-primary/10 px-4 py-3 text-xs font-semibold text-primary"
+                style={{ border: `2px solid ${INK}` }}
+              >
+                <Sparkles className="h-4 w-4 shrink-0 mt-0.5" />
+                AI found your listing. Review the details below before publishing.
+              </div>
+
+              <div className="flex gap-4">
+                <div className="h-24 w-24 shrink-0 overflow-hidden" style={{ border: `2px solid ${INK}` }}>
+                  <img src={parsed.image} alt="" className="h-full w-full object-cover" />
+                </div>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="font-bold text-foreground truncate">{parsed.title}</p>
+                  <p className="font-display text-2xl text-primary">${parsed.price}</p>
+                  <p className="text-xs text-muted-foreground">{parsed.category} · {parsed.location}</p>
+                </div>
+              </div>
+
+              <div className="bg-surface px-4 py-3 text-sm text-muted-foreground" style={{ border: `2px solid ${INK}` }}>
+                {parsed.description}
+              </div>
+
+              <div
+                className="flex items-start gap-2 text-xs text-muted-foreground px-3 py-2.5"
+                style={{ border: `2px solid oklch(0.14 0.02 240)`, background: "oklch(0.955 0.016 84)" }}
+              >
+                <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
+                You'll be able to edit everything before publishing. This is just a starting point.
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button
+                  onClick={onClose}
+                  className="flex-1 bg-surface py-2.5 text-sm font-semibold transition hover:text-foreground"
+                  style={{ border: `2px solid ${INK}` }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => onImport(parsed)}
+                  className="flex-1 bg-primary py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
+                  style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
+                >
+                  Edit &amp; publish →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
