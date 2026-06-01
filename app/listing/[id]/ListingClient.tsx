@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, AdvancedMarker, Circle } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
@@ -403,11 +403,20 @@ function MiniMap({ lat, lng }: { lat: number; lng: number }) {
         style={{ width: "100%", height: "100%" }}
         mapId="18620e62c3fd6cbf63eb5904"
         defaultCenter={{ lat, lng }}
-        defaultZoom={15}
+        defaultZoom={14}
         disableDefaultUI
         gestureHandling="none"
         draggable={false}
       >
+        <Circle
+          center={{ lat, lng }}
+          radius={400}
+          fillColor="#2dd4a8"
+          fillOpacity={0.15}
+          strokeColor="#0f6b55"
+          strokeOpacity={0.5}
+          strokeWeight={1.5}
+        />
         <AdvancedMarker position={{ lat, lng }}>
           <svg width="36" height="34" viewBox="0 0 36 34" style={{ filter: "drop-shadow(2px 2px 0 oklch(0.14 0.02 240))", display: "block" }}>
             <rect x="22" y="1" width="5" height="7" rx="1" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
