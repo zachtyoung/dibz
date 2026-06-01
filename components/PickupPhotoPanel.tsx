@@ -44,11 +44,12 @@ function SourceBadge({ source }: { source: PickupPhoto["source"] }) {
 }
 
 /* Lightbox */
-function Lightbox({ photos, streetView, lat, lng, index, onClose, onNav }: {
+function Lightbox({ photos, streetView, svLat, svLng, isExactLocation, index, onClose, onNav }: {
   photos: PickupPhoto[];
   streetView: boolean;
-  lat: number;
-  lng: number;
+  svLat: number;
+  svLng: number;
+  isExactLocation: boolean;
   index: number;
   onClose: () => void;
   onNav: (i: number) => void;
@@ -69,7 +70,7 @@ function Lightbox({ photos, streetView, lat, lng, index, onClose, onNav }: {
       >
         <div className="relative aspect-video bg-black overflow-hidden">
           {isStreetView ? (
-            <StreetViewImg lat={lat} lng={lng} />
+            <StreetViewImg lat={svLat} lng={svLng} />
           ) : (
             <img src={photo!.src} alt={photo!.caption ?? "Pickup location"} className="h-full w-full object-cover" />
           )}
@@ -79,7 +80,7 @@ function Lightbox({ photos, streetView, lat, lng, index, onClose, onNav }: {
               className="absolute left-2 top-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
               style={{ background: "#3b82f6", border: `1.5px solid ${INK}`, boxShadow: `1px 1px 0 ${INK}` }}
             >
-              Street View
+              {isExactLocation ? "Street View" : "Neighborhood"}
             </span>
           )}
         </div>
@@ -87,7 +88,9 @@ function Lightbox({ photos, streetView, lat, lng, index, onClose, onNav }: {
         <div className="flex items-center justify-between gap-4 bg-card px-4 py-3">
           <p className="text-xs text-muted-foreground truncate">
             {isStreetView
-              ? "Google Street View — automated snapshot"
+              ? isExactLocation
+                ? "Google Street View — pickup location"
+                : "General neighborhood — message seller for exact address"
               : photo?.caption ?? (photo?.source === "buyer" ? `Submitted by ${photo.submittedBy ?? "a buyer"}` : "Seller photo")}
           </p>
           <div className="flex items-center gap-2 shrink-0">
@@ -195,13 +198,24 @@ function SubmitPhotoForm({ onSubmit, onCancel }: {
   );
 }
 
+/* Deterministic fuzz: offset by up to ~400m using listing coords as seed */
+function fuzzCoords(lat: number, lng: number): { lat: number; lng: number } {
+  const seed = Math.abs(Math.sin(lat * 1000) * Math.cos(lng * 1000));
+  const seed2 = Math.abs(Math.cos(lat * 1337) * Math.sin(lng * 1337));
+  const dLat = (seed - 0.5) * 0.007;   // ~±390m
+  const dLng = (seed2 - 0.5) * 0.009;  // ~±390m
+  return { lat: lat + dLat, lng: lng + dLng };
+}
+
 export function PickupPhotoPanel({
   lat,
   lng,
+  isExactLocation = false,
   photos: initialPhotos = [],
 }: {
   lat: number;
   lng: number;
+  isExactLocation?: boolean;
   photos?: PickupPhoto[];
 }) {
   const [photos, setPhotos] = useState<PickupPhoto[]>(initialPhotos);
@@ -210,7 +224,8 @@ export function PickupPhotoPanel({
   const [scoutEarned, setScoutEarned] = useState(false);
   const [streetViewOk, setStreetViewOk] = useState(true);
 
-  const streetViewSrc = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${lat},${lng}&fov=90&heading=0&pitch=0&key=${KEY}`;
+  const svCoords = isExactLocation ? { lat, lng } : fuzzCoords(lat, lng);
+  const streetViewSrc = `https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${svCoords.lat},${svCoords.lng}&fov=90&heading=0&pitch=0&key=${KEY}`;
   const hasStreetView = streetViewOk;
   const total = photos.length + (hasStreetView ? 1 : 0);
 
@@ -259,7 +274,7 @@ export function PickupPhotoPanel({
             <>
               <img
                 src={streetViewSrc}
-                alt="Street View of pickup location"
+                alt="Street View of pickup area"
                 className="h-full w-full object-cover"
                 onError={() => setStreetViewOk(false)}
               />
@@ -267,8 +282,16 @@ export function PickupPhotoPanel({
                 className="absolute left-2 top-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
                 style={{ background: "#3b82f6", border: `1.5px solid ${INK}`, boxShadow: `1px 1px 0 ${INK}` }}
               >
-                Street View
+                {isExactLocation ? "Street View" : "Neighborhood"}
               </span>
+              {!isExactLocation && (
+                <span
+                  className="absolute bottom-2 right-2 px-2 py-0.5 text-[10px] font-semibold text-white"
+                  style={{ background: "rgba(0,0,0,0.55)", border: `1px solid rgba(255,255,255,0.3)` }}
+                >
+                  Exact location shared after contact
+                </span>
+              )}
             </>
           ) : (
             <>
@@ -287,7 +310,9 @@ export function PickupPhotoPanel({
         <div className="flex items-center gap-2 bg-card px-3 py-2" style={{ borderTop: `2px solid ${INK}` }}>
           <p className="flex-1 truncate text-[11px] text-muted-foreground">
             {primaryIsStreetView
-              ? "Automated Street View — tap to see more photos"
+              ? isExactLocation
+                ? "Street View of pickup location"
+                : "General neighborhood — message seller for exact address"
               : primaryPhoto?.caption ?? (primaryPhoto?.source === "buyer"
                   ? `Scout photo by ${primaryPhoto?.submittedBy ?? "a buyer"}`
                   : "Seller photo — tap to see more")}
@@ -363,8 +388,9 @@ export function PickupPhotoPanel({
         <Lightbox
           photos={sorted}
           streetView={hasStreetView}
-          lat={lat}
-          lng={lng}
+          svLat={svCoords.lat}
+          svLng={svCoords.lng}
+          isExactLocation={isExactLocation}
           index={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
           onNav={setLightboxIndex}

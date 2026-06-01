@@ -347,6 +347,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
             <PickupPhotoPanel
               lat={listing.lat}
               lng={listing.lng}
+              isExactLocation={!!listing.isGarageSale}
               photos={listing.pickupPhotos}
             />
 
