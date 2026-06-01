@@ -395,7 +395,6 @@ function MiniMap({ lat, lng }: { lat: number; lng: number }) {
         mapId="18620e62c3fd6cbf63eb5904"
         defaultCenter={{ lat, lng }}
         defaultZoom={15}
-        styles={MINI_MAP_STYLES}
         disableDefaultUI
         gestureHandling="none"
         draggable={false}

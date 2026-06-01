@@ -152,7 +152,6 @@ export function ListingsMap({
         mapId="18620e62c3fd6cbf63eb5904"
         defaultCenter={{ lat: resolvedCenter[0], lng: resolvedCenter[1] }}
         defaultZoom={zoom}
-        styles={MAP_STYLES}
         disableDefaultUI={false}
         gestureHandling="greedy"
         onClick={() => setSelectedId(null)}
