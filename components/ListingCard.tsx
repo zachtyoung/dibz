@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart, MapPin, Calendar, Clock } from "lucide-react";
 import { timeAgo } from "@/lib/listings";
 import type { Listing } from "@/lib/listings";
+import { SellerBadgesCompact } from "@/components/SellerBadges";
 
 const FAVS_KEY = "dibz-favorites";
 
@@ -75,6 +76,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </span>
           <span className="text-xs font-medium text-muted-foreground">{listing.distance}</span>
         </div>
+        {listing.condition && (
+          <span className="mt-1 inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground" style={{border: "1.5px solid oklch(0.14 0.02 240)"}}>
+            {listing.condition}
+          </span>
+        )}
         <h3 className="mt-1 flex-1 line-clamp-2 text-sm font-bold leading-snug text-foreground">
           {listing.title}
         </h3>
@@ -89,6 +95,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
             <><Clock className="h-3 w-3 shrink-0" /><span>{listing.postedHoursAgo != null ? timeAgo(listing.postedHoursAgo) : ""}</span></>
           )}
         </div>
+        {listing.sellerTrust && (
+          <div className="mt-2">
+            <SellerBadgesCompact trust={listing.sellerTrust} />
+          </div>
+        )}
       </div>
     </article>
     </Link>

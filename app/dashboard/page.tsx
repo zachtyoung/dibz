@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
-import { LISTINGS, CATEGORIES, type Listing } from "@/lib/listings";
+import { LISTINGS, CATEGORIES, CONDITIONS, type Listing, type Condition } from "@/lib/listings";
 import {
   Plus,
   Eye,
@@ -180,7 +180,7 @@ function Dashboard() {
   function openEdit(l: SellerListing) {
     setEditor({ open: true, listing: l });
   }
-  function saveListing(data: Omit<SellerListing, "views" | "saves" | "messages" | "postedDays" | "distance" | "seller" | "lat" | "lng">) {
+  function saveListing(data: Pick<SellerListing, "id" | "title" | "price" | "category" | "condition" | "location" | "image" | "status" | "description">) {
     setListings((prev) => {
       const exists = prev.find((p) => p.id === data.id);
       if (exists) {
@@ -875,11 +875,12 @@ function ListingEditor({
 }: {
   initial: SellerListing | null;
   onClose: () => void;
-  onSave: (l: Pick<SellerListing, "id" | "title" | "price" | "category" | "location" | "image" | "status" | "description">) => void;
+  onSave: (l: Pick<SellerListing, "id" | "title" | "price" | "category" | "condition" | "location" | "image" | "status" | "description">) => void;
 }) {
   const [title, setTitle] = useState(initial?.title ?? "");
   const [price, setPrice] = useState(String(initial?.price ?? ""));
   const [category, setCategory] = useState(initial?.category ?? CATEGORIES[1]);
+  const [condition, setCondition] = useState<Condition>(initial?.condition ?? "good");
   const [location, setLocation] = useState(initial?.location ?? "Mission District");
   const [image, setImage] = useState(initial?.image ?? STOCK_IMG);
   const [description, setDescription] = useState(initial?.description ?? "");
@@ -899,6 +900,7 @@ function ListingEditor({
       title: t,
       price: Math.round(p),
       category,
+      condition,
       location: location.trim().slice(0, 80) || "Nearby",
       image: image.trim() || STOCK_IMG,
       description: description.trim().slice(0, 1000),
@@ -980,6 +982,26 @@ function ListingEditor({
               </select>
             </Field>
           </div>
+
+          <Field label="Condition">
+            <div className="flex flex-wrap gap-1.5">
+              {CONDITIONS.map((c) => (
+                <button
+                  type="button"
+                  key={c}
+                  onClick={() => setCondition(c)}
+                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                    condition === c
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-surface text-muted-foreground hover:text-foreground"
+                  }`}
+                  style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </Field>
 
           <Field label="Neighborhood">
             <input

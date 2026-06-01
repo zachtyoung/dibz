@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
-import { getListings, CATEGORIES } from "@/lib/listings";
+import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import { getCityBySlug } from "@/lib/cities";
 import { ArrowRight, MapPin, Sparkles } from "lucide-react";
@@ -15,10 +15,12 @@ export default function Browse() {
   const activeCity = city ?? SF;
   const listings = useMemo(() => getListings(activeCity), [activeCity]);
   const [cat, setCat] = useState("All");
-  const filtered = useMemo(
-    () => (cat === "All" ? listings : listings.filter((l) => l.category === cat)),
-    [cat, listings],
-  );
+  const [cond, setCond] = useState<Condition | "All">("All");
+  const filtered = useMemo(() => {
+    let r = cat === "All" ? listings : listings.filter((l) => l.category === cat);
+    if (cond !== "All") r = r.filter((l) => l.condition === cond);
+    return r;
+  }, [cat, cond, listings]);
   const sales = listings.filter((l) => l.isGarageSale).length;
 
   return (
@@ -92,6 +94,24 @@ export default function Browse() {
                 cat === c
                   ? "bg-primary text-primary-foreground"
                   : "bg-background text-foreground hover:bg-muted"
+              }`}
+              style={{border: "2px solid oklch(0.14 0.02 240)"}}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        {/* Condition filter */}
+        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 pb-3 md:px-8">
+          <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Condition:</span>
+          {(["All", ...CONDITIONS] as const).map((c) => (
+            <button
+              key={c}
+              onClick={() => setCond(c)}
+              className={`whitespace-nowrap px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
+                cond === c
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background text-muted-foreground hover:text-foreground"
               }`}
               style={{border: "2px solid oklch(0.14 0.02 240)"}}
             >

@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingsMap } from "@/components/ListingsMap";
-import { getListings, CATEGORIES } from "@/lib/listings";
+import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import { getCityBySlug } from "@/lib/cities";
 
@@ -14,11 +14,13 @@ function MapContent() {
   const { city, loading } = useCityContext();
   const activeCity = city ?? SF;
   const [cat, setCat] = useState("All");
+  const [cond, setCond] = useState<Condition | "All">("All");
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.toLowerCase().trim() ?? "";
   const listings = useMemo(() => getListings(activeCity), [activeCity]);
   const filtered = useMemo(() => {
     let result = cat === "All" ? listings : listings.filter((l) => l.category === cat);
+    if (cond !== "All") result = result.filter((l) => l.condition === cond);
     if (q) result = result.filter((l) =>
       l.title.toLowerCase().includes(q) ||
       l.description?.toLowerCase().includes(q) ||
@@ -26,7 +28,7 @@ function MapContent() {
       l.seller.toLowerCase().includes(q)
     );
     return result;
-  }, [listings, cat, q]);
+  }, [listings, cat, cond, q]);
   const center: [number, number] = [activeCity.lat, activeCity.lng];
 
   return (
@@ -42,13 +44,30 @@ function MapContent() {
               ? "Finding your city…"
               : `${filtered.length} ${filtered.length === 1 ? "result" : "results"} in ${activeCity.name}`}
           </p>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{scrollbarWidth: "none", msOverflowStyle: "none"}}>
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {CATEGORIES.map((c) => (
               <button
                 key={c}
                 onClick={() => setCat(c)}
                 className={`whitespace-nowrap px-3 py-1 text-xs font-semibold transition ${
                   cat === c
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-surface text-muted-foreground hover:text-foreground"
+                }`}
+                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1">
+            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cond:</span>
+            {(["All", ...CONDITIONS] as const).map((c) => (
+              <button
+                key={c}
+                onClick={() => setCond(c)}
+                className={`whitespace-nowrap px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                  cond === c
                     ? "bg-primary text-primary-foreground"
                     : "bg-surface text-muted-foreground hover:text-foreground"
                 }`}
