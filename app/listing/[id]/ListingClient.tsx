@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { APIProvider, Map, AdvancedMarker, Circle } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, AdvancedMarker, Polygon } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
@@ -327,7 +327,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
             {/* Map */}
             <div style={{ border: `2px solid ${INK}` }}>
               <div className="relative h-44 bg-muted overflow-hidden">
-                <MiniMap lat={listing.lat} lng={listing.lng} />
+                <MiniMap lat={listing.lat} lng={listing.lng} neighborhood={listing.location} />
               </div>
               <div className="flex items-center gap-2 bg-card px-4 py-3 text-sm" style={{ borderTop: `2px solid ${INK}` }}>
                 <MapPin className="h-4 w-4 shrink-0 text-primary" />
@@ -396,27 +396,60 @@ export function ListingClient({ listing }: { listing: Listing }) {
   );
 }
 
-function MiniMap({ lat, lng }: { lat: number; lng: number }) {
+function NeighborhoodPolygon({ neighborhood }: { neighborhood: string }) {
+  const [paths, setPaths] = useState<{ lat: number; lng: number }[][]>([]);
+
+  useEffect(() => {
+    fetch("/wichita-neighborhoods.geojson")
+      .then((r) => r.json())
+      .then((data) => {
+        const match = data.features.find(
+          (f: { properties: { NAME: string } }) =>
+            f.properties.NAME.toLowerCase() === neighborhood.toLowerCase()
+        );
+        if (!match) return;
+        const geom = match.geometry;
+        const rings = geom.type === "Polygon" ? [geom.coordinates] : geom.coordinates;
+        setPaths(
+          rings.flat().map((ring: number[][]) =>
+            ring.map(([lng, lat]: number[]) => ({ lat, lng }))
+          )
+        );
+      })
+      .catch(() => {});
+  }, [neighborhood]);
+
+  if (!paths.length) return null;
+  return (
+    <>
+      {paths.map((path, i) => (
+        <Polygon
+          key={i}
+          paths={path}
+          fillColor="#2dd4a8"
+          fillOpacity={0.15}
+          strokeColor="#0f6b55"
+          strokeOpacity={0.7}
+          strokeWeight={2}
+        />
+      ))}
+    </>
+  );
+}
+
+function MiniMap({ lat, lng, neighborhood }: { lat: number; lng: number; neighborhood: string }) {
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!}>
       <Map
         style={{ width: "100%", height: "100%" }}
         mapId="18620e62c3fd6cbf63eb5904"
         defaultCenter={{ lat, lng }}
-        defaultZoom={14}
+        defaultZoom={13}
         disableDefaultUI
         gestureHandling="none"
         draggable={false}
       >
-        <Circle
-          center={{ lat, lng }}
-          radius={400}
-          fillColor="#2dd4a8"
-          fillOpacity={0.15}
-          strokeColor="#0f6b55"
-          strokeOpacity={0.5}
-          strokeWeight={1.5}
-        />
+        <NeighborhoodPolygon neighborhood={neighborhood} />
         <AdvancedMarker position={{ lat, lng }}>
           <svg width="36" height="34" viewBox="0 0 36 34" style={{ filter: "drop-shadow(2px 2px 0 oklch(0.14 0.02 240))", display: "block" }}>
             <rect x="22" y="1" width="5" height="7" rx="1" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
