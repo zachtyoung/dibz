@@ -83,23 +83,114 @@ export default function Browse() {
         </div>
       </section>
 
-      {/* Marquee ticker */}
-      <div className="overflow-hidden" style={{ borderBottom: "2px solid oklch(0.14 0.02 240)", background: "oklch(0.14 0.02 240)" }}>
-        <div className="flex" style={{ animation: "marquee 28s linear infinite" }}>
-          {[...listings, ...listings].map((l, i) => (
-            <span
-              key={i}
-              className="flex shrink-0 items-center gap-2 px-4 py-2 font-display text-sm tracking-wider"
-              style={{ color: "oklch(0.955 0.016 84)" }}
-            >
-              <span style={{ color: "oklch(0.52 0.14 178)" }}>✦</span>
-              <span>{l.title.toUpperCase()}</span>
-              {!l.isGarageSale && (
-                <span style={{ color: "oklch(0.52 0.14 178)" }}>${l.price.toLocaleString()}</span>
-              )}
-              <span style={{ color: "oklch(0.60 0.04 70 / 0.6)", fontSize: 11 }}>{l.location}</span>
-            </span>
-          ))}
+      {/* Bloomberg/DOS ticker */}
+      <div
+        className="overflow-hidden select-none"
+        style={{
+          borderBottom: "2px solid oklch(0.14 0.02 240)",
+          borderTop: "2px solid oklch(0.14 0.02 240)",
+          background: "oklch(0.11 0.015 240)",
+        }}
+      >
+        <div className="flex items-stretch" style={{ animation: "marquee 48s linear infinite" }}>
+          {[...listings, ...listings].map((l, i) => {
+            const isNew    = (l.postedHoursAgo ?? 999) <= 3;
+            const isHot    = (l.postedHoursAgo ?? 999) <= 6;
+            const isOld    = (l.postedHoursAgo ?? 0) >= 72;
+            const isSale   = l.isGarageSale;
+            const isEstate = l.saleType === "estate";
+
+            const tag = isSale && isEstate ? { label: "ESTATE", bar: "█▓▒░", color: "#fbbf24" }
+                      : isSale             ? { label: "WEEKEND", bar: "█▓▒░", color: "#fbbf24" }
+                      : isNew              ? { label: "NEW", bar: "███░", color: "oklch(0.52 0.14 178)" }
+                      : isHot              ? { label: "HOT", bar: "██░░", color: "oklch(0.52 0.14 178)" }
+                      : isOld              ? { label: "AGING", bar: "░░░░", color: "oklch(0.50 0.02 220)" }
+                      :                     { label: "LIVE", bar: "█░░░", color: "oklch(0.52 0.14 178)" };
+
+            const neighborhood = l.location.split(" ").slice(0, 2).join(" ");
+
+            return (
+              <span
+                key={i}
+                className="flex shrink-0 items-center gap-0"
+                style={{ fontFamily: "'Courier New', 'Lucida Console', monospace" }}
+              >
+                {/* Divider */}
+                <span style={{ color: "oklch(0.30 0.02 240)", padding: "0 10px", fontSize: 18 }}>│</span>
+
+                {/* DOS bar + tag */}
+                <span style={{ color: tag.color, fontSize: 10, letterSpacing: "0.08em", fontWeight: 700 }}>
+                  {tag.bar}
+                </span>
+                <span
+                  style={{
+                    marginLeft: 5,
+                    background: tag.color,
+                    color: "oklch(0.11 0.015 240)",
+                    fontSize: 9,
+                    fontWeight: 900,
+                    letterSpacing: "0.12em",
+                    padding: "1px 4px",
+                  }}
+                >
+                  {tag.label}
+                </span>
+
+                {/* Title */}
+                <span
+                  style={{
+                    marginLeft: 8,
+                    color: "oklch(0.92 0.012 80)",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {l.title.length > 28 ? l.title.slice(0, 27).toUpperCase() + "…" : l.title.toUpperCase()}
+                </span>
+
+                {/* Price or FREE */}
+                <span
+                  style={{
+                    marginLeft: 8,
+                    color: isSale ? "#fbbf24" : "oklch(0.52 0.14 178)",
+                    fontSize: 12,
+                    fontWeight: 900,
+                    letterSpacing: "0.04em",
+                    fontFamily: "'Courier New', monospace",
+                  }}
+                >
+                  {isSale ? "FREE ENTRY" : `$${l.price.toLocaleString()}`}
+                </span>
+
+                {/* Neighborhood */}
+                <span
+                  style={{
+                    marginLeft: 6,
+                    color: "oklch(0.45 0.02 220)",
+                    fontSize: 9,
+                    letterSpacing: "0.10em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {neighborhood}
+                </span>
+
+                {/* Time signal */}
+                {l.postedHoursAgo != null && (
+                  <span style={{ marginLeft: 5, color: "oklch(0.35 0.02 220)", fontSize: 9 }}>
+                    ·{l.postedHoursAgo < 24 ? ` ${l.postedHoursAgo}H` : ` ${Math.floor(l.postedHoursAgo / 24)}D`}
+                  </span>
+                )}
+                {l.date && (
+                  <span style={{ marginLeft: 5, color: "oklch(0.35 0.02 220)", fontSize: 9 }}>
+                    · {l.date.split("·")[0].trim().toUpperCase()}
+                  </span>
+                )}
+              </span>
+            );
+          })}
         </div>
       </div>
       <style>{`
