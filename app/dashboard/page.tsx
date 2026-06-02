@@ -29,6 +29,7 @@ import {
   Upload,
   Sparkles,
   AlertCircle,
+  Tag,
 } from "lucide-react";
 
 
@@ -130,7 +131,7 @@ function Dashboard() {
       setEditor({ open: true, listing: null });
       router.replace("/dashboard");
     }
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!toast) return;
@@ -870,6 +871,34 @@ function ThreadView({
   );
 }
 
+type ListingType = "item" | "multi" | "sale-event";
+
+const LISTING_TYPES: { id: ListingType; icon: React.ElementType; label: string; sub: string }[] = [
+  { id: "item",       icon: Package,    label: "One item",     sub: "A single thing you're selling — furniture, electronics, clothes, etc." },
+  { id: "multi",      icon: Tag,        label: "Multiple items", sub: "A batch or lot — box of books, set of dishes, whole room of stuff." },
+  { id: "sale-event", icon: Calendar,   label: "Sale event",   sub: "Garage sale, estate sale, swap meet — a date, a place, a whole yard." },
+];
+
+const PHOTO_TIPS = [
+  { icon: "☀️", tip: "Shoot in natural light — open a window or step outside." },
+  { icon: "🧹", tip: "Clear the background. A clean wall beats a cluttered room every time." },
+  { icon: "📐", tip: "Show all four sides plus any damage. No surprises = faster sale." },
+  { icon: "📏", tip: "Toss a coin or ruler in frame so buyers can gauge size instantly." },
+];
+
+const PROHIBITED = [
+  "Drugs, prescription meds, paraphernalia",
+  "Weapons, ammo, firearms, explosives",
+  "Animals — live, parts, or taxidermy",
+  "Alcohol or tobacco products",
+  "Adult or explicit items",
+  "Counterfeit, knockoff, or stolen goods",
+  "Services of any kind",
+  "Healthcare products (testing kits, medical devices)",
+  "Digital goods, subscriptions, gift cards",
+  "Fraudulent, misleading, or deceptive listings",
+];
+
 function ListingEditor({
   initial, onClose, onSave,
 }: {
@@ -877,15 +906,27 @@ function ListingEditor({
   onClose: () => void;
   onSave: (l: Pick<SellerListing, "id" | "title" | "price" | "category" | "condition" | "location" | "image" | "status" | "description">) => void;
 }) {
+  const INK = "oklch(0.14 0.02 240)";
+
+  // Steps: type-pick → photo-tips → form → (submit goes straight through)
+  // If editing existing listing skip straight to form
+  const [step, setStep] = useState<"type" | "photo-tips" | "form">(initial ? "form" : "type");
+  const [listingType, setListingType] = useState<ListingType>("item");
+
   const [title, setTitle] = useState(initial?.title ?? "");
   const [price, setPrice] = useState(String(initial?.price ?? ""));
   const [category, setCategory] = useState(initial?.category ?? CATEGORIES[1]);
   const [condition, setCondition] = useState<Condition>(initial?.condition ?? "good");
-  const [location, setLocation] = useState(initial?.location ?? "Mission District");
+  const [location, setLocation] = useState(initial?.location ?? "");
   const [image, setImage] = useState(initial?.image ?? STOCK_IMG);
   const [description, setDescription] = useState(initial?.description ?? "");
   const [status, setStatus] = useState<Status>(initial?.status ?? "active");
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isSaleEvent = listingType === "sale-event";
+  const totalSteps = 3;
+  const stepIndex = step === "type" ? 1 : step === "photo-tips" ? 2 : 3;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -893,15 +934,16 @@ function ListingEditor({
     const p = Number(price);
     if (!t) return setError("Title is required");
     if (t.length > 120) return setError("Title is too long");
-    if (!Number.isFinite(p) || p < 0 || p > 1_000_000) return setError("Enter a valid price");
+    if (!isSaleEvent && (!Number.isFinite(p) || p < 0 || p > 1_000_000)) return setError("Enter a valid price");
     if (description.length > 1000) return setError("Description is too long");
+    if (!agreed) return setError("You must confirm you're not selling prohibited items");
     onSave({
       id: initial?.id ?? `new-${Date.now()}`,
       title: t,
-      price: Math.round(p),
-      category,
+      price: isSaleEvent ? 0 : Math.round(p),
+      category: isSaleEvent ? "Sales" : category,
       condition,
-      location: location.trim().slice(0, 80) || "Nearby",
+      location: location.trim().slice(0, 80) || "Wichita, KS",
       image: image.trim() || STOCK_IMG,
       description: description.trim().slice(0, 1000),
       status,
@@ -910,173 +952,320 @@ function ListingEditor({
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-background/80 p-4 backdrop-blur-sm" onClick={onClose}>
-      <form
+      <div
         onClick={(e) => e.stopPropagation()}
-        onSubmit={submit}
-        className="w-full max-w-lg overflow-hidden bg-card shadow-2xl"
-        style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+        className="w-full max-w-lg overflow-hidden bg-card"
+        style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}
       >
-        <div
-          className="flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}
-        >
-          <h2 className="font-display text-2xl tracking-wide">{initial ? "Edit listing" : "Post something for sale"}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="grid h-8 w-8 place-items-center text-muted-foreground hover:bg-surface hover:text-foreground"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div className="max-h-[70vh] space-y-4 overflow-y-auto px-5 py-5">
-          <div className="relative h-40 overflow-hidden bg-muted" style={{ border: "2px solid oklch(0.14 0.02 240)" }}>
-            <img src={image || STOCK_IMG} alt="" className="h-full w-full object-cover" />
-            <label className="absolute bottom-3 right-3 inline-flex cursor-pointer items-center gap-1.5 bg-background/80 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-background" style={{ border: "2px solid oklch(0.14 0.02 240)" }}>
-              <ImageIcon className="h-3.5 w-3.5" />
-              Photo URL
-              <input
-                type="url"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                className="ml-2 w-40 bg-transparent text-xs focus:outline-none"
-                placeholder="https://…"
-              />
-            </label>
-          </div>
-
-          <Field label="Title">
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={120}
-              placeholder="e.g. Mid-Century Walnut Dresser"
-              className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            />
-          </Field>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Price (USD)">
-              <input
-                inputMode="numeric"
-                value={price}
-                onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
-                placeholder="0"
-                className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-              />
-            </Field>
-            <Field label="Category">
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `2px solid ${INK}` }}>
+          <div className="flex items-center gap-3">
+            {step !== "type" && !initial && (
+              <button
+                type="button"
+                onClick={() => setStep(step === "form" ? "photo-tips" : "type")}
+                className="grid h-7 w-7 place-items-center text-muted-foreground hover:bg-surface hover:text-foreground"
+                style={{ border: `2px solid ${INK}` }}
               >
-                {CATEGORIES.filter((c) => c !== "All").map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-            </Field>
+                ←
+              </button>
+            )}
+            <h2 className="font-display text-2xl tracking-wide">
+              {initial ? "Edit listing" : step === "type" ? "What are you selling?" : step === "photo-tips" ? "Photo tips" : "Listing details"}
+            </h2>
           </div>
-
-          <Field label="Condition">
-            <div className="flex flex-wrap gap-1.5">
-              {CONDITIONS.map((c) => (
-                <button
-                  type="button"
-                  key={c}
-                  onClick={() => setCondition(c)}
-                  className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
-                    condition === c
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-surface text-muted-foreground hover:text-foreground"
-                  }`}
-                  style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          </Field>
-
-          <Field label="Neighborhood">
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              maxLength={80}
-              className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            />
-          </Field>
-
-          <Field label="Description">
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              maxLength={1000}
-              placeholder="Condition, pickup details, etc."
-              className="w-full resize-none bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            />
-            <div className="mt-1 text-right text-[10px] text-muted-foreground">{description.length}/1000</div>
-          </Field>
-
-          <Field label="Status">
-            <div className="flex gap-2">
-              {(["active", "draft", "sold"] as const).map((s) => (
-                <button
-                  type="button"
-                  key={s}
-                  onClick={() => setStatus(s)}
-                  className={`flex-1 px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
-                    status === s
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-surface text-muted-foreground hover:text-foreground"
-                  }`}
-                  style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </Field>
-
-          {error && (
-            <div
-              className="bg-destructive/10 px-3 py-2 text-sm text-destructive"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+          <div className="flex items-center gap-3">
+            {!initial && (
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalSteps }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1.5 w-6 transition-all ${i < stepIndex ? "bg-primary" : "bg-muted"}`}
+                    style={{ border: `1px solid ${INK}` }}
+                  />
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-8 w-8 place-items-center text-muted-foreground hover:bg-surface hover:text-foreground"
+              style={{ border: `2px solid ${INK}` }}
             >
-              {error}
-            </div>
-          )}
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
-        <div
-          className="flex items-center justify-end gap-2 bg-surface/50 px-5 py-4"
-          style={{ borderTop: "2px solid oklch(0.14 0.02 240)" }}
-        >
-          <button
-            type="button"
-            onClick={onClose}
-            className="bg-surface px-4 py-2 text-sm font-semibold hover:border-primary transition"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-primary px-5 py-2 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
-            style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
-          >
-            {initial ? "Save changes" : "Post listing"}
-          </button>
-        </div>
-      </form>
+        {/* Step 1 — Type picker */}
+        {step === "type" && (
+          <div className="px-5 py-5">
+            <p className="mb-4 text-sm text-muted-foreground">Pick the type that fits. This shapes how your listing looks to buyers.</p>
+            <div className="flex flex-col gap-0" style={{ border: `2px solid ${INK}` }}>
+              {LISTING_TYPES.map(({ id, icon: Icon, label, sub }, i) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => { setListingType(id); setStep("photo-tips"); }}
+                  className="flex items-center gap-4 bg-surface px-5 py-4 text-left transition hover:bg-primary/10 group"
+                  style={i > 0 ? { borderTop: `2px solid ${INK}` } : {}}
+                >
+                  <div
+                    className="grid h-10 w-10 shrink-0 place-items-center bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground"
+                    style={{ border: `2px solid ${INK}` }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-foreground">{label}</div>
+                    <div className="text-xs text-muted-foreground">{sub}</div>
+                  </div>
+                  <span className="text-muted-foreground">→</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 flex items-start gap-2 px-1 text-xs text-muted-foreground">
+              <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+              No services, digital goods, or prohibited items. <button type="button" onClick={() => window.open("/rules", "_blank")} className="ml-1 font-semibold text-primary hover:underline">See full list →</button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2 — Photo tips */}
+        {step === "photo-tips" && (
+          <div className="px-5 py-5">
+            <div
+              className="mb-5 flex items-center gap-3 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary"
+              style={{ border: `2px solid ${INK}` }}
+            >
+              <Sparkles className="h-4 w-4 shrink-0" />
+              Listings with 3+ photos get 2× more messages. Here's how to nail it.
+            </div>
+            <div className="flex flex-col gap-0" style={{ border: `2px solid ${INK}` }}>
+              {PHOTO_TIPS.map(({ icon, tip }, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 px-4 py-3 text-sm"
+                  style={i > 0 ? { borderTop: `2px solid ${INK}` } : {}}
+                >
+                  <span className="text-base leading-none mt-0.5">{icon}</span>
+                  <span className="text-foreground">{tip}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setStep("form")}
+                className="flex-1 bg-surface py-2.5 text-sm font-semibold transition hover:bg-muted"
+                style={{ border: `2px solid ${INK}` }}
+              >
+                Skip for now
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep("form")}
+                className="flex-1 bg-primary py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-accent"
+                style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
+              >
+                Got it — continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3 — Form */}
+        {step === "form" && (
+          <form onSubmit={submit}>
+            <div className="max-h-[65vh] space-y-4 overflow-y-auto px-5 py-5">
+              {/* Photo */}
+              <div className="relative h-40 overflow-hidden bg-muted" style={{ border: `2px solid ${INK}` }}>
+                <img src={image || STOCK_IMG} alt="" className="h-full w-full object-cover" />
+                <label className="absolute bottom-3 right-3 inline-flex cursor-pointer items-center gap-1.5 bg-background/80 px-3 py-1.5 text-xs font-semibold backdrop-blur hover:bg-background" style={{ border: `2px solid ${INK}` }}>
+                  <ImageIcon className="h-3.5 w-3.5" />
+                  Photo URL
+                  <input
+                    type="url"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    className="ml-2 w-40 bg-transparent text-xs focus:outline-none"
+                    placeholder="https://…"
+                  />
+                </label>
+              </div>
+
+              <Field label="Title">
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  maxLength={120}
+                  placeholder={isSaleEvent ? "e.g. Riverside Estate Sale — Sat Jun 7" : "e.g. Mid-Century Walnut Dresser"}
+                  className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  style={{ border: `2px solid ${INK}` }}
+                />
+              </Field>
+
+              {isSaleEvent ? (
+                <>
+                  <Field label="Date">
+                    <input
+                      type="date"
+                      className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      style={{ border: `2px solid ${INK}` }}
+                    />
+                  </Field>
+                  <Field label="Start / End time">
+                    <div className="grid grid-cols-2 gap-3">
+                      <input type="time" className="bg-surface px-3 py-2 text-sm focus:outline-none" style={{ border: `2px solid ${INK}` }} defaultValue="08:00" />
+                      <input type="time" className="bg-surface px-3 py-2 text-sm focus:outline-none" style={{ border: `2px solid ${INK}` }} defaultValue="14:00" />
+                    </div>
+                  </Field>
+                </>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Price (USD)">
+                    <input
+                      inputMode="numeric"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
+                      placeholder="0"
+                      className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      style={{ border: `2px solid ${INK}` }}
+                    />
+                  </Field>
+                  <Field label="Category">
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                      style={{ border: `2px solid ${INK}` }}
+                    >
+                      {CATEGORIES.filter((c) => c !== "All" && c !== "Sales").map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                  </Field>
+                </div>
+              )}
+
+              {!isSaleEvent && (
+                <Field label="Condition">
+                  <div className="flex flex-wrap gap-1.5">
+                    {CONDITIONS.map((c) => (
+                      <button
+                        type="button"
+                        key={c}
+                        onClick={() => setCondition(c)}
+                        className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                          condition === c ? "bg-primary text-primary-foreground" : "bg-surface text-muted-foreground hover:text-foreground"
+                        }`}
+                        style={{ border: `2px solid ${INK}` }}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
+              )}
+
+              <Field label="Neighborhood">
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  maxLength={80}
+                  placeholder="e.g. College Hill"
+                  className="w-full bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  style={{ border: `2px solid ${INK}` }}
+                />
+              </Field>
+
+              <Field label="Description">
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  maxLength={1000}
+                  placeholder={isSaleEvent ? "What's in the sale? Furniture, vintage, tools, clothing…" : "Condition, pickup details, measurements, etc."}
+                  className="w-full resize-none bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  style={{ border: `2px solid ${INK}` }}
+                />
+                <div className="mt-1 text-right text-[10px] text-muted-foreground">{description.length}/1000</div>
+              </Field>
+
+              <Field label="Status">
+                <div className="flex gap-2">
+                  {(["active", "draft"] as const).map((s) => (
+                    <button
+                      type="button"
+                      key={s}
+                      onClick={() => setStatus(s)}
+                      className={`flex-1 px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                        status === s ? "bg-primary text-primary-foreground" : "bg-surface text-muted-foreground hover:text-foreground"
+                      }`}
+                      style={{ border: `2px solid ${INK}` }}
+                    >
+                      {s === "active" ? "Post now" : "Save as draft"}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+
+              {/* Prohibited items acknowledgment */}
+              <div style={{ border: `2px solid ${INK}` }}>
+                <div className="px-4 pt-3 pb-2">
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Not allowed on Dibz</div>
+                  <div className="grid grid-cols-1 gap-0.5">
+                    {PROHIBITED.map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="h-1 w-1 shrink-0 bg-primary" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <label
+                  className="flex cursor-pointer items-start gap-3 px-4 py-3 transition hover:bg-surface"
+                  style={{ borderTop: `2px solid ${INK}` }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => { setAgreed(e.target.checked); setError(null); }}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                  />
+                  <span className="text-xs font-semibold text-foreground">
+                    I confirm my listing doesn't include any prohibited items and is accurate and not misleading.
+                  </span>
+                </label>
+              </div>
+
+              {error && (
+                <div className="flex items-center gap-2 bg-destructive/10 px-3 py-2 text-sm text-destructive" style={{ border: `2px solid ${INK}` }}>
+                  <AlertCircle className="h-4 w-4 shrink-0" /> {error}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 bg-surface/50 px-5 py-4" style={{ borderTop: `2px solid ${INK}` }}>
+              <button
+                type="button"
+                onClick={onClose}
+                className="bg-surface px-4 py-2 text-sm font-semibold transition hover:bg-muted"
+                style={{ border: `2px solid ${INK}` }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-primary px-5 py-2 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
+                style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
+              >
+                {initial ? "Save changes" : status === "draft" ? "Save draft" : "Post listing →"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
