@@ -37,9 +37,9 @@ export default function Browse() {
             >
               <Sparkles className="h-3 w-3" /> {sales} sales near you this weekend
             </span>
-            <h1 className="mt-5 font-display text-5xl leading-[0.88] tracking-tight md:text-7xl">
-              Your next score<br />
-              <span className="text-primary">is next door.</span>
+            <h1 className="mt-5 font-display text-6xl leading-[0.88] tracking-tight md:text-8xl">
+              Dibz it<br />
+              <span className="text-primary">before they do.</span>
             </h1>
             <p className="mt-5 max-w-md text-base font-semibold text-muted-foreground">
               The neighborhood marketplace built around real maps and weekend sales — garage, estate, and everything in between.
