@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CityProvider } from "@/components/CityProvider";
+import { SaleTicker } from "@/components/SaleTicker";
 
 export const metadata: Metadata = {
   title: "Dibz — Buy, sell & find garage sales near you",
@@ -26,7 +27,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full antialiased">
-        <CityProvider>{children}</CityProvider>
+        <CityProvider>
+          {children}
+          <SaleTicker />
+        </CityProvider>
       </body>
     </html>
   );
