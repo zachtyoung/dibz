@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { APIProvider, Map, AdvancedMarker, Polygon } from "@vis.gl/react-google-maps";
+import { Map, AdvancedMarker, Polygon } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
@@ -439,28 +439,26 @@ function NeighborhoodPolygon({ neighborhood }: { neighborhood: string }) {
 
 function MiniMap({ lat, lng, neighborhood }: { lat: number; lng: number; neighborhood: string }) {
   return (
-    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!}>
-      <Map
-        style={{ width: "100%", height: "100%" }}
-        mapId="18620e62c3fd6cbf63eb5904"
-        defaultCenter={{ lat, lng }}
-        defaultZoom={13}
-        disableDefaultUI
-        gestureHandling="none"
-        draggable={false}
-      >
-        <NeighborhoodPolygon neighborhood={neighborhood} />
-        <AdvancedMarker position={{ lat, lng }}>
-          <svg width="36" height="34" viewBox="0 0 36 34" style={{ filter: "drop-shadow(2px 2px 0 oklch(0.14 0.02 240))", display: "block" }}>
-            <rect x="22" y="1" width="5" height="7" rx="1" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
-            <polygon points="2,17 18,3 34,17" fill="#1fa88a" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" strokeLinejoin="round" />
-            <rect x="5" y="16" width="26" height="17" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
-            <rect x="14" y="24" width="8" height="9" rx="1" fill="oklch(0.14 0.02 240)" opacity="0.55" />
-            <circle cx="21" cy="28.5" r="1" fill="oklch(0.14 0.02 240)" opacity="0.8" />
-          </svg>
-        </AdvancedMarker>
-      </Map>
-    </APIProvider>
+    <Map
+      style={{ width: "100%", height: "100%" }}
+      mapId="18620e62c3fd6cbf63eb5904"
+      defaultCenter={{ lat, lng }}
+      defaultZoom={13}
+      disableDefaultUI
+      gestureHandling="none"
+      draggable={false}
+    >
+      <NeighborhoodPolygon neighborhood={neighborhood} />
+      <AdvancedMarker position={{ lat, lng }}>
+        <svg width="36" height="34" viewBox="0 0 36 34" style={{ filter: "drop-shadow(2px 2px 0 oklch(0.14 0.02 240))", display: "block" }}>
+          <rect x="22" y="1" width="5" height="7" rx="1" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
+          <polygon points="2,17 18,3 34,17" fill="#1fa88a" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" strokeLinejoin="round" />
+          <rect x="5" y="16" width="26" height="17" fill="#2dd4a8" stroke="oklch(0.14 0.02 240)" strokeWidth="1.5" />
+          <rect x="14" y="24" width="8" height="9" rx="1" fill="oklch(0.14 0.02 240)" opacity="0.55" />
+          <circle cx="21" cy="28.5" r="1" fill="oklch(0.14 0.02 240)" opacity="0.8" />
+        </svg>
+      </AdvancedMarker>
+    </Map>
   );
 }
 

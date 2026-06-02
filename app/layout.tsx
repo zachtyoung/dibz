@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { CityProvider } from "@/components/CityProvider";
 import { SaleTicker } from "@/components/SaleTicker";
+import { APIProvider } from "@vis.gl/react-google-maps";
 
 export const metadata: Metadata = {
   title: "Dibz — Buy, sell & find garage sales near you",
@@ -27,10 +28,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full antialiased">
-        <CityProvider>
-          {children}
-          <SaleTicker />
-        </CityProvider>
+        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!}>
+          <CityProvider>
+            {children}
+            <SaleTicker />
+          </CityProvider>
+        </APIProvider>
       </body>
     </html>
   );

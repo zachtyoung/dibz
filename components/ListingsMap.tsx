@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
 import {
-  APIProvider,
   Map,
   AdvancedMarker,
   InfoWindow,
@@ -10,7 +9,6 @@ import {
 import Link from "next/link";
 import type { Listing } from "@/lib/listings";
 
-const KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!;
 
 /* Warm cream map style matching the Dibz aesthetic */
 const MAP_STYLES: google.maps.MapTypeStyle[] = [
@@ -168,8 +166,7 @@ export function ListingsMap({
   }, []);
 
   return (
-    <APIProvider apiKey={KEY}>
-      <Map
+    <Map
         style={{ width: "100%", height }}
         mapId="18620e62c3fd6cbf63eb5904"
         defaultCenter={{ lat: resolvedCenter[0], lng: resolvedCenter[1] }}
@@ -205,6 +202,5 @@ export function ListingsMap({
           />
         )}
       </Map>
-    </APIProvider>
   );
 }
