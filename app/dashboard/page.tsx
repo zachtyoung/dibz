@@ -1211,33 +1211,11 @@ function ListingEditor({
               </Field>
 
               {/* Prohibited items acknowledgment */}
-              <div style={{ border: `2px solid ${INK}` }}>
-                <div className="px-4 pt-3 pb-2">
-                  <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Not allowed on Dibz</div>
-                  <div className="grid grid-cols-1 gap-0.5">
-                    {PROHIBITED.map((item) => (
-                      <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="h-1 w-1 shrink-0 bg-primary" />
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <label
-                  className="flex cursor-pointer items-start gap-3 px-4 py-3 transition hover:bg-surface"
-                  style={{ borderTop: `2px solid ${INK}` }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={agreed}
-                    onChange={(e) => { setAgreed(e.target.checked); setError(null); }}
-                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
-                  />
-                  <span className="text-xs font-semibold text-foreground">
-                    I confirm my listing doesn't include any prohibited items and is accurate and not misleading.
-                  </span>
-                </label>
-              </div>
+              <ProhibitedAccordion
+                agreed={agreed}
+                onToggle={(v) => { setAgreed(v); setError(null); }}
+                ink={INK}
+              />
 
               {error && (
                 <div className="flex items-center gap-2 bg-destructive/10 px-3 py-2 text-sm text-destructive" style={{ border: `2px solid ${INK}` }}>
@@ -1266,6 +1244,48 @@ function ListingEditor({
           </form>
         )}
       </div>
+    </div>
+  );
+}
+
+function ProhibitedAccordion({ agreed, onToggle, ink }: { agreed: boolean; onToggle: (v: boolean) => void; ink: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ border: `2px solid ${ink}` }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-surface"
+      >
+        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Not allowed on Dibz</span>
+        <span className="text-xs text-muted-foreground">{open ? "▲" : "▼"}</span>
+      </button>
+      {open && (
+        <div className="px-4 pb-3" style={{ borderTop: `2px solid ${ink}` }}>
+          <div className="grid grid-cols-1 gap-0.5 pt-2">
+            {PROHIBITED.map((item) => (
+              <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="h-1 w-1 shrink-0 bg-primary" />
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <label
+        className="flex cursor-pointer items-start gap-3 px-4 py-3 transition hover:bg-surface"
+        style={{ borderTop: `2px solid ${ink}` }}
+      >
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => onToggle(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+        />
+        <span className="text-xs font-semibold text-foreground">
+          I confirm my listing doesn't include any prohibited items and is accurate and not misleading.
+        </span>
+      </label>
     </div>
   );
 }
