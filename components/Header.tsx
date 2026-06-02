@@ -6,6 +6,8 @@ import { MapPin, Plus, Search, Tag } from "lucide-react";
 import { useCityContext } from "@/components/CityProvider";
 import { CityPrompt } from "@/components/CityPrompt";
 
+const MOCK_USER = { initials: "ZY", name: "Zach Young" };
+
 const INK = "oklch(0.14 0.02 240)";
 
 export function Header() {
@@ -68,6 +70,20 @@ export function Header() {
           <MapPin className="h-3.5 w-3.5 text-primary" />
           {city ? city.name : "Pick city"}
         </button>
+
+        {/* Profile */}
+        <Link
+          href="/profile"
+          className="group"
+          title={MOCK_USER.name}
+        >
+          <div
+            className="grid h-8 w-8 place-items-center bg-surface font-display text-sm text-foreground transition group-hover:bg-muted"
+            style={{border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}`}}
+          >
+            {MOCK_USER.initials}
+          </div>
+        </Link>
 
         {/* Sell CTA */}
         <button
