@@ -83,6 +83,32 @@ export default function Browse() {
         </div>
       </section>
 
+      {/* Marquee ticker */}
+      <div className="overflow-hidden" style={{ borderBottom: "2px solid oklch(0.14 0.02 240)", background: "oklch(0.14 0.02 240)" }}>
+        <div className="flex" style={{ animation: "marquee 28s linear infinite" }}>
+          {[...listings, ...listings].map((l, i) => (
+            <span
+              key={i}
+              className="flex shrink-0 items-center gap-2 px-4 py-2 font-display text-sm tracking-wider"
+              style={{ color: "oklch(0.955 0.016 84)" }}
+            >
+              <span style={{ color: "oklch(0.52 0.14 178)" }}>✦</span>
+              <span>{l.title.toUpperCase()}</span>
+              {!l.isGarageSale && (
+                <span style={{ color: "oklch(0.52 0.14 178)" }}>${l.price.toLocaleString()}</span>
+              )}
+              <span style={{ color: "oklch(0.60 0.04 70 / 0.6)", fontSize: 11 }}>{l.location}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <style>{`
+        @keyframes marquee {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
+
       {/* Category pills */}
       <section className="sticky top-[48px] z-30 bg-surface md:top-[52px]" style={{borderBottom: "2px solid oklch(0.14 0.02 240)"}}>
         <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 md:px-8">
