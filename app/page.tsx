@@ -83,116 +83,53 @@ export default function Browse() {
         </div>
       </section>
 
-      {/* Bloomberg/DOS ticker */}
-      <div
-        className="overflow-hidden select-none"
-        style={{
-          borderBottom: "2px solid oklch(0.14 0.02 240)",
-          borderTop: "2px solid oklch(0.14 0.02 240)",
-          background: "oklch(0.11 0.015 240)",
-        }}
-      >
-        <div className="flex items-stretch" style={{ animation: "marquee 48s linear infinite" }}>
-          {[...listings, ...listings].map((l, i) => {
-            const isNew    = (l.postedHoursAgo ?? 999) <= 3;
-            const isHot    = (l.postedHoursAgo ?? 999) <= 6;
-            const isOld    = (l.postedHoursAgo ?? 0) >= 72;
-            const isSale   = l.isGarageSale;
-            const isEstate = l.saleType === "estate";
-
-            const tag = isSale && isEstate ? { label: "ESTATE", bar: "█▓▒░", color: "#fbbf24" }
-                      : isSale             ? { label: "WEEKEND", bar: "█▓▒░", color: "#fbbf24" }
-                      : isNew              ? { label: "NEW", bar: "███░", color: "oklch(0.52 0.14 178)" }
-                      : isHot              ? { label: "HOT", bar: "██░░", color: "oklch(0.52 0.14 178)" }
-                      : isOld              ? { label: "AGING", bar: "░░░░", color: "oklch(0.50 0.02 220)" }
-                      :                     { label: "LIVE", bar: "█░░░", color: "oklch(0.52 0.14 178)" };
-
-            const neighborhood = l.location.split(" ").slice(0, 2).join(" ");
-
-            return (
-              <span
-                key={i}
-                className="flex shrink-0 items-center gap-0"
-                style={{ fontFamily: "'Courier New', 'Lucida Console', monospace" }}
-              >
-                {/* Divider */}
-                <span style={{ color: "oklch(0.30 0.02 240)", padding: "0 10px", fontSize: 18 }}>│</span>
-
-                {/* DOS bar + tag */}
-                <span style={{ color: tag.color, fontSize: 10, letterSpacing: "0.08em", fontWeight: 700 }}>
-                  {tag.bar}
-                </span>
+      {/* Sale event ticker */}
+      {(() => {
+        const sales = listings.filter((l) => l.isGarageSale);
+        if (!sales.length) return null;
+        const items = [...sales, ...sales];
+        return (
+          <div
+            className="overflow-hidden select-none"
+            style={{
+              borderBottom: "2px solid oklch(0.14 0.02 240)",
+              background: "oklch(0.955 0.016 84)",
+            }}
+          >
+            <div className="flex items-center" style={{ animation: "marquee 32s linear infinite" }}>
+              {items.map((l, i) => (
                 <span
-                  style={{
-                    marginLeft: 5,
-                    background: tag.color,
-                    color: "oklch(0.11 0.015 240)",
-                    fontSize: 9,
-                    fontWeight: 900,
-                    letterSpacing: "0.12em",
-                    padding: "1px 4px",
-                  }}
+                  key={i}
+                  className="flex shrink-0 items-center"
+                  style={{ fontFamily: "'Courier New', 'Lucida Console', monospace", fontSize: 12 }}
                 >
-                  {tag.label}
-                </span>
-
-                {/* Title */}
-                <span
-                  style={{
-                    marginLeft: 8,
-                    color: "oklch(0.92 0.012 80)",
-                    fontSize: 11,
+                  <span style={{ color: "oklch(0.70 0.02 220)", padding: "0 14px" }}>*</span>
+                  <span style={{
+                    background: l.saleType === "estate" ? "#fbbf24" : "oklch(0.14 0.02 240)",
+                    color: l.saleType === "estate" ? "oklch(0.14 0.02 240)" : "oklch(0.955 0.016 84)",
+                    fontSize: 10,
                     fontWeight: 700,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {l.title.length > 28 ? l.title.slice(0, 27).toUpperCase() + "…" : l.title.toUpperCase()}
-                </span>
-
-                {/* Price or FREE */}
-                <span
-                  style={{
-                    marginLeft: 8,
-                    color: isSale ? "#fbbf24" : "oklch(0.52 0.14 178)",
-                    fontSize: 12,
-                    fontWeight: 900,
-                    letterSpacing: "0.04em",
-                    fontFamily: "'Courier New', monospace",
-                  }}
-                >
-                  {isSale ? "FREE ENTRY" : `$${l.price.toLocaleString()}`}
-                </span>
-
-                {/* Neighborhood */}
-                <span
-                  style={{
-                    marginLeft: 6,
-                    color: "oklch(0.45 0.02 220)",
-                    fontSize: 9,
                     letterSpacing: "0.10em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {neighborhood}
+                    padding: "1px 5px",
+                    marginRight: 8,
+                  }}>
+                    {l.saleType === "estate" ? "ESTATE SALE" : "GARAGE SALE"}
+                  </span>
+                  <span style={{ color: "oklch(0.14 0.02 240)", fontWeight: 700, letterSpacing: "0.04em" }}>
+                    {l.title.toUpperCase()}
+                  </span>
+                  <span style={{ color: "oklch(0.52 0.14 178)", marginLeft: 10, fontWeight: 700 }}>
+                    {l.date?.split("·")[0].trim().toUpperCase()}
+                  </span>
+                  <span style={{ color: "oklch(0.55 0.02 220)", marginLeft: 10, fontSize: 11 }}>
+                    {l.location}
+                  </span>
                 </span>
-
-                {/* Time signal */}
-                {l.postedHoursAgo != null && (
-                  <span style={{ marginLeft: 5, color: "oklch(0.35 0.02 220)", fontSize: 9 }}>
-                    ·{l.postedHoursAgo < 24 ? ` ${l.postedHoursAgo}H` : ` ${Math.floor(l.postedHoursAgo / 24)}D`}
-                  </span>
-                )}
-                {l.date && (
-                  <span style={{ marginLeft: 5, color: "oklch(0.35 0.02 220)", fontSize: 9 }}>
-                    · {l.date.split("·")[0].trim().toUpperCase()}
-                  </span>
-                )}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
       <style>{`
         @keyframes marquee {
           0%   { transform: translateX(0); }
