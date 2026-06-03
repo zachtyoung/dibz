@@ -40,7 +40,7 @@ export function Header() {
 
         {/* Desktop nav */}
         <nav className="ml-3 hidden items-center gap-0.5 md:flex">
-          <NavLink href="/">Browse</NavLink>
+          <NavLink href="/browse">Browse</NavLink>
           <NavLink href="/map">Map</NavLink>
           <NavLink href="/garage-sales">Sales</NavLink>
           <NavLink href="/dashboard">Dashboard</NavLink>
@@ -101,7 +101,7 @@ export function Header() {
         className="flex items-center gap-0 overflow-x-auto px-4 py-0 md:hidden"
         style={{borderTop: `2px solid ${INK}`}}
       >
-        <NavLink href="/">Browse</NavLink>
+        <NavLink href="/browse">Browse</NavLink>
         <NavLink href="/map">Map</NavLink>
         <NavLink href="/garage-sales">Sales</NavLink>
         <NavLink href="/dashboard">Dashboard</NavLink>
