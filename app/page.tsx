@@ -183,7 +183,7 @@ export default function Landing() {
         <div className="grid md:grid-cols-3" style={{ borderBottom: `2px solid ${INK}` }}>
           <HowStep n="01" icon={<Search className="h-5 w-5" />} title="Find it" body="Browse listings and garage sales nearby — filter by distance, category, condition." href="/browse" />
           <HowStep n="02" icon={<Navigation className="h-5 w-5" />} title="Route it" body="Build your weekend route. We calculate door-to-door drive time automatically." href="/garage-sales" bordered />
-          <HowStep n="03" icon={<DollarSign className="h-5 w-5" />} title="Dibz it" body="See something you want? Call dibs before someone else does. Message the seller and make it yours." href="/dashboard?new=1" />
+          <HowStep n="03" icon={<DollarSign className="h-5 w-5" />} title="Dibz it" body="See something you want? Call dibs before someone else does." href="/dashboard?new=1" />
         </div>
       </section>
 
