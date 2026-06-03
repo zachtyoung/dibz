@@ -25,10 +25,10 @@ export default function Landing() {
         style={{ borderBottom: `2px solid ${INK}`, background: "oklch(0.955 0.016 84)" }}
       >
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <div className="grid min-h-[82vh] grid-cols-1 gap-0 md:grid-cols-[1fr_420px] md:min-h-[78vh]">
+          <div className="grid grid-cols-1 gap-0 md:grid-cols-[1fr_420px]">
 
             {/* Left: copy */}
-            <div className="flex flex-col justify-center py-14 pr-0 md:py-20 md:pr-12" style={{ borderRight: `2px solid ${INK}` }}>
+            <div className="flex flex-col py-14 pr-0 md:py-20 md:pr-12" style={{ borderRight: `2px solid ${INK}` }}>
 
               {/* Overline pill */}
               {sales > 0 ? (
@@ -99,13 +99,12 @@ export default function Landing() {
             </div>
 
             {/* Right: collage grid */}
-            <div className="relative hidden flex-col gap-0 md:flex" style={{ borderLeft: `2px solid ${INK}` }}>
-              {/* Stacked images */}
-              <div className="grid h-full grid-rows-3">
+            <div className="relative hidden md:block self-stretch" style={{ borderLeft: `2px solid ${INK}` }}>
+              <div className="sticky top-[52px] flex flex-col" style={{ height: "calc(100vh - 52px)" }}>
                 {heroListings.slice(0, 3).map((l, i) => (
                   <div
                     key={l.id}
-                    className="relative overflow-hidden"
+                    className="relative flex-1 overflow-hidden"
                     style={{ borderBottom: i < 2 ? `2px solid ${INK}` : undefined }}
                   >
                     <img
@@ -117,26 +116,13 @@ export default function Landing() {
                       className="absolute bottom-0 left-0 right-0 flex items-end justify-between px-3 py-2"
                       style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)" }}
                     >
-                      <span className="font-display text-lg tracking-wide text-white drop-shadow">{l.title}</span>
+                      <span className="font-display text-base tracking-wide text-white drop-shadow">{l.title}</span>
                       {!l.isGarageSale && (
-                        <span className="font-display text-xl text-white drop-shadow">${l.price.toLocaleString()}</span>
+                        <span className="font-display text-lg text-white drop-shadow">${l.price.toLocaleString()}</span>
                       )}
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Diagonal stamp overlay */}
-              <div
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
-                style={{ zIndex: 10 }}
-              >
-                <div
-                  className="font-display text-6xl tracking-[0.2em] text-white/10 select-none"
-                  style={{ transform: "rotate(-35deg)", letterSpacing: "0.3em", fontSize: "5rem" }}
-                >
-                  DIBZ
-                </div>
               </div>
             </div>
           </div>
