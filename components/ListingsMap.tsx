@@ -1,10 +1,11 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Map,
   AdvancedMarker,
   InfoWindow,
   Pin,
+  useMap,
 } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import type { Listing } from "@/lib/listings";
@@ -146,6 +147,14 @@ function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => v
   );
 }
 
+function MapPanner({ center }: { center: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    if (map) map.panTo({ lat: center[0], lng: center[1] });
+  }, [map, center[0], center[1]]);
+  return null;
+}
+
 export function ListingsMap({
   listings,
   center,
@@ -158,7 +167,7 @@ export function ListingsMap({
   height?: string;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const resolvedCenter = center ?? [37.6872, -97.3301] as [number, number];
+  const initialCenter = center ?? [37.6872, -97.3301] as [number, number];
   const selectedListing = listings.find((l) => l.id === selectedId) ?? null;
 
   const handleMarkerClick = useCallback((id: string) => {
@@ -169,12 +178,14 @@ export function ListingsMap({
     <Map
         style={{ width: "100%", height }}
         mapId="18620e62c3fd6cbf63eb5904"
-        defaultCenter={{ lat: resolvedCenter[0], lng: resolvedCenter[1] }}
+        defaultCenter={{ lat: initialCenter[0], lng: initialCenter[1] }}
         defaultZoom={zoom}
         disableDefaultUI={false}
         gestureHandling="greedy"
         onClick={() => setSelectedId(null)}
       >
+        {center && <MapPanner center={center} />}
+
         {/* User location dot */}
         {center && (
           <AdvancedMarker position={{ lat: center[0], lng: center[1] }} zIndex={20}>
