@@ -5,7 +5,6 @@ import { Header } from "@/components/Header";
 import { ListingsMap } from "@/components/ListingsMap";
 import { getListings } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
-import { getCityBySlug } from "@/lib/cities";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -18,7 +17,6 @@ import type { Listing } from "@/lib/listings";
 
 const RouteMap = dynamic(() => import("@/components/RouteMap").then((m) => m.RouteMap), { ssr: false });
 
-const SF = getCityBySlug("san-francisco-ca")!;
 const STORAGE_KEY = "dibz-route";
 const KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!;
 
@@ -129,11 +127,10 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
 
 export default function GarageSales() {
   const router = useRouter();
-  const { city } = useCityContext();
-  const activeCity = city ?? SF;
-  const listings = useMemo(() => getListings(activeCity), [activeCity]);
+  const { city, loading } = useCityContext();
+  const listings = useMemo(() => city ? getListings(city) : [], [city]);
   const sales = listings.filter((l) => l.isGarageSale);
-  const center: [number, number] = [activeCity.lat, activeCity.lng];
+  const center: [number, number] | undefined = city ? [city.lat, city.lng] : undefined;
 
   const [route, setRoute] = useState<string[]>([]);
   const [steps, setSteps] = useState<RouteStep[]>([]);
@@ -490,7 +487,7 @@ export default function GarageSales() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="font-display text-3xl tracking-wide md:text-4xl">
-              {filteredSales.length} {saleFilter === "estate" ? "estate" : saleFilter === "garage" ? "garage" : ""} sale{filteredSales.length !== 1 ? "s" : ""} in {activeCity.name}
+              {loading ? "Finding your location…" : `${filteredSales.length} ${saleFilter === "estate" ? "estate" : saleFilter === "garage" ? "garage" : ""} sale${filteredSales.length !== 1 ? "s" : ""}${city ? ` in ${city.name}` : " near you"}`}
             </h2>
           </div>
           <div className="flex items-center gap-2">

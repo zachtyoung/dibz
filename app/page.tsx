@@ -4,16 +4,12 @@ import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
 import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
-import { getCityBySlug } from "@/lib/cities";
-import { ArrowRight, MapPin, Sparkles } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
-
-const SF = getCityBySlug("san-francisco-ca")!;
 
 export default function Browse() {
   const { city } = useCityContext();
-  const activeCity = city ?? SF;
-  const listings = useMemo(() => getListings(activeCity), [activeCity]);
+  const listings = useMemo(() => city ? getListings(city) : [], [city]);
   const [cat, setCat] = useState("All");
   const [cond, setCond] = useState<Condition | "All">("All");
   const filtered = useMemo(() => {
@@ -31,12 +27,13 @@ export default function Browse() {
       <section className="relative overflow-hidden" style={{borderBottom: "2px solid oklch(0.14 0.02 240)"}}>
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-[1.2fr_1fr] md:gap-16 md:px-8 md:py-20">
           <div className="flex flex-col justify-center">
-            <span
-              className="inline-flex w-fit items-center gap-1.5 bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground"
+            <Link
+              href="/garage-sales"
+              className="inline-flex w-fit items-center gap-1.5 bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground transition hover:bg-teal-600 cursor-pointer"
               style={{border: "2px solid oklch(0.14 0.02 240)", boxShadow: "2px 2px 0 oklch(0.14 0.02 240)"}}
             >
-              <Sparkles className="h-3 w-3" /> {sales} sales near you this weekend
-            </span>
+              <MapPin className="h-3 w-3" /> {sales} sales near you this weekend
+            </Link>
             <h1 className="mt-5 font-display text-6xl leading-[0.88] tracking-tight md:text-8xl">
               Dibz it<br />
               <span className="text-primary">before they do.</span>
@@ -126,7 +123,7 @@ export default function Browse() {
       <section className="mx-auto max-w-7xl px-4 py-10 md:px-8">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="font-display text-3xl tracking-wide md:text-4xl">
-            {activeCity.name} <span className="text-primary">/ {filtered.length} items</span>
+            {city ? city.name : "All cities"} <span className="text-primary">/ {filtered.length} items</span>
           </h2>
           <Link href="/map" className="hidden text-sm font-medium text-primary hover:underline md:inline">
             View on map →

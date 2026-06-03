@@ -1,23 +1,20 @@
 "use client";
-import { Suspense, useState, useMemo } from "react";
+import { Suspense, useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingsMap } from "@/components/ListingsMap";
 import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
-import { getCityBySlug } from "@/lib/cities";
-
-const SF = getCityBySlug("san-francisco-ca")!;
 
 function MapContent() {
   const { city, loading } = useCityContext();
-  const activeCity = city ?? SF;
   const [cat, setCat] = useState("All");
   const [cond, setCond] = useState<Condition | "All">("All");
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.toLowerCase().trim() ?? "";
-  const listings = useMemo(() => getListings(activeCity), [activeCity]);
+  const listings = useMemo(() => city ? getListings(city) : [], [city]);
   const filtered = useMemo(() => {
     let result = cat === "All" ? listings : listings.filter((l) => l.category === cat);
     if (cond !== "All") result = result.filter((l) => l.condition === cond);
@@ -29,7 +26,16 @@ function MapContent() {
     );
     return result;
   }, [listings, cat, cond, q]);
-  const center: [number, number] = [activeCity.lat, activeCity.lng];
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
+      () => {},
+    );
+  }, []);
+
+  const center: [number, number] | undefined =
+    userLocation ?? (city ? [city.lat, city.lng] : undefined);
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
@@ -41,8 +47,8 @@ function MapContent() {
           </h1>
           <p className="text-sm text-muted-foreground">
             {loading
-              ? "Finding your city…"
-              : `${filtered.length} ${filtered.length === 1 ? "result" : "results"} in ${activeCity.name}`}
+              ? "Finding your location…"
+              : `${filtered.length} ${filtered.length === 1 ? "result" : "results"}${city ? ` in ${city.name}` : ""}`}
           </p>
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {CATEGORIES.map((c) => (
