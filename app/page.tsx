@@ -1,22 +1,14 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Header } from "@/components/Header";
-import { ListingCard } from "@/components/ListingCard";
-import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
+import { getListings } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight, MapPin, Tag, Map } from "lucide-react";
 import Link from "next/link";
 
-export default function Browse() {
+export default function Landing() {
   const { city } = useCityContext();
   const listings = useMemo(() => city ? getListings(city) : [], [city]);
-  const [cat, setCat] = useState("All");
-  const [cond, setCond] = useState<Condition | "All">("All");
-  const filtered = useMemo(() => {
-    let r = cat === "All" ? listings : listings.filter((l) => l.category === cat);
-    if (cond !== "All") r = r.filter((l) => l.condition === cond);
-    return r;
-  }, [cat, cond, listings]);
   const sales = listings.filter((l) => l.isGarageSale).length;
 
   return (
@@ -24,16 +16,18 @@ export default function Browse() {
       <Header />
 
       {/* Hero */}
-      <section className="relative overflow-hidden" style={{borderBottom: "2px solid oklch(0.14 0.02 240)"}}>
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-[1.2fr_1fr] md:gap-16 md:px-8 md:py-20">
+      <section className="relative overflow-hidden" style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:grid-cols-[1.2fr_1fr] md:gap-16 md:px-8 md:py-28">
           <div className="flex flex-col justify-center">
-            <Link
-              href="/garage-sales"
-              className="inline-flex w-fit items-center gap-1.5 bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground transition hover:bg-teal-600 cursor-pointer"
-              style={{border: "2px solid oklch(0.14 0.02 240)", boxShadow: "2px 2px 0 oklch(0.14 0.02 240)"}}
-            >
-              <MapPin className="h-3 w-3" /> {sales} sales near you this weekend
-            </Link>
+            {sales > 0 && (
+              <Link
+                href="/garage-sales"
+                className="inline-flex w-fit items-center gap-1.5 bg-primary px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary-foreground transition hover:bg-teal-600 cursor-pointer"
+                style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "2px 2px 0 oklch(0.14 0.02 240)" }}
+              >
+                <MapPin className="h-3 w-3" /> {sales} sales near you this weekend
+              </Link>
+            )}
             <h1 className="mt-5 font-display text-6xl leading-[0.88] tracking-tight md:text-8xl">
               Dibz it<br />
               <span className="text-primary">before they do.</span>
@@ -43,35 +37,42 @@ export default function Browse() {
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
-                href="/map"
+                href="/browse"
                 className="group inline-flex items-center gap-2 bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-teal-600"
-                style={{border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)"}}
+                style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
               >
-                <MapPin className="h-4 w-4" /> Open the map
+                <Tag className="h-4 w-4" /> Browse listings
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/garage-sales"
                 className="inline-flex items-center gap-2 bg-surface px-5 py-3 text-sm font-bold text-foreground transition hover:bg-muted"
-                style={{border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)"}}
+                style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
               >
-                Browse sales
+                <MapPin className="h-4 w-4" /> Garage sales
+              </Link>
+              <Link
+                href="/map"
+                className="inline-flex items-center gap-2 bg-surface px-5 py-3 text-sm font-bold text-foreground transition hover:bg-muted"
+                style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+              >
+                <Map className="h-4 w-4" /> Open map
               </Link>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-0 max-w-sm" style={{border: "2px solid oklch(0.14 0.02 240)"}}>
+            <div className="mt-10 grid grid-cols-3 gap-0 max-w-sm" style={{ border: "2px solid oklch(0.14 0.02 240)" }}>
               <Stat n="12K+" label="Listings" />
               <Stat n="340" label="Sales" />
               <Stat n="0%" label="Fees" />
             </div>
           </div>
 
-          <div className="relative grid grid-cols-2 gap-3 pb-8">
+          <div className="relative hidden grid-cols-2 gap-3 pb-8 md:grid">
             {listings.slice(0, 4).map((l, i) => (
               <div
                 key={l.id}
                 className={`overflow-hidden ${i % 2 ? "translate-y-8" : ""}`}
-                style={{border: "2px solid oklch(0.14 0.02 240)", boxShadow: "4px 4px 0 oklch(0.14 0.02 240)"}}
+                style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "4px 4px 0 oklch(0.14 0.02 240)" }}
               >
                 <img src={l.image} alt={l.title} className="aspect-square w-full object-cover" />
               </div>
@@ -80,63 +81,26 @@ export default function Browse() {
         </div>
       </section>
 
-
-      {/* Category pills */}
-      <section className="sticky top-[48px] z-30 bg-surface md:top-[52px]" style={{borderBottom: "2px solid oklch(0.14 0.02 240)"}}>
-        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 md:px-8">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCat(c)}
-              className={`whitespace-nowrap px-4 py-2 text-xs font-bold uppercase tracking-widest transition ${
-                cat === c
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background text-foreground hover:bg-muted"
-              }`}
-              style={{border: "2px solid oklch(0.14 0.02 240)"}}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        {/* Condition filter */}
-        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 pb-3 md:px-8">
-          <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Condition:</span>
-          {(["All", ...CONDITIONS] as const).map((c) => (
-            <button
-              key={c}
-              onClick={() => setCond(c)}
-              className={`whitespace-nowrap px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
-                cond === c
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background text-muted-foreground hover:text-foreground"
-              }`}
-              style={{border: "2px solid oklch(0.14 0.02 240)"}}
-            >
-              {c}
-            </button>
-          ))}
+      {/* Value props */}
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+        <div className="grid gap-0 md:grid-cols-3" style={{ border: "2px solid oklch(0.14 0.02 240)" }}>
+          <ValueProp
+            title="Real maps"
+            body="Every listing pinned. See what's near you before you go."
+          />
+          <ValueProp
+            title="Weekend sales"
+            body="Garage and estate sales with route planning built in."
+            bordered
+          />
+          <ValueProp
+            title="Zero fees"
+            body="Free to list. Free to browse. No middlemen."
+          />
         </div>
       </section>
 
-      {/* Card grid */}
-      <section className="mx-auto max-w-7xl px-4 py-10 md:px-8">
-        <div className="mb-6 flex items-end justify-between">
-          <h2 className="font-display text-3xl tracking-wide md:text-4xl">
-            {city ? city.name : "All cities"} <span className="text-primary">/ {filtered.length} items</span>
-          </h2>
-          <Link href="/map" className="hidden text-sm font-medium text-primary hover:underline md:inline">
-            View on map →
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((l) => (
-            <ListingCard key={l.id} listing={l} />
-          ))}
-        </div>
-      </section>
-
-      <footer className="mt-10 border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
+      <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
         Built for neighbors. <span className="text-primary">Dibz</span> — list free, sell local.
       </footer>
     </div>
@@ -145,9 +109,21 @@ export default function Browse() {
 
 function Stat({ n, label }: { n: string; label: string }) {
   return (
-    <div className="px-4 py-3" style={{borderRight: "2px solid oklch(0.14 0.02 240)"}}>
+    <div className="px-4 py-3" style={{ borderRight: "2px solid oklch(0.14 0.02 240)" }}>
       <div className="font-display text-3xl text-primary">{n}</div>
       <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function ValueProp({ title, body, bordered }: { title: string; body: string; bordered?: boolean }) {
+  return (
+    <div
+      className="px-8 py-10"
+      style={bordered ? { borderLeft: "2px solid oklch(0.14 0.02 240)", borderRight: "2px solid oklch(0.14 0.02 240)" } : {}}
+    >
+      <h3 className="font-display text-2xl tracking-wide text-primary">{title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground">{body}</p>
     </div>
   );
 }
