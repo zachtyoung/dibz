@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 260" role="img" aria-labelledby="title desc">
+  <title id="title">Dibz pixel art wordmark</title>
+  <desc id="desc">Retro pixel art Dibz logo using cream, black, and teal colors.</desc>
+  <defs>
+    <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff7e8"/>
+      <stop offset="46%" stop-color="#fff1dc"/>
+      <stop offset="47%" stop-color="#a6d3c8"/>
+      <stop offset="62%" stop-color="#64b7ad"/>
+      <stop offset="78%" stop-color="#1aa096"/>
+      <stop offset="100%" stop-color="#008f82"/>
+    </linearGradient>
+    <filter id="pixelShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="10" dy="10" stdDeviation="0" flood-color="#001b19" flood-opacity="1"/>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#050505"/>
+
+  <!-- teal pixel outline -->
+  <text x="48" y="196"
+        font-family="'Arial Black', Impact, sans-serif"
+        font-size="190"
+        font-weight="900"
+        font-style="italic"
+        letter-spacing="-12"
+        fill="none"
+        stroke="#008f82"
+        stroke-width="30"
+        stroke-linejoin="miter"
+        paint-order="stroke fill"
+        filter="url(#pixelShadow)">Dibz</text>
+
+  <!-- black inner outline -->
+  <text x="48" y="196"
+        font-family="'Arial Black', Impact, sans-serif"
+        font-size="190"
+        font-weight="900"
+        font-style="italic"
+        letter-spacing="-12"
+        fill="none"
+        stroke="#050505"
+        stroke-width="14"
+        stroke-linejoin="miter"
+        paint-order="stroke fill">Dibz</text>
+
+  <!-- main fill -->
+  <text x="48" y="196"
+        font-family="'Arial Black', Impact, sans-serif"
+        font-size="190"
+        font-weight="900"
+        font-style="italic"
+        letter-spacing="-12"
+        fill="url(#fill)">Dibz</text>
+</svg>

@@ -26,16 +26,8 @@ export function Header() {
     <header className="sticky top-0 z-40 bg-surface" style={{borderBottom: `2px solid ${INK}`}}>
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div
-            className="grid h-8 w-8 place-items-center bg-primary text-primary-foreground"
-            style={{border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}`}}
-          >
-            <Tag className="h-4 w-4" strokeWidth={2.5} />
-          </div>
-          <span className="font-display text-2xl tracking-wider" style={{color: INK}}>
-            DIBZ
-          </span>
+        <Link href="/" className="flex items-center shrink-0">
+          <img src="/dibz-logo.svg" alt="Dibz" height={36} style={{ height: 36, width: "auto" }} />
         </Link>
 
         {/* Desktop nav */}

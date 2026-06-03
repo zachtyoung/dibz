@@ -66,14 +66,18 @@ export default function Landing() {
 
           {/* Giant headline — centered vertically */}
           <div className="flex flex-1 flex-col justify-center py-8">
+            <img
+              src="/dibz-logo.svg"
+              alt="Dibz"
+              style={{ width: "clamp(280px, 55vw, 720px)", height: "auto", filter: "drop-shadow(0 4px 32px rgba(0,0,0,0.6))" }}
+            />
             <h1
-              className="font-display leading-[0.82] text-white"
-              style={{ fontSize: "clamp(5rem, 17vw, 15rem)", textShadow: "0 4px 40px rgba(0,0,0,0.4)" }}
+              className="font-display leading-[0.88] text-white"
+              style={{ fontSize: "clamp(2.5rem, 8vw, 8rem)", textShadow: "0 4px 40px rgba(0,0,0,0.5)", marginTop: "0.15em" }}
             >
-              DIBZ IT<br />
-              <span style={{ color: TEAL, textShadow: `0 0 80px ${TEAL}55` }}>BEFORE<br />THEY DO.</span>
+              BEFORE<br />
+              <span style={{ color: TEAL }}>THEY DO.</span>
             </h1>
-
             <p className="mt-6 max-w-lg text-base font-semibold text-white/70 md:text-lg">
               Garage sales, estate sales &amp; local deals — on a real map, near you.
             </p>
@@ -207,11 +211,8 @@ export default function Landing() {
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="grid grid-cols-2 gap-0 py-12 md:grid-cols-4" style={{ borderBottom: `2px solid ${INK}` }}>
             <div className="col-span-2 pb-8 pr-8 md:col-span-1 md:pb-0" style={{ borderRight: `2px solid ${INK}` }}>
-              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center bg-primary" style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}>
-                <Tag className="h-5 w-5 text-white" />
-              </div>
-              <div className="font-display text-4xl tracking-wider" style={{ color: INK }}>DIBZ</div>
-              <p className="mt-2 text-xs font-medium leading-relaxed text-muted-foreground">
+              <img src="/dibz-logo.svg" alt="Dibz" style={{ height: 48, width: "auto", marginBottom: 8 }} />
+              <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
                 The neighborhood marketplace. Built for neighbors, not corporations.
               </p>
             </div>
