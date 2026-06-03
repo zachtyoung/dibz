@@ -5,7 +5,7 @@ import { getListings } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import { ArrowRight, MapPin, Tag, Map, Navigation, DollarSign, Search } from "lucide-react";
 import Link from "next/link";
-import { DibzLogo, DibzLogoAccent } from "@/components/DibzLogo";
+import { DibzLogo } from "@/components/DibzLogo";
 
 const INK = "oklch(0.14 0.02 240)";
 const TEAL = "oklch(0.52 0.14 178)";
@@ -65,24 +65,16 @@ export default function Landing() {
             )}
           </div>
 
-          {/* Giant headline — centered vertically */}
+          {/* Giant headline */}
           <div className="flex flex-1 flex-col justify-center py-8">
-            {/* Stamp wordmark — large, white on dark photo */}
-            <DibzLogoAccent
-              size={Math.min(700, typeof window !== "undefined" ? window.innerWidth * 0.85 : 600)}
-              inkColor="white"
-              tealColor={TEAL}
-              style={{ filter: "drop-shadow(0 4px 32px rgba(0,0,0,0.5))", maxWidth: "90vw" }}
-            />
-
-            <h2
-              className="mt-4 font-display leading-[0.82] text-white"
-              style={{ fontSize: "clamp(2.5rem, 7vw, 6rem)", textShadow: "0 4px 40px rgba(0,0,0,0.4)" }}
+            <h1
+              className="font-display text-white leading-[0.84]"
+              style={{ fontSize: "clamp(5rem, 17vw, 15rem)", textShadow: "0 4px 40px rgba(0,0,0,0.5)" }}
             >
-              BEFORE THEY DO.
-            </h2>
-
-            <p className="mt-5 max-w-lg text-base font-semibold text-white/70 md:text-lg">
+              DIBZ IT<br />
+              <span style={{ color: TEAL, textShadow: `0 0 60px ${TEAL}66` }}>BEFORE<br />THEY DO.</span>
+            </h1>
+            <p className="mt-6 max-w-lg text-base font-semibold text-white/70 md:text-lg">
               Garage sales, estate sales &amp; local deals — on a real map, near you.
             </p>
           </div>
@@ -215,7 +207,7 @@ export default function Landing() {
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="grid grid-cols-2 gap-0 py-12 md:grid-cols-4" style={{ borderBottom: `2px solid ${INK}` }}>
             <div className="col-span-2 pb-8 pr-8 md:col-span-1 md:pb-0" style={{ borderRight: `2px solid ${INK}` }}>
-              <DibzLogo size={100} className="mb-2" />
+              <DibzLogo size={100} className="mb-1" />
               <p className="mt-2 text-xs font-medium leading-relaxed text-muted-foreground">
                 The neighborhood marketplace. Built for neighbors, not corporations.
               </p>
