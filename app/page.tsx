@@ -30,7 +30,7 @@ export default function Landing() {
           className="flex items-center justify-between px-4 py-1.5 md:px-8"
           style={{ borderBottom: `1px solid ${INK}`, fontSize: 10, fontFamily: "'Barlow', sans-serif", letterSpacing: "0.15em", fontWeight: 700 }}
         >
-          <span style={{ color: INK, opacity: 0.6 }}>THE NEIGHBORHOOD CLASSIFIEDS CO.</span>
+          <span style={{ color: INK, opacity: 0.6 }}>VOL. I · NO. 01{city ? ` · ${city.name.toUpperCase()} EDITION` : ""}</span>
           <span style={{ color: INK, opacity: 0.6 }}>{today} · FREE ONLINE</span>
         </div>
 
@@ -135,25 +135,23 @@ export default function Landing() {
 
             {/* Giant headline */}
             <h1
-              className="flex-1 flex items-center"
+              className="flex-1 flex items-end pb-4"
               style={{
                 fontFamily: SERIF,
                 fontStyle: "italic",
                 fontWeight: 700,
-                fontSize: "clamp(4.5rem, 11vw, 9rem)",
-                lineHeight: 0.9,
+                fontSize: "clamp(5rem, 13vw, 11rem)",
+                lineHeight: 0.88,
                 color: INK,
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.03em",
               }}
             >
               <span>
-                Dibz{" "}
-                <span style={{ color: RED }}>it,</span>
+                Dibz <span style={{ color: RED }}>it,</span>
                 <br />
                 before
                 <br />
-                they do.
-                <span style={{ color: RED }}>.</span>
+                they do<span style={{ color: RED }}>.</span>
               </span>
             </h1>
 
@@ -162,17 +160,17 @@ export default function Landing() {
               <p className="mb-6 max-w-sm" style={{ fontSize: 15, lineHeight: 1.6, color: INK, opacity: 0.75 }}>
                 Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-2 max-w-xs">
                 <Link
                   href="/browse"
-                  className="group inline-flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest text-white transition hover:opacity-90"
+                  className="group inline-flex items-center justify-between gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest text-white transition hover:opacity-90"
                   style={{ fontFamily: "'Barlow', sans-serif", background: INK, letterSpacing: "0.12em" }}
                 >
                   Browse the map <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link
                   href="/dashboard?new=1"
-                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition hover:bg-muted"
+                  className="inline-flex items-center justify-between gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition hover:bg-muted"
                   style={{ fontFamily: "'Barlow', sans-serif", border: `2px solid ${INK}`, letterSpacing: "0.12em", color: INK }}
                 >
                   Post your sale
