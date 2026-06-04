@@ -101,7 +101,7 @@ function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => v
       onCloseClick={onClose}
       pixelOffset={[0, listing.isGarageSale ? -42 : -46]}
     >
-      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: 200, textDecoration: "none" }}>
+      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: "min(200px, 58vw)", textDecoration: "none" }}>
         <img
           src={listing.image}
           alt={listing.title}
