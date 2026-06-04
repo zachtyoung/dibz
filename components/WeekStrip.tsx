@@ -45,8 +45,8 @@ export function WeekStrip({
   }, []);
 
   return (
-    <div style={{ borderBottom: `2px solid ${INK}` }}>
-      <div className="mx-auto max-w-7xl overflow-hidden">
+    <div>
+      <div className="mx-auto max-w-7xl overflow-hidden" style={{ borderBottom: `2px solid ${INK}` }}>
       <div className="flex items-stretch overflow-x-auto" ref={scrollRef}>
         {/* All pill */}
         <button
