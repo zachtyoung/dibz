@@ -19,7 +19,7 @@ export function Header() {
     if (city?.slug && city.slug !== prevCityRef.current) {
       prevCityRef.current = city.slug;
       setFlash(true);
-      setTimeout(() => setFlash(false), 600);
+      setTimeout(() => setFlash(false), 800);
     }
   }, [city?.slug]);
   const [query, setQuery] = useState("");
@@ -33,6 +33,17 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-surface" style={{ borderBottom: `2px solid ${INK}` }}>
+      <style>{`
+        @keyframes city-slam {
+          0%   { transform: scale(1.4) rotate(-3deg); background: #ff6b00; color: white; box-shadow: 6px 6px 0 ${INK}; }
+          20%  { transform: scale(0.88) rotate(2deg); background: #ff6b00; color: white; }
+          40%  { transform: scale(1.12) rotate(-1deg); background: oklch(0.52 0.14 178); color: white; }
+          60%  { transform: scale(0.95) rotate(1deg); background: oklch(0.52 0.14 178); color: white; }
+          80%  { transform: scale(1.04); background: oklch(0.52 0.14 178); color: white; }
+          100% { transform: scale(1) rotate(0deg); }
+        }
+        .city-slam { animation: city-slam 0.8s cubic-bezier(0.36,0.07,0.19,0.97) forwards; }
+      `}</style>
 
       {/* ── Main bar ── */}
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 md:px-8">
@@ -78,16 +89,10 @@ export function Header() {
         {/* Desktop city picker */}
         <button
           onClick={() => setPicking(true)}
-          className="hidden items-center gap-1.5 px-3 py-1.5 text-sm font-semibold md:flex transition-all duration-300"
-          style={{
-            border: `2px solid ${INK}`,
-            background: flash ? "oklch(0.52 0.14 178)" : "var(--color-background)",
-            color: flash ? "white" : "var(--color-foreground)",
-            boxShadow: flash ? `3px 3px 0 ${INK}` : undefined,
-            transform: flash ? "translateY(-1px)" : undefined,
-          }}
+          className={`hidden items-center gap-1.5 px-3 py-1.5 text-sm font-semibold md:flex${flash ? " city-slam" : ""}`}
+          style={{ border: `2px solid ${INK}` }}
         >
-          <MapPin className="h-3.5 w-3.5" style={{ color: flash ? "white" : "oklch(0.52 0.14 178)" }} />
+          <MapPin className="h-3.5 w-3.5 text-primary" />
           {city ? city.name : "Pick city"}
         </button>
 
@@ -118,13 +123,9 @@ export function Header() {
         <div className="flex items-center" style={{ borderBottom: `2px solid ${INK}` }}>
           <button
             onClick={() => setPicking(true)}
-            className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300"
-            style={{
-              background: flash ? "oklch(0.52 0.14 178)" : "var(--color-background)",
-              color: flash ? "white" : "var(--color-foreground)",
-            }}
+            className={`flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold${flash ? " city-slam" : ""}`}
           >
-            <MapPin className="h-3.5 w-3.5" style={{ color: flash ? "white" : "oklch(0.52 0.14 178)" }} />
+            <MapPin className="h-3.5 w-3.5 text-primary" />
             <span>{city ? city.name : "Pick city"}</span>
           </button>
         </div>
