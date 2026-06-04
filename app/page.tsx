@@ -38,7 +38,7 @@ export default function Landing() {
         {/* Brand row */}
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-6 py-4">
           <div className="flex items-end gap-3">
-            <Link href="/" style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,6vw,3.5rem)", color: INK, lineHeight: 1, textDecoration: "none" }}>
+            <Link href="/" style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(3rem,7vw,5rem)", color: INK, lineHeight: 1, textDecoration: "none" }}>
               Dibz<span style={{ color: RED }}>.</span>
             </Link>
             <span className="mb-1.5 hidden md:block" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.45, lineHeight: 1.5 }}>
@@ -91,25 +91,24 @@ export default function Landing() {
           </div>
 
           {/* Center headline col */}
-          <div className="md:col-span-6 relative">
+          <div className="md:col-span-6 relative" style={{ borderLeft: `1px solid ${INK}`, borderRight: `1px solid ${INK}`, paddingLeft: 24, paddingRight: 24 }}>
             <div className="hidden md:flex justify-between mb-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.3 }}>
               <span>╋ trim</span><span>trim ╋</span>
             </div>
 
-            {/* Giant headline */}
-            <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(5rem,14vw,10.5rem)", lineHeight: 0.85, letterSpacing: "-0.03em", color: INK }}>
-              <span className="block" style={{ fontStyle: "italic" }}>Dibz</span>
-              <span className="block" style={{ color: RED, fontStyle: "italic" }}>it,</span>
-              <span className="block" style={{ fontStyle: "italic" }}>before</span>
-              <span className="block" style={{ fontStyle: "italic" }}>they do<span style={{ color: RED }}>.</span></span>
+            {/* Giant headline — "Dibz it," one line, "before" one line, "they do." one line */}
+            <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(4.5rem,12vw,9.5rem)", lineHeight: 0.88, letterSpacing: "-0.03em", color: INK, fontStyle: "italic" }}>
+              <span className="block">Dibz <span style={{ color: RED }}>it,</span></span>
+              <span className="block">before</span>
+              <span className="block">they do<span style={{ color: RED }}>.</span></span>
             </h1>
 
-            {/* CTAs + sub */}
-            <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto]">
-              <p style={{ fontFamily: SERIF, fontSize: 15, lineHeight: 1.65, opacity: 0.75 }}>
+            {/* Sub-copy LEFT, CTAs RIGHT — side by side like mockup */}
+            <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <p style={{ fontFamily: SERIF, fontSize: 15, lineHeight: 1.65, opacity: 0.75, maxWidth: 340 }}>
                 Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
               </p>
-              <div className="flex flex-col gap-3" style={{ minWidth: 180 }}>
+              <div className="flex flex-col gap-3 shrink-0" style={{ minWidth: 200 }}>
                 <Link
                   href="/browse"
                   style={{ display: "block", background: INK, color: CREAM, padding: "12px 20px", fontFamily: MONO, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center" }}
@@ -132,18 +131,20 @@ export default function Landing() {
               <span style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>Late Edition</span>
               <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: RED, fontWeight: 700 }}>Live</span>
             </div>
-            <ol className="mt-3" style={{ fontFamily: SERIF, fontSize: 13 }}>
+            <ol className="mt-3">
               {lateEdition.map((l, i) => (
-                <li key={l.id} style={{ borderBottom: `1px dotted ${INK}`, paddingBottom: 8, marginBottom: 8, opacity: 0.9 }}>
+                <li key={l.id} style={{ borderBottom: `1px solid ${INK}`, paddingTop: 8, paddingBottom: 8 }}>
                   <Link href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-                    <div style={{ minWidth: 0 }}>
-                      <span style={{ fontFamily: MONO, fontSize: 9, opacity: 0.4 }}>№ {String(i + 1).padStart(2, "0")} · </span>
-                      <em>{l.title}</em>
-                      <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.45, marginTop: 2 }}>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                        <span style={{ fontFamily: MONO, fontSize: 9, opacity: 0.35, flexShrink: 0 }}>№ {String(i + 1).padStart(2, "0")}</span>
+                        <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 13, fontWeight: 700, lineHeight: 1.3 }}>{l.title}</span>
+                      </div>
+                      <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, marginTop: 2 }}>
                         {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Garage") : l.category} · {l.location.split(" ").slice(0, 2).join(" ")}
                       </div>
                     </div>
-                    <span style={{ fontFamily: SANS, fontSize: 13, fontWeight: 800, color: l.isGarageSale ? TEAL_HEX : RED, flexShrink: 0 }}>
+                    <span style={{ fontFamily: SANS, fontSize: 14, fontWeight: 800, color: l.isGarageSale ? TEAL_HEX : RED, flexShrink: 0, paddingTop: 2 }}>
                       {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
                     </span>
                   </Link>
