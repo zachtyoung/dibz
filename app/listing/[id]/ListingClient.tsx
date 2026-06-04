@@ -8,9 +8,9 @@ import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
 import { SellerTrustPanel, StarRating } from "@/components/SellerBadges";
 import { PickupPhotoPanel } from "@/components/PickupPhotoPanel";
 import {
-  ArrowLeft, Calendar, Car, Check, Clock, Heart, MapPin,
+  ArrowLeft, Calendar, Check, Clock, Heart, MapPin,
   MessageCircle, Plus, Send, Share2, Shield, Tag, Users, Eye,
-  Zap, ChevronRight,
+  ChevronRight,
 } from "lucide-react";
 
 const INK = "oklch(0.14 0.02 240)";
@@ -202,21 +202,6 @@ export function ListingClient({ listing }: { listing: Listing }) {
               </p>
             </div>
 
-            {/* Trust badges */}
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                { icon: Shield, label: "Free to list", sub: "No fees, ever" },
-                { icon: Tag, label: "Local pickup", sub: "Meet nearby" },
-                { icon: Car, label: "Negotiable", sub: "Message to offer" },
-                { icon: Zap, label: "Fast replies", sub: "Usually within 1h" },
-              ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="flex flex-col items-center gap-1.5 bg-card px-3 py-4 text-center" style={{ border: `2px solid ${INK}` }}>
-                  <Icon className="h-5 w-5 text-primary" />
-                  <p className="text-xs font-bold uppercase tracking-wider text-foreground">{label}</p>
-                  <p className="text-[10px] text-muted-foreground">{sub}</p>
-                </div>
-              ))}
-            </div>
 
             {/* Seller trust panel */}
             {listing.sellerTrust ? (
