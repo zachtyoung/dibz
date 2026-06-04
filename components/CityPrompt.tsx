@@ -1,9 +1,9 @@
 "use client";
 import { useState, useMemo } from "react";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, X } from "lucide-react";
 import { ACTIVE_CITIES, type City } from "@/lib/cities";
 
-export function CityPrompt({ onCity }: { onCity: (city: City) => void }) {
+export function CityPrompt({ onCity, onClose }: { onCity: (city: City) => void; onClose?: () => void }) {
   const [query, setQuery] = useState("");
 
   const results = useMemo(() => {
@@ -18,10 +18,20 @@ export function CityPrompt({ onCity }: { onCity: (city: City) => void }) {
   }, [query]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm px-4">
-      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15">
-          <MapPin className="h-7 w-7 text-primary" />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-6 flex items-start justify-between">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15">
+            <MapPin className="h-7 w-7 text-primary" />
+          </div>
+          {onClose && (
+            <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground transition">
+              <X className="h-5 w-5" />
+            </button>
+          )}
         </div>
         <h2 className="font-display text-3xl tracking-wide">Pick your city</h2>
         <p className="mt-2 text-sm text-muted-foreground">
