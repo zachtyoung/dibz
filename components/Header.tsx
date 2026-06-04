@@ -63,7 +63,7 @@ export function Header() {
           />
         </form>
 
-        {picking && <CityPrompt onCity={(c) => { setCity(c); setPicking(false); }} onClose={() => setPicking(false)} />}
+        {picking && <CityPrompt onCity={(c) => { setCity(c); setPicking(false); }} onClose={() => setPicking(false)} currentCity={city} />}
 
         {/* Desktop city picker */}
         <button
