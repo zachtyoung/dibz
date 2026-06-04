@@ -72,16 +72,6 @@ export function Header() {
           {city ? city.name : "Pick city"}
         </button>
 
-        {/* Profile */}
-        <Link href="/profile" className="group" title={MOCK_USER.name}>
-          <div
-            className="grid h-8 w-8 place-items-center bg-surface font-display text-sm text-foreground transition group-hover:bg-muted"
-            style={{ border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
-          >
-            {MOCK_USER.initials}
-          </div>
-        </Link>
-
         {/* Sell CTA */}
         <button
           onClick={() => router.push("/dashboard?new=1")}
@@ -91,6 +81,16 @@ export function Header() {
           <Plus className="h-4 w-4" strokeWidth={3} />
           <span className="hidden sm:inline">Sell</span>
         </button>
+
+        {/* Profile */}
+        <Link href="/profile" className="group" title={MOCK_USER.name}>
+          <div
+            className="grid h-8 w-8 place-items-center bg-surface font-display text-sm text-foreground transition group-hover:bg-muted"
+            style={{ border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
+          >
+            {MOCK_USER.initials}
+          </div>
+        </Link>
       </div>
 
       {/* ── Mobile second row: search + city + nav ── */}
