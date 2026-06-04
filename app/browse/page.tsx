@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingsMap } from "@/components/ListingsMap";
-import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
+import { getListings, distanceMi, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import { LayoutGrid, Map, Search, SlidersHorizontal, X } from "lucide-react";
 
@@ -40,7 +40,11 @@ export default function Browse() {
     );
   }, []);
 
-  const listings = useMemo(() => (city ? getListings(city) : []), [city]);
+  const listings = useMemo(() => {
+    const base = city ? getListings(city) : [];
+    if (!userLocation) return base;
+    return base.map((l) => ({ ...l, distance: distanceMi(userLocation[0], userLocation[1], l.lat, l.lng) }));
+  }, [city, userLocation]);
   const origin: [number, number] | null = userLocation ?? (city ? [city.lat, city.lng] : null);
 
   const filtered = useMemo(() => {

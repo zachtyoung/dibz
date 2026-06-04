@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingsMap } from "@/components/ListingsMap";
-import { getListings, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
+import { getListings, distanceMi, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 
 const RADII = [5, 10, 25, 50] as const;
@@ -25,7 +25,11 @@ function MapContent() {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.toLowerCase().trim() ?? "";
-  const listings = useMemo(() => city ? getListings(city) : [], [city]);
+  const listings = useMemo(() => {
+    const base = city ? getListings(city) : [];
+    if (!userLocation) return base;
+    return base.map((l) => ({ ...l, distance: distanceMi(userLocation[0], userLocation[1], l.lat, l.lng) }));
+  }, [city, userLocation]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(

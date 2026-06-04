@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Header } from "@/components/Header";
 import { ListingsMap } from "@/components/ListingsMap";
-import { getListings } from "@/lib/listings";
+import { getListings, distanceMi } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -129,9 +129,13 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
 export default function GarageSales() {
   const router = useRouter();
   const { city, loading } = useCityContext();
-  const listings = useMemo(() => city ? getListings(city) : [], [city]);
-  const sales = listings.filter((l) => l.isGarageSale);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const listings = useMemo(() => {
+    const base = city ? getListings(city) : [];
+    if (!userLocation) return base;
+    return base.map((l) => ({ ...l, distance: distanceMi(userLocation[0], userLocation[1], l.lat, l.lng) }));
+  }, [city, userLocation]);
+  const sales = listings.filter((l) => l.isGarageSale);
   const center: [number, number] | undefined = userLocation ?? (city ? [city.lat, city.lng] : undefined);
 
   const [route, setRoute] = useState<string[]>([]);

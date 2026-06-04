@@ -80,7 +80,7 @@ const TEMPLATES: (Omit<Listing, "distance"> & { dLat: number; dLng: number })[] 
   { id: "16", title: "Sony CRT TV — 27\"",                    price: 40,     category: "Electronics",  condition: "for parts", location: "CROWN HEIGHTS SOUTH",          seller: "Old Timer",        sellerTrust: T.unver,  image: "/listings/crt-tv.png",         lat: 37.6819, lng: -97.3055, dLat: 0, dLng: 0, postedHoursAgo: 120, description: "Perfect for retro gaming. Composite + coax inputs." },
 ];
 
-function distanceMi(lat1: number, lng1: number, lat2: number, lng2: number): string {
+export function distanceMi(lat1: number, lng1: number, lat2: number, lng2: number): string {
   const dLat = lat2 - lat1;
   const dLng = lng2 - lng1;
   const m = Math.sqrt((dLat * 111_000) ** 2 + (dLng * 111_000 * Math.cos(lat1 * Math.PI / 180)) ** 2);
