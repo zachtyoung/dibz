@@ -97,13 +97,12 @@ export default function Landing() {
               <span>╋ trim</span><span>trim ╋</span>
             </div>
 
-            {/* Giant headline — fills column, each word on own line */}
+            {/* Giant headline — "Dibz it," on one line, then before / they do. */}
             <div style={{ position: "relative" }}>
-              <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(5.5rem,15vw,13rem)", lineHeight: 0.88, letterSpacing: "-0.03em", color: INK, fontStyle: "italic" }}>
-                <span className="block">Dibz <span style={{ color: RED }}>it,</span></span>
+              <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(3.5rem,8vw,7.5rem)", lineHeight: 0.9, letterSpacing: "-0.03em", color: INK, fontStyle: "italic" }}>
+                <span className="block" style={{ whiteSpace: "nowrap" }}>Dibz <span style={{ color: RED }}>it,</span></span>
                 <span className="block">before</span>
-                <span className="block">they</span>
-                <span className="block">do<span style={{ color: RED }}>.</span></span>
+                <span className="block">they do<span style={{ color: RED }}>.</span></span>
               </h1>
               {/* Halftone teal block — right side like mockup */}
               <span aria-hidden style={{
