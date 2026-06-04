@@ -39,6 +39,9 @@ export function Header() {
           </span>
         </Link>
 
+        {/* Push sell+profile to right on mobile */}
+        <div className="flex-1 md:hidden" />
+
         {/* Desktop nav */}
         <nav className="ml-3 hidden items-center gap-0.5 md:flex">
           <NavLink href="/browse">Browse</NavLink>
