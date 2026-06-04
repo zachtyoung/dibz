@@ -50,14 +50,21 @@ export default function Landing() {
           </div>
 
           <nav className="flex items-center gap-x-4 overflow-x-auto" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
-            {[["01", "Browse", "/browse"], ["02", "The Map", "/map"], ["03", "Sales", "/garage-sales"], ["04", "Dashboard", "/dashboard"]].map(([n, label, href]) => (
-              <Link key={href} href={href} style={{ textDecoration: "none", color: INK, borderBottom: "2px solid transparent", transition: "border-color 0.15s" }}
+            {[["01", "Browse", "/browse"], ["02", "The Map", "/map"], ["03", "Sales", "/garage-sales"]].map(([n, label, href]) => (
+              <Link key={href} href={href} style={{ textDecoration: "none", color: INK, borderBottom: "2px solid transparent", transition: "border-color 0.15s", whiteSpace: "nowrap" }}
                 onMouseEnter={e => (e.currentTarget.style.borderBottomColor = RED)}
                 onMouseLeave={e => (e.currentTarget.style.borderBottomColor = "transparent")}
               >
                 <span className="hidden md:inline" style={{ color: RED, fontFamily: MONO, fontWeight: 700 }}>{n}/ </span>{label}
               </Link>
             ))}
+            {/* Dashboard hidden on mobile — accessible via avatar dropdown */}
+            <Link href="/dashboard" className="hidden md:inline" style={{ textDecoration: "none", color: INK, borderBottom: "2px solid transparent", transition: "border-color 0.15s", whiteSpace: "nowrap" }}
+              onMouseEnter={e => (e.currentTarget.style.borderBottomColor = RED)}
+              onMouseLeave={e => (e.currentTarget.style.borderBottomColor = "transparent")}
+            >
+              <span style={{ color: RED, fontFamily: MONO, fontWeight: 700 }}>04/ </span>Dashboard
+            </Link>
             <Link
               href="/dashboard?new=1"
               style={{ background: INK, color: CREAM, padding: "7px 12px", fontFamily: SANS, fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", fontWeight: 900, boxShadow: `3px 3px 0 ${RED}`, whiteSpace: "nowrap", flexShrink: 0 }}
