@@ -97,29 +97,33 @@ export default function Landing() {
               <span>╋ trim</span><span>trim ╋</span>
             </div>
 
-            {/* Giant headline — "Dibz it," one line, "before" one line, "they do." one line */}
-            <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(4.5rem,12vw,9.5rem)", lineHeight: 0.88, letterSpacing: "-0.03em", color: INK, fontStyle: "italic" }}>
-              <span className="block">Dibz <span style={{ color: RED }}>it,</span></span>
-              <span className="block">before</span>
-              <span className="block">they do<span style={{ color: RED }}>.</span></span>
-            </h1>
+            {/* Giant headline — fills column, each word on own line */}
+            <div style={{ position: "relative" }}>
+              <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(5.5rem,15vw,13rem)", lineHeight: 0.88, letterSpacing: "-0.03em", color: INK, fontStyle: "italic" }}>
+                <span className="block">Dibz <span style={{ color: RED }}>it,</span></span>
+                <span className="block">before</span>
+                <span className="block">they</span>
+                <span className="block">do<span style={{ color: RED }}>.</span></span>
+              </h1>
+              {/* Halftone teal block — right side like mockup */}
+              <span aria-hidden style={{
+                position: "absolute", right: -8, top: "25%",
+                width: 130, height: 150,
+                backgroundImage: `radial-gradient(${TEAL_HEX} 1.2px, transparent 1.4px)`,
+                backgroundSize: "6px 6px", opacity: 0.3, zIndex: 0, pointerEvents: "none",
+              }} />
+            </div>
 
-            {/* Sub-copy LEFT, CTAs RIGHT — side by side like mockup */}
-            <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <p style={{ fontFamily: SERIF, fontSize: 15, lineHeight: 1.65, opacity: 0.75, maxWidth: 340 }}>
+            {/* Sub-copy LEFT, CTAs stacked RIGHT */}
+            <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <p style={{ fontFamily: BODY, fontSize: 15, lineHeight: 1.65, opacity: 0.8, maxWidth: 320 }}>
                 Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
               </p>
-              <div className="flex flex-col gap-3 shrink-0" style={{ minWidth: 200 }}>
-                <Link
-                  href="/browse"
-                  style={{ display: "block", background: INK, color: CREAM, padding: "12px 20px", fontFamily: MONO, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center" }}
-                >
+              <div className="flex flex-col gap-3 shrink-0" style={{ minWidth: 220 }}>
+                <Link href="/browse" style={{ display: "block", background: INK, color: "#f5f0e8", padding: "14px 22px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center" }}>
                   Browse the Map →
                 </Link>
-                <Link
-                  href="/dashboard?new=1"
-                  style={{ display: "block", border: `2px solid ${INK}`, color: INK, padding: "10px 20px", fontFamily: MONO, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center", background: "transparent" }}
-                >
+                <Link href="/dashboard?new=1" style={{ display: "block", border: `2px solid ${INK}`, color: INK, padding: "12px 22px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center", background: "transparent" }}>
                   Post Your Sale
                 </Link>
               </div>
