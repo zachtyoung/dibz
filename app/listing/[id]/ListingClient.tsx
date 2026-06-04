@@ -101,7 +101,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-8">
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px] lg:grid-flow-row grid-flow-dense">
+        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
 
           {/* ── LEFT COLUMN ── */}
           <div>
@@ -224,7 +224,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
           </div>
 
           {/* ── RIGHT COLUMN ── */}
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start lg:order-last order-first">
+          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
             {/* Price callout */}
             <div className="bg-card px-5 py-4" style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}>
               <div className="flex items-baseline justify-between gap-2">
