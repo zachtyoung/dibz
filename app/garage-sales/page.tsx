@@ -130,7 +130,8 @@ export default function GarageSales() {
   const { city, loading } = useCityContext();
   const listings = useMemo(() => city ? getListings(city) : [], [city]);
   const sales = listings.filter((l) => l.isGarageSale);
-  const center: [number, number] | undefined = city ? [city.lat, city.lng] : undefined;
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const center: [number, number] | undefined = userLocation ?? (city ? [city.lat, city.lng] : undefined);
 
   const [route, setRoute] = useState<string[]>([]);
   const [steps, setSteps] = useState<RouteStep[]>([]);
@@ -145,6 +146,13 @@ export default function GarageSales() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) setRoute(JSON.parse(saved));
     } catch {}
+  }, []);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
+      () => {},
+    );
   }, []);
 
   function toggleRoute(id: string) {
