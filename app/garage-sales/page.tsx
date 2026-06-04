@@ -206,7 +206,7 @@ export default function GarageSales() {
     <div className="min-h-screen">
       <Header />
 
-      <section style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
+      <section>
         <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
           <span
             className="inline-flex items-center gap-1.5 bg-accent/15 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent"
@@ -243,7 +243,9 @@ export default function GarageSales() {
       </section>
 
       {/* ── Calendar strip ── */}
-      <WeekStrip saleDates={saleDates} selected={selectedDate} onSelect={setSelectedDate} />
+      <div className="mx-auto max-w-7xl px-4 md:px-8">
+        <WeekStrip saleDates={saleDates} selected={selectedDate} onSelect={setSelectedDate} />
+      </div>
 
       {/* ── Route planner ── */}
       {showRoute && routeSales.length > 0 && (
