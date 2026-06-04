@@ -379,7 +379,7 @@ export default function Landing() {
             <div className="col-span-2 md:col-span-1">
               <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.75rem", color: "white", lineHeight: 1 }}>Dibz.</div>
               <p className="mt-2 text-xs leading-relaxed" style={{ fontFamily: "'Barlow', sans-serif", color: "white", opacity: 0.4 }}>
-                The neighborhood marketplace. Built for neighbors, not corporations.
+                Built for neighbors, by neighbors.
               </p>
             </div>
             {[
@@ -400,7 +400,7 @@ export default function Landing() {
             ))}
           </div>
           <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
-            <span className="text-xs" style={{ fontFamily: "'Barlow', sans-serif", color: "white", opacity: 0.3 }}>© 2025 Dibz. Built for neighbors.</span>
+            <span className="text-xs" style={{ fontFamily: "'Barlow', sans-serif", color: "white", opacity: 0.3 }}>© 2025 Dibz. Built for neighbors, by neighbors.</span>
             <span className="text-xs" style={{ fontFamily: "'Barlow', sans-serif", color: "white", opacity: 0.3 }}>Free to list · Free to browse · Zero fees</span>
           </div>
         </div>
