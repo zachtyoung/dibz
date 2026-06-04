@@ -26,6 +26,7 @@ export function CityPrompt({
   const [query, setQuery] = useState("");
   const [detecting, setDetecting] = useState(false);
   const [geoError, setGeoError] = useState("");
+  const [suggested, setSuggested] = useState<City | null>(null);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -37,12 +38,13 @@ export function CityPrompt({
 
   function autoDetect() {
     setGeoError("");
+    setSuggested(null);
     setDetecting(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const nearest = nearestCity(pos.coords.latitude, pos.coords.longitude);
         setDetecting(false);
-        if (nearest) onCity(nearest);
+        if (nearest) setSuggested(nearest);
         else setGeoError("No city found near you.");
       },
       () => {
@@ -88,6 +90,32 @@ export function CityPrompt({
             : <Crosshair className="h-4 w-4" />}
           {detecting ? "Detecting…" : "Use my location"}
         </button>
+        {/* Suggested city confirmation */}
+        {suggested && (
+          <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: `2px solid ${INK}`, background: "oklch(0.93 0.018 82)" }}>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Detected near you</p>
+              <p className="mt-0.5 text-base font-bold" style={{ color: INK }}>{suggested.name}, {suggested.state}</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { onCity(suggested); }}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-teal-600"
+                style={{ background: TEAL, border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setSuggested(null)}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition hover:bg-muted"
+                style={{ border: `2px solid ${INK}` }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        )}
+
         {geoError && (
           <div className="px-5 py-2 text-xs text-red-500" style={{ borderBottom: `2px solid ${INK}` }}>
             {geoError}
