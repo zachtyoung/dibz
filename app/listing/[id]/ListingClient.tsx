@@ -9,7 +9,7 @@ import { SellerTrustPanel, StarRating } from "@/components/SellerBadges";
 import { PickupPhotoPanel } from "@/components/PickupPhotoPanel";
 import {
   ArrowLeft, Calendar, Check, Clock, Heart, MapPin,
-  MessageCircle, Plus, Send, Share2, Shield, Tag, Users, Eye,
+  Plus, Send, Share2, Shield, Tag, Users, Eye,
   ChevronRight,
 } from "lucide-react";
 
@@ -252,41 +252,14 @@ export function ListingClient({ listing }: { listing: Listing }) {
                   {inRoute ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   {inRoute ? "On your route — tap to remove" : "Add to my route"}
                 </button>
-              ) : (
-                <button
-                  onClick={() => document.getElementById("msg-form")?.focus()}
-                  className="mt-4 flex w-full items-center justify-center gap-2 bg-primary py-3 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px"
-                  style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
-                >
-                  <MessageCircle className="h-4 w-4" /> Message seller
-                </button>
-              )}
-            </div>
-
-            {/* Message form */}
-            <div className="bg-card px-5 py-5" style={{ border: `2px solid ${INK}` }}>
-              <div className="mb-4 flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center bg-primary/15 font-display text-xl text-primary" style={{ border: `2px solid ${INK}` }}>
-                  {listing.seller.charAt(0)}
-                </div>
-                <div>
-                  <p className="font-semibold text-foreground text-sm">{listing.seller}</p>
-                  {listing.sellerTrust ? (
-                    <StarRating rating={listing.sellerTrust.rating} sales={listing.sellerTrust.sales} />
-                  ) : (
-                    <p className="text-[11px] text-muted-foreground">Usually replies in &lt;1h</p>
-                  )}
-                </div>
-              </div>
-
-              {messageSent ? (
-                <div className="bg-primary/10 px-4 py-4 text-center" style={{ border: `2px solid ${INK}` }}>
+              ) : messageSent ? (
+                <div className="mt-4 bg-primary/10 px-4 py-4 text-center" style={{ border: `2px solid ${INK}` }}>
                   <Check className="mx-auto mb-1.5 h-5 w-5 text-primary" />
                   <p className="text-sm font-bold text-primary">Message sent!</p>
                   <p className="text-xs text-muted-foreground mt-0.5">You'll hear back soon.</p>
                 </div>
               ) : (
-                <form onSubmit={sendMessage} className="space-y-3">
+                <form onSubmit={sendMessage} className="mt-4 space-y-2">
                   <textarea
                     id="msg-form"
                     value={draft}
