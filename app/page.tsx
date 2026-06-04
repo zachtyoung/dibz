@@ -4,13 +4,13 @@ import { getListings } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
 import Link from "next/link";
 
-const INK = "#1a1a18";
+const INK = "oklch(0.16 0.01 60)";
 const RED = "#c0392b";
 const TEAL_HEX = "#2a7a6f";
 const CREAM = "#f5f0e8";
-const SERIF = "'DM Serif Display', 'Playfair Display', Georgia, serif";
+const SERIF = "'DM Serif Display', 'Bodoni 72', Didot, serif";
 const BODY = "'Libre Caslon Text', Georgia, serif";
-const MONO = "'Barlow', 'JetBrains Mono', 'Courier New', monospace";
+const MONO = "'JetBrains Mono', 'Courier New', monospace";
 const SANS = "'Archivo Black', 'Barlow', system-ui, sans-serif";
 
 export default function Landing() {
@@ -27,13 +27,15 @@ export default function Landing() {
       {/* ── MASTHEAD ── */}
       <header style={{ borderBottom: `2px solid ${INK}` }}>
         {/* Top strip */}
-        <div
-          className="flex items-center justify-between px-6 py-2"
-          style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", borderBottom: `1px solid ${INK}` }}
-        >
-          <span style={{ opacity: 0.6 }}>Vol. I · No. 01</span>
-          <span className="hidden md:block" style={{ opacity: 0.6 }}>{edition}{today}</span>
-          <span style={{ opacity: 0.6 }}>Free Online</span>
+        <div style={{ borderBottom: `1px solid ${INK}` }}>
+          <div
+            className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2"
+            style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase" }}
+          >
+            <span style={{ opacity: 0.75 }}>Vol. I · No. 01</span>
+            <span className="hidden md:block" style={{ opacity: 0.75 }}>{edition}{today}</span>
+            <span style={{ opacity: 0.75 }}>Free Online</span>
+          </div>
         </div>
 
         {/* Brand row */}
@@ -42,31 +44,32 @@ export default function Landing() {
             <Link href="/" style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(3rem,7vw,5rem)", color: INK, lineHeight: 1, textDecoration: "none" }}>
               Dibz<span style={{ color: RED }}>.</span>
             </Link>
-            <span className="mb-1.5 hidden md:block" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.45, lineHeight: 1.5 }}>
+            <span className="mb-1.5 hidden md:block" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.65, lineHeight: 1.5 }}>
               The Neighborhood<br />Classifieds Co.
             </span>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+          <nav className="flex items-center gap-x-4 overflow-x-auto" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
             {[["01", "Browse", "/browse"], ["02", "The Map", "/map"], ["03", "Sales", "/garage-sales"], ["04", "Dashboard", "/dashboard"]].map(([n, label, href]) => (
               <Link key={href} href={href} style={{ textDecoration: "none", color: INK, borderBottom: "2px solid transparent", transition: "border-color 0.15s" }}
                 onMouseEnter={e => (e.currentTarget.style.borderBottomColor = RED)}
                 onMouseLeave={e => (e.currentTarget.style.borderBottomColor = "transparent")}
               >
-                <span style={{ color: RED, fontFamily: MONO, fontWeight: 700 }}>{n}/ </span>{label}
+                <span className="hidden md:inline" style={{ color: RED, fontFamily: MONO, fontWeight: 700 }}>{n}/ </span>{label}
               </Link>
             ))}
             <Link
               href="/dashboard?new=1"
-              style={{ background: INK, color: CREAM, padding: "6px 14px", fontFamily: MONO, fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700 }}
+              style={{ background: INK, color: CREAM, padding: "7px 12px", fontFamily: SANS, fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", fontWeight: 900, boxShadow: `3px 3px 0 ${RED}`, whiteSpace: "nowrap", flexShrink: 0 }}
             >
               + Post an Ad
             </Link>
           </nav>
         </div>
 
-        {/* Double rule */}
-        <div style={{ height: 1, background: INK, opacity: 0.25 }} />
+        {/* Double rule — thin above thick, matches Lovable */}
+        <div style={{ height: 1, background: INK, opacity: 0.18 }} />
+        <div style={{ height: 1, background: "transparent" }} />
         <div style={{ height: 4, background: INK }} />
       </header>
 
@@ -77,13 +80,10 @@ export default function Landing() {
           {/* Left editorial col */}
           <div className="hidden md:block md:col-span-3 md:border-r-2 md:pr-6" style={{ borderColor: INK }}>
             <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>▶ Feature — Page One</p>
-            <p className="mt-3" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.5 }}>By the Editors</p>
+            <p className="mt-3" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.7 }}>By the Editors</p>
             <p className="mt-4" style={{ fontFamily: BODY, fontSize: 14, lineHeight: 1.75 }}>
               <span style={{ float: "left", fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "5em", lineHeight: 0.75, marginRight: 6, marginTop: 8, color: RED }}>E</span>
               very Saturday morning, before the coffee is cold, somebody on your block is dragging a perfectly good armchair onto a lawn. The question has always been the same: <em>who calls dibz first?</em>
-            </p>
-            <p className="mt-4" style={{ fontFamily: BODY, fontSize: 14, lineHeight: 1.75 }}>
-              Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
             </p>
             <div className="mt-6 flex items-center gap-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em" }}>
               <span style={{ display: "inline-block", width: 6, height: 6, background: RED }} />
@@ -91,38 +91,69 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Center headline col */}
-          <div className="md:col-span-6 relative" style={{ borderLeft: `1px solid ${INK}`, borderRight: `1px solid ${INK}`, paddingLeft: 24, paddingRight: 24 }}>
+          {/* Center headline col — no border on center itself; left/right cols carry the rules */}
+          <div className="md:col-span-6 relative" style={{ paddingLeft: 24, paddingRight: 24 }}>
             <div className="hidden md:flex justify-between mb-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.3 }}>
               <span>╋ trim</span><span>trim ╋</span>
             </div>
 
-            {/* Giant headline — "Dibz it," on one line, then before / they do. */}
+            {/* Giant headline — 4 lines matching Lovable exactly */}
             <div style={{ position: "relative" }}>
-              <h1 style={{ fontFamily: SERIF, fontWeight: 700, fontSize: "clamp(3.5rem,8vw,7.5rem)", lineHeight: 0.9, letterSpacing: "-0.03em", color: INK, fontStyle: "italic" }}>
-                <span className="block" style={{ whiteSpace: "nowrap" }}>Dibz <span style={{ color: RED }}>it,</span></span>
-                <span className="block">before</span>
-                <span className="block">they do<span style={{ color: RED }}>.</span></span>
+              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.82, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,14vw,9rem)" }}>
+                {/* Line 1: Dibz */}
+                <span className="block">Dibz</span>
+                {/* Line 2: it, — "it" in red/accent, comma in black */}
+                <span className="block" style={{ marginTop: "-0.05em" }}>
+                  <span style={{ color: RED }}>it</span>
+                  <span style={{ fontFamily: BODY, fontStyle: "normal", color: INK }}>,</span>
+                </span>
+                {/* Line 3: before */}
+                <span className="block" style={{ marginTop: "-0.05em" }}>before</span>
+                {/* Line 4: they do. */}
+                <span className="block" style={{ position: "relative", marginTop: "-0.05em" }}>
+                  <span style={{ position: "relative", zIndex: 1 }}>they do</span>
+                  <span style={{ color: RED }}>.</span>
+                </span>
               </h1>
-              {/* Halftone teal block — right side like mockup */}
+              {/* Halftone teal dot block — right side, ~1/3 down */}
               <span aria-hidden style={{
-                position: "absolute", right: -8, top: "25%",
-                width: 130, height: 150,
-                backgroundImage: `radial-gradient(${TEAL_HEX} 1.2px, transparent 1.4px)`,
-                backgroundSize: "6px 6px", opacity: 0.3, zIndex: 0, pointerEvents: "none",
+                position: "absolute", right: -8, top: "30%",
+                width: 130, height: 160,
+                backgroundImage: `radial-gradient(${TEAL_HEX} 1.4px, transparent 1.6px)`,
+                backgroundSize: "7px 7px", opacity: 0.22, zIndex: 0, pointerEvents: "none", display: "block",
               }} />
             </div>
 
             {/* Sub-copy LEFT, CTAs stacked RIGHT */}
-            <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <p style={{ fontFamily: BODY, fontSize: 15, lineHeight: 1.65, opacity: 0.8, maxWidth: 320 }}>
+            <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <p style={{ fontFamily: BODY, fontSize: 15, lineHeight: 1.65, opacity: 0.8, maxWidth: 280 }}>
                 Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
               </p>
-              <div className="flex flex-col gap-3 shrink-0" style={{ minWidth: 220 }}>
-                <Link href="/browse" style={{ display: "block", background: INK, color: "#f5f0e8", padding: "14px 22px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center" }}>
+              <div className="flex flex-col gap-2 shrink-0" style={{ minWidth: 220 }}>
+                <Link href="/browse" className="btn-zine" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  background: INK, color: CREAM,
+                  border: `2px solid ${INK}`,
+                  padding: "11px 18px", fontFamily: SANS,
+                  fontSize: 13, letterSpacing: "0.08em", textTransform: "uppercase",
+                  textDecoration: "none", fontWeight: 900, textAlign: "center",
+                  boxShadow: `${RED} 5px 5px 0px 0px`,
+                  transition: "transform 0.08s ease, box-shadow 0.08s ease",
+                  cursor: "pointer",
+                }}>
                   Browse the Map →
                 </Link>
-                <Link href="/dashboard?new=1" style={{ display: "block", border: `2px solid ${INK}`, color: INK, padding: "12px 22px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", fontWeight: 700, textAlign: "center", background: "transparent" }}>
+                <Link href="/dashboard?new=1" className="btn-zine btn-zine-alt" style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  background: CREAM, color: INK,
+                  border: `2px solid ${INK}`,
+                  padding: "11px 18px", fontFamily: SANS,
+                  fontSize: 13, letterSpacing: "0.08em", textTransform: "uppercase",
+                  textDecoration: "none", fontWeight: 900, textAlign: "center",
+                  boxShadow: `${TEAL_HEX} 5px 5px 0px 0px`,
+                  transition: "transform 0.08s ease, box-shadow 0.08s ease",
+                  cursor: "pointer",
+                }}>
                   Post Your Sale
                 </Link>
               </div>
@@ -135,20 +166,22 @@ export default function Landing() {
               <span style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>Late Edition</span>
               <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: RED, fontWeight: 700 }}>Live</span>
             </div>
-            <ol className="mt-3">
+            <ol className="mt-2">
               {lateEdition.map((l, i) => (
-                <li key={l.id} style={{ borderBottom: `1px solid ${INK}`, paddingTop: 8, paddingBottom: 8 }}>
-                  <Link href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+                <li key={l.id} style={{ borderBottom: `1px dotted ${INK}`, paddingTop: 9, paddingBottom: 9 }}>
+                  <Link href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                        <span style={{ fontFamily: MONO, fontSize: 9, opacity: 0.35, flexShrink: 0 }}>№ {String(i + 1).padStart(2, "0")}</span>
-                        <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 13, fontWeight: 700, lineHeight: 1.3 }}>{l.title}</span>
+                      {/* № label */}
+                      <div style={{ fontFamily: MONO, fontSize: 9, opacity: 0.55, letterSpacing: "0.05em", marginBottom: 2 }}>
+                        № {String(i + 1).padStart(2, "0")} ·{" "}
+                        <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 14, fontWeight: 700, opacity: 1, letterSpacing: "-0.01em" }}>{l.title}</span>
                       </div>
-                      <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, marginTop: 2 }}>
-                        {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Garage") : l.category} · {l.location.split(" ").slice(0, 2).join(" ")}
+                      {/* Category · location */}
+                      <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.6 }}>
+                        {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Garage") : l.category} · {l.location.split(",")[0]}
                       </div>
                     </div>
-                    <span style={{ fontFamily: SANS, fontSize: 14, fontWeight: 800, color: l.isGarageSale ? TEAL_HEX : RED, flexShrink: 0, paddingTop: 2 }}>
+                    <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 16, fontWeight: 700, color: l.isGarageSale ? TEAL_HEX : RED, flexShrink: 0 }}>
                       {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
                     </span>
                   </Link>
@@ -163,20 +196,16 @@ export default function Landing() {
       </section>
 
       {/* ── MARQUEE ── */}
-      <div style={{ background: INK, color: CREAM, borderTop: `2px solid ${INK}`, borderBottom: `2px solid ${INK}`, overflow: "hidden" }}>
-        <div className="marquee-track" style={{ display: "flex", whiteSpace: "nowrap", padding: "8px 0", fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.2em" }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <span key={i} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-              {(sales.length > 0 ? sales : listings.slice(0, 4)).map((s) => (
-                <span key={s.id} style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ color: TEAL_HEX, padding: "0 16px" }}>✦</span>
-                  <span style={{ padding: "0 16px" }}>{s.title.toUpperCase()}</span>
-                  {s.date && <span style={{ padding: "0 16px", color: TEAL_HEX }}>{s.date.toUpperCase()}</span>}
-                  <span style={{ padding: "0 16px", opacity: 0.3 }}>·</span>
-                  <span style={{ padding: "0 16px", opacity: 0.6 }}>{s.location}</span>
-                </span>
-              ))}
-            </span>
+      <div style={{ background: INK, borderTop: `2px solid ${INK}`, borderBottom: `2px solid ${INK}`, overflow: "hidden" }}>
+        <div className="flex gap-10 whitespace-nowrap py-2 text-xs uppercase tracking-widest animate-[marquee_50s_linear_infinite]" style={{ color: "oklch(0.965 0.018 85)", fontFamily: "'JetBrains Mono', 'Courier New', monospace", fontSize: 12, letterSpacing: "1.2px" }}>
+          {[0, 1].map((i) => (
+            <div key={i} className="flex shrink-0 gap-10 px-5">
+              <span>✦ Neighborhood Garage Sale · Sat 9am · Orchard Breeze</span>
+              <span style={{ color: "oklch(0.52 0.14 178)" }}>✦ Estate Sale — 3 Generations · Sun Jun 9 · Fairmount</span>
+              <span>✦ Block Party Multi-Family · Sat Jun 15 · College Hill</span>
+              <span style={{ color: "oklch(0.78 0.14 82)" }}>✦ Moving Sale · Everything Must Go</span>
+              <span>✦ Free Piano · You Haul · Riverside</span>
+            </div>
           ))}
         </div>
       </div>
@@ -191,10 +220,10 @@ export default function Landing() {
             ["0%", "Platform fees", "— always"],
             ["Free", "To post forever", "— no kidding"],
           ].map(([n, l, s]) => (
-            <div key={l} style={{ padding: "24px" }}>
-              <div style={{ fontFamily: SERIF, fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 700, lineHeight: 1, color: INK }}>{n}</div>
+            <div key={l} style={{ padding: "24px", background: "var(--background)" }}>
+              <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 700, lineHeight: 1, color: INK }}>{n}</div>
               <div className="mt-2" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>{l}</div>
-              <div className="mt-1" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.45 }}>{s}</div>
+              <div className="mt-1" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.65 }}>— {s.replace("— ", "")}</div>
             </div>
           ))}
         </div>
@@ -207,49 +236,51 @@ export default function Landing() {
             <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,3vw,2.5rem)", lineHeight: 1 }}>
               This Weekend{city ? ` in ${city.name}` : ""}
             </h2>
-            <Link href="/garage-sales" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, textDecoration: "none", opacity: 0.5 }}>
+            <Link href="/garage-sales" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, textDecoration: "none", opacity: 0.7 }}>
               All sales →
             </Link>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            {sales.slice(0, 3).map((s, i) => (
-              <Link key={s.id} href={`/listing/${s.id}`} style={{ textDecoration: "none", color: INK, display: "block" }}>
-                <article style={{ border: `2px solid ${INK}` }}>
-                  {/* Photo with label bar */}
-                  <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", borderBottom: `2px solid ${INK}` }}>
-                    <img
-                      src={s.image}
-                      alt={s.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.75) contrast(1.05)" }}
-                    />
-                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, background: INK, padding: "6px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", color: CREAM, opacity: 0.8 }}>
-                        {s.saleType === "estate" ? "Estate" : "Garage"} Sale · No. {String(i + 1).padStart(2, "0")}
-                      </span>
-                      {s.date && (
-                        <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: TEAL_HEX }}>
-                          {s.date.split("·")[0].trim().toUpperCase()}
-                        </span>
+            {sales.slice(0, 3).map((s, i) => {
+              const dotColor = i === 0 ? TEAL_HEX : i === 1 ? RED : INK;
+              const saleLabel = s.saleType === "estate" ? "Estate Sale" : s.isGarageSale ? "Garage Sale" : "Multi Sale";
+              return (
+                <Link key={s.id} href={`/listing/${s.id}`} style={{ textDecoration: "none", color: INK, display: "block" }}>
+                  <article style={{ border: `2px solid ${INK}`, position: "relative", background: CREAM }}>
+                    {/* Image header */}
+                    <div style={{ height: 160, borderBottom: `2px solid ${INK}`, position: "relative", overflow: "hidden" }}>
+                      <img src={s.image} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.8) contrast(1.05)" }} />
+                      {/* Label badge */}
+                      <div style={{
+                        position: "absolute", top: 10, left: 10,
+                        border: `2px solid ${INK}`, background: CREAM,
+                        padding: "3px 8px", fontFamily: SANS, fontSize: 9,
+                        textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900,
+                      }}>
+                        {saleLabel} · No. {String(i + 1).padStart(2, "0")}
+                      </div>
+                    </div>
+                    {/* Copy */}
+                    <div style={{ padding: "16px 20px" }}>
+                      {s.date && <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: TEAL_HEX, marginBottom: 8 }}>{s.date.toUpperCase()}</p>}
+                      <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 20, lineHeight: 1.25 }}>{s.title}</h3>
+                      <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                        <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: TEAL_HEX }} />
+                        {s.location}
+                      </p>
+                      {s.description && (
+                        <p style={{ fontFamily: BODY, fontSize: 13, lineHeight: 1.6, marginTop: 10 }} className="line-clamp-2">{s.description}</p>
                       )}
+                      <div style={{ borderTop: `1px dotted ${INK}`, marginTop: 14, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em" }}>RSVP Free</span>
+                        <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", color: RED, fontWeight: 700 }}>View Listing →</span>
+                      </div>
                     </div>
-                  </div>
-                  {/* Copy */}
-                  <div style={{ padding: "16px 20px" }}>
-                    {s.date && <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", color: RED, marginBottom: 6 }}>{s.date.toUpperCase()}</p>}
-                    <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 18, lineHeight: 1.3 }}>{s.title}</h3>
-                    <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.5, marginTop: 4 }}>◉ {s.location}</p>
-                    {s.description && (
-                      <p style={{ fontFamily: SERIF, fontSize: 13, lineHeight: 1.6, marginTop: 10, opacity: 0.7 }} className="line-clamp-2">{s.description}</p>
-                    )}
-                    <div style={{ borderTop: `1px dotted ${INK}`, marginTop: 12, paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.5 }}>RSVP free</span>
-                      <span style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", color: RED }}>View Listing →</span>
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
+                  </article>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
@@ -261,7 +292,7 @@ export default function Landing() {
             <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,5vw,3.5rem)", lineHeight: 1 }}>
               How <span style={{ color: RED }}>it</span> works.
             </h2>
-            <p className="hidden md:block" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.4 }}>
+            <p className="hidden md:block" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.65 }}>
               Three acts. No middleman.
             </p>
           </div>
@@ -273,7 +304,7 @@ export default function Landing() {
             ].map((s) => (
               <li key={s.n} style={{ listStyle: "none", position: "relative" }}>
                 <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "7rem", lineHeight: 1, color: RED, opacity: 0.85 }}>{s.n}</div>
-                <div style={{ position: "absolute", top: 8, right: 0, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.35 }}>Step</div>
+                <div style={{ position: "absolute", top: 8, right: 0, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.6 }}>Step</div>
                 <h3 style={{ fontFamily: SANS, fontSize: 20, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 800, marginTop: -16 }}>{s.t}.</h3>
                 <p style={{ fontFamily: SERIF, fontSize: 14, lineHeight: 1.7, marginTop: 8, maxWidth: 280, opacity: 0.75 }}>{s.d}</p>
               </li>
@@ -284,12 +315,12 @@ export default function Landing() {
 
       {/* ── SATURDAY DISPATCH CTA ── */}
       <section style={{ borderBottom: `2px solid ${INK}`, position: "relative", overflow: "hidden" }}>
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center" style={{ position: "relative", zIndex: 1 }}>
+        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
           <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.4em", color: RED }}>▼ Subscribe ▼</p>
-          <h2 className="mx-auto mt-4" style={{ maxWidth: 680, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,5vw,4rem)", lineHeight: 0.95 }}>
-            The Saturday Dispatch, delivered to your inbox at 6 AM.
+          <h2 className="mx-auto mt-4" style={{ maxWidth: 680, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.8rem,5vw,4rem)", lineHeight: 1.05 }}>
+            The Saturday <span style={{ fontStyle: "normal", textShadow: `2px 2px 0 ${RED}` }}>Dispatch</span>, delivered to your inbox at 6 AM.
           </h2>
-          <p className="mx-auto mt-4" style={{ maxWidth: 480, fontFamily: SERIF, fontSize: 15, lineHeight: 1.65, opacity: 0.7 }}>
+          <p className="mx-auto mt-4" style={{ maxWidth: 480, fontFamily: BODY, fontSize: 15, lineHeight: 1.65 }}>
             Every sale within a 5-mile radius, ranked by what your neighbors are actually rushing to. Free. Forever.
           </p>
           <form className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
@@ -297,11 +328,11 @@ export default function Landing() {
               type="email"
               placeholder="your@address.here"
               className="flex-1"
-              style={{ border: `2px solid ${INK}`, padding: "12px 16px", fontFamily: MONO, fontSize: 13, outline: "none" }}
+              style={{ border: `2px solid ${INK}`, padding: "12px 16px", fontFamily: MONO, fontSize: 13, outline: "none", background: "transparent" }}
             />
             <button
               type="submit"
-              style={{ background: INK, color: CREAM, padding: "12px 24px", fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: 700, border: "none", cursor: "pointer" }}
+              style={{ background: INK, color: CREAM, padding: "12px 24px", fontFamily: SANS, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, border: "none", cursor: "pointer", boxShadow: `4px 4px 0 ${RED}` }}
             >
               Sign Up
             </button>
@@ -316,7 +347,7 @@ export default function Landing() {
             <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "2rem", lineHeight: 1 }}>
               Dibz<span style={{ color: RED }}>.</span>
             </div>
-            <p className="mt-3" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.5, lineHeight: 1.6 }}>
+            <p className="mt-3" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.7, lineHeight: 1.6 }}>
               The Neighborhood Classifieds Co.<br />Built for neighbors, by neighbors.
             </p>
           </div>
@@ -343,14 +374,14 @@ export default function Landing() {
       </footer>
 
       <style>{`
-        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-25%); } }
-        .marquee-track { animation: marquee 50s linear infinite; width: max-content; }
-        .marquee-track:hover { animation-play-state: paused; }
-        /* Override global h rule for newspaper page */
         .newspaper h1, .newspaper h2, .newspaper h3, .newspaper h4 {
-          font-family: "DM Serif Display", "Playfair Display", Georgia, serif;
+          font-family: "DM Serif Display", "Bodoni 72", Didot, serif;
           letter-spacing: -0.02em;
         }
+        .btn-zine:hover { transform: translate(-2px, -2px) !important; box-shadow: ${RED} 7px 7px 0px 0px !important; }
+        .btn-zine:active { transform: translate(3px, 3px) !important; box-shadow: ${RED} 2px 2px 0px 0px !important; }
+        .btn-zine-alt:hover { transform: translate(-2px, -2px) !important; box-shadow: ${TEAL_HEX} 7px 7px 0px 0px !important; }
+        .btn-zine-alt:active { transform: translate(3px, 3px) !important; box-shadow: ${TEAL_HEX} 2px 2px 0px 0px !important; }
       `}</style>
     </div>
   );
