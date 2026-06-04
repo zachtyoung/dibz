@@ -66,12 +66,15 @@ export default function Landing() {
 
           {/* Giant headline — centered vertically */}
           <div className="flex flex-1 flex-col justify-center py-8">
-            <img
-              src="/dibz-logo.svg"
-              alt="Dibz It"
-              style={{ width: "clamp(260px, 52vw, 700px)", height: "auto", filter: "drop-shadow(0 4px 40px rgba(0,0,0,0.5))" }}
-            />
-            <p className="mt-8 max-w-lg text-base font-semibold text-white/70 md:text-lg">
+            <h1
+              className="font-display leading-[0.82] text-white"
+              style={{ fontSize: "clamp(5rem, 17vw, 15rem)", textShadow: "0 4px 40px rgba(0,0,0,0.4)" }}
+            >
+              DIBZ IT<br />
+              <span style={{ color: TEAL, textShadow: `0 0 80px ${TEAL}55` }}>BEFORE<br />THEY DO.</span>
+            </h1>
+
+            <p className="mt-6 max-w-lg text-base font-semibold text-white/70 md:text-lg">
               Garage sales, estate sales &amp; local deals — on a real map, near you.
             </p>
           </div>
