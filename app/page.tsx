@@ -79,8 +79,9 @@ export default function Landing() {
           </Link>
         </div>
 
-        {/* Section rule */}
-        <div style={{ height: 3, background: INK }} />
+        {/* Double rule — thin + thick */}
+        <div style={{ height: 1, background: INK, opacity: 0.3 }} />
+        <div style={{ height: 4, background: INK }} />
       </header>
 
       {/* ── HERO: 3-column newspaper layout ── */}
@@ -101,18 +102,17 @@ export default function Landing() {
               </div>
 
               {/* Drop cap paragraph */}
-              <p style={{ fontSize: 13, lineHeight: 1.7, color: INK }}>
+              <p style={{ fontSize: 13, lineHeight: 1.75, color: INK }}>
                 <span
                   style={{
                     float: "left", fontFamily: SERIF, fontStyle: "italic",
-                    fontSize: "3.8em", lineHeight: 0.8, marginRight: 4, marginTop: 6,
+                    fontSize: "5.5em", lineHeight: 0.75, marginRight: 6, marginTop: 8,
                     color: RED, fontWeight: 700,
                   }}
                 >E</span>
                 very Saturday morning, before the coffee is cold, somebody on your block is dragging a perfectly good armchair onto a lawn. The question has always been the same: <em>who calls dibz first?</em>
               </p>
-
-              <p className="mt-4" style={{ fontSize: 13, lineHeight: 1.7, color: INK }}>
+              <p className="mt-4" style={{ fontSize: 13, lineHeight: 1.75, color: INK }}>
                 Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
               </p>
             </div>
@@ -133,49 +133,46 @@ export default function Landing() {
               <span>TRIM ↕</span>
             </div>
 
-            {/* Giant headline */}
+            {/* Giant headline — each word on its own line like mockup */}
             <h1
-              className="flex-1 flex items-end pb-4"
+              className="flex-1 flex flex-col justify-center"
               style={{
                 fontFamily: SERIF,
                 fontStyle: "italic",
                 fontWeight: 700,
-                fontSize: "clamp(5rem, 13vw, 11rem)",
-                lineHeight: 0.88,
+                fontSize: "clamp(5rem, 14vw, 12rem)",
+                lineHeight: 0.86,
                 color: INK,
                 letterSpacing: "-0.03em",
               }}
             >
-              <span>
-                Dibz <span style={{ color: RED }}>it,</span>
-                <br />
-                before
-                <br />
-                they do<span style={{ color: RED }}>.</span>
-              </span>
+              <span>Dibz</span>
+              <span style={{ color: RED }}>it,</span>
+              <span>before</span>
+              <span>they do<span style={{ color: RED }}>.</span></span>
             </h1>
 
-            {/* Sub + CTAs */}
+            {/* CTAs then sub-copy — matching mockup order */}
             <div>
-              <p className="mb-6 max-w-sm" style={{ fontSize: 15, lineHeight: 1.6, color: INK, opacity: 0.75 }}>
-                Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood.
-              </p>
-              <div className="flex flex-col gap-2 max-w-xs">
+              <div className="flex flex-col gap-2 mb-5" style={{ maxWidth: 320 }}>
                 <Link
                   href="/browse"
-                  className="group inline-flex items-center justify-between gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest text-white transition hover:opacity-90"
-                  style={{ fontFamily: "'Barlow', sans-serif", background: INK, letterSpacing: "0.12em" }}
+                  className="group inline-flex items-center justify-between px-5 py-3.5 font-bold uppercase tracking-widest text-white transition hover:opacity-90"
+                  style={{ fontFamily: "'Barlow', sans-serif", background: INK, letterSpacing: "0.12em", fontSize: 13 }}
                 >
                   Browse the map <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link
                   href="/dashboard?new=1"
-                  className="inline-flex items-center justify-between gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition hover:bg-muted"
-                  style={{ fontFamily: "'Barlow', sans-serif", border: `2px solid ${INK}`, letterSpacing: "0.12em", color: INK }}
+                  className="inline-flex items-center justify-between px-5 py-3.5 font-bold uppercase tracking-widest transition hover:bg-muted"
+                  style={{ fontFamily: "'Barlow', sans-serif", border: `2px solid ${INK}`, letterSpacing: "0.12em", color: INK, fontSize: 13 }}
                 >
                   Post your sale
                 </Link>
               </div>
+              <p style={{ fontSize: 14, lineHeight: 1.65, color: INK, opacity: 0.65, maxWidth: 340, fontFamily: SERIF }}>
+                Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
+              </p>
             </div>
           </div>
 
@@ -196,40 +193,30 @@ export default function Landing() {
               </span>
             </div>
 
-            <div className="flex flex-col divide-y" style={{ borderTop: `1px solid ${INK}`, borderBottom: `1px solid ${INK}` }}>
+            <div className="flex flex-col" style={{ borderTop: `1px solid ${INK}` }}>
               {lateEdition.map((l, i) => (
                 <Link
                   key={l.id}
                   href={`/listing/${l.id}`}
-                  className="flex items-start gap-3 py-3 transition hover:opacity-70"
+                  className="flex items-baseline justify-between gap-2 py-2.5 transition hover:opacity-60"
+                  style={{ borderBottom: `1px solid ${INK}` }}
                 >
-                  {/* Number */}
-                  <span style={{ fontFamily: "'Barlow', sans-serif", fontSize: 9, fontWeight: 700, color: INK, opacity: 0.35, minWidth: 24, paddingTop: 2 }}>
-                    № {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {/* Thumb */}
-                  <div className="shrink-0 overflow-hidden" style={{ width: 40, height: 40, border: `1px solid ${INK}` }}>
-                    <img src={l.image} alt={l.title} className="h-full w-full object-cover" style={{ filter: "saturate(0.7)" }} />
-                  </div>
-                  {/* Copy */}
-                  <div className="flex-1 min-w-0">
-                    <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 12, fontWeight: 700, color: INK, lineHeight: 1.3 }} className="line-clamp-2">
-                      {l.title}
-                    </div>
-                    <div className="mt-0.5 flex items-center justify-between">
-                      <span style={{ fontFamily: "'Barlow', sans-serif", fontSize: 9, color: INK, opacity: 0.45, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <div className="flex items-baseline gap-2 min-w-0">
+                    <span style={{ fontFamily: "'Barlow', sans-serif", fontSize: 8, fontWeight: 700, color: INK, opacity: 0.3, flexShrink: 0 }}>
+                      № {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="min-w-0">
+                      <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 12, fontWeight: 700, color: INK, lineHeight: 1.3 }} className="line-clamp-1">
+                        {l.title}
+                      </span>
+                      <div style={{ fontFamily: "'Barlow', sans-serif", fontSize: 9, color: INK, opacity: 0.4, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 1 }}>
                         {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Garage") : l.category} · {l.location.split(" ").slice(0, 2).join(" ")}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "'Barlow', sans-serif", fontSize: 11, fontWeight: 800,
-                          color: l.isGarageSale ? TEAL : RED,
-                        }}
-                      >
-                        {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
-                      </span>
+                      </div>
                     </div>
                   </div>
+                  <span style={{ fontFamily: "'Barlow', sans-serif", fontSize: 12, fontWeight: 800, color: l.isGarageSale ? "oklch(0.38 0.12 178)" : RED, flexShrink: 0 }}>
+                    {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
+                  </span>
                 </Link>
               ))}
             </div>
@@ -294,7 +281,7 @@ export default function Landing() {
               className="p-5"
               style={{ borderRight: i < 3 ? `1px solid ${INK}` : undefined }}
             >
-              <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, color: INK, lineHeight: 1 }}>
+              <div style={{ fontFamily: SERIF, fontStyle: "normal", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, color: INK, lineHeight: 1 }}>
                 {s.n}
               </div>
               <div className="mt-1 text-xs font-bold uppercase tracking-widest" style={{ fontFamily: "'Barlow', sans-serif", color: INK }}>
