@@ -7,8 +7,10 @@
   --radius-lg: 3px;
   --radius-xl: 4px;
 
-  --font-display: "Bebas Neue", "Impact", sans-serif;
-  --font-sans: "Barlow", system-ui, sans-serif;
+  --font-display: "DM Serif Display", "Playfair Display", Georgia, serif;
+  --font-body: "Libre Caslon Text", Georgia, serif;
+  --font-sans: "Archivo Black", "Barlow", system-ui, sans-serif;
+  --font-mono: "Barlow", "JetBrains Mono", monospace;
 
   --color-background:         var(--background);
   --color-foreground:         var(--foreground);
@@ -82,7 +84,7 @@
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
     color: var(--ink);
   }
 }

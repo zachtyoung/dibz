@@ -22,7 +22,7 @@ export default function Landing() {
   const edition = city ? `${city.name.toUpperCase()} EDITION · ` : "";
 
   return (
-    <div className="min-h-screen" style={{ color: INK }}>
+    <div className="newspaper min-h-screen" style={{ color: INK }}>
 
       {/* ── MASTHEAD ── */}
       <header style={{ borderBottom: `2px solid ${INK}` }}>
@@ -343,6 +343,11 @@ export default function Landing() {
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-25%); } }
         .marquee-track { animation: marquee 50s linear infinite; width: max-content; }
         .marquee-track:hover { animation-play-state: paused; }
+        /* Override global h rule for newspaper page */
+        .newspaper h1, .newspaper h2, .newspaper h3, .newspaper h4 {
+          font-family: "DM Serif Display", "Playfair Display", Georgia, serif;
+          letter-spacing: -0.02em;
+        }
       `}</style>
     </div>
   );
