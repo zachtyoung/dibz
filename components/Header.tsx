@@ -95,25 +95,14 @@ export function Header() {
 
       {/* ── Mobile second row: search + city + nav ── */}
       <div className="md:hidden" style={{ borderTop: `2px solid ${INK}` }}>
-        {/* Search + city picker row */}
-        <div className="flex items-center gap-0" style={{ borderBottom: `2px solid ${INK}` }}>
-          <form onSubmit={handleSearch} className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search listings…"
-              className="w-full bg-background py-2.5 pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none"
-            />
-          </form>
+        {/* City picker row */}
+        <div className="flex items-center" style={{ borderBottom: `2px solid ${INK}` }}>
           <button
             onClick={() => setPicking(true)}
-            className="flex shrink-0 items-center gap-1.5 bg-background px-3 py-2.5 text-sm font-semibold text-foreground"
-            style={{ borderLeft: `2px solid ${INK}` }}
+            className="flex w-full items-center gap-2 bg-background px-4 py-2.5 text-sm font-semibold text-foreground"
           >
             <MapPin className="h-3.5 w-3.5 text-primary" />
-            <span className="max-w-[90px] truncate">{city ? city.name : "Pick city"}</span>
+            <span>{city ? city.name : "Pick city"}</span>
           </button>
         </div>
 
