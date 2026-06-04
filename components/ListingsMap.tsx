@@ -101,28 +101,28 @@ function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => v
       onCloseClick={onClose}
       pixelOffset={[0, listing.isGarageSale ? -42 : -46]}
     >
-      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: "min(200px, 58vw)", textDecoration: "none" }}>
+      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: 160, textDecoration: "none" }}>
         <img
           src={listing.image}
           alt={listing.title}
-          style={{ width: "100%", height: 110, objectFit: "cover", border: `2px solid ${INK}`, display: "block" }}
+          style={{ width: "100%", height: 90, objectFit: "cover", border: `2px solid ${INK}`, display: "block" }}
         />
-        <div style={{ padding: "8px 0 2px" }}>
-          <div style={{ fontWeight: 800, fontSize: 13, color: "oklch(0.14 0.02 240)", lineHeight: 1.3 }}>
+        <div style={{ padding: "6px 0 2px" }}>
+          <div style={{ fontWeight: 800, fontSize: 12, color: "oklch(0.14 0.02 240)", lineHeight: 1.3 }}>
             {listing.title}
           </div>
-          <div style={{ marginTop: 4, fontFamily: "Bebas Neue, Impact, sans-serif", fontSize: 18, color: "#0f6b55" }}>
+          <div style={{ marginTop: 3, fontFamily: "Bebas Neue, Impact, sans-serif", fontSize: 16, color: "#0f6b55" }}>
             {listing.isGarageSale
               ? (listing.saleType === "estate" ? "Estate Sale" : "Garage Sale")
               : `$${listing.price.toLocaleString()}`}
           </div>
-          <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>
             {listing.location} · {listing.distance}
           </div>
           {listing.condition && (
             <div style={{
-              display: "inline-block", marginTop: 4, padding: "1px 6px",
-              border: `1.5px solid ${INK}`, fontSize: 10, fontWeight: 700,
+              display: "inline-block", marginTop: 3, padding: "1px 5px",
+              border: `1.5px solid ${INK}`, fontSize: 9, fontWeight: 700,
               textTransform: "uppercase", letterSpacing: "0.05em", color: "#6b7280",
             }}>
               {listing.condition}
