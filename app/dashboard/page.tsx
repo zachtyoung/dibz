@@ -267,10 +267,10 @@ function Dashboard() {
             <span className="text-foreground font-semibold">{stats.active} active listings</span>.
           </p>
           {/* Actions — full width row on mobile */}
-          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="mt-5 flex flex-col gap-2">
             <button
               onClick={openNew}
-              className="inline-flex items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px w-full"
               style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
             >
               <Plus className="h-4 w-4" strokeWidth={3} /> New listing
@@ -278,14 +278,14 @@ function Dashboard() {
             <div className="flex gap-2">
               <Link
                 href="/garage-sales"
-                className="inline-flex flex-1 items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px sm:flex-none"
+                className="inline-flex flex-1 items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px"
                 style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
               >
                 <Calendar className="h-4 w-4 text-primary" /> Host a sale
               </Link>
               <button
                 onClick={() => setImporter(true)}
-                className="inline-flex flex-1 items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px sm:flex-none"
+                className="inline-flex flex-1 items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px"
                 style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
               >
                 <Upload className="h-4 w-4 text-primary" /> Import
