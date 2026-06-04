@@ -250,7 +250,7 @@ export default function Browse() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((l) => (
               <ListingCard key={l.id} listing={l} />
             ))}

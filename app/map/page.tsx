@@ -127,7 +127,7 @@ function MapContent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 p-4 lg:flex-1 lg:overflow-y-auto">
+        <div className="grid grid-cols-1 gap-3 p-4 lg:flex-1 lg:overflow-y-auto">
           {filtered.map((l) => (
             <ListingCard key={l.id} listing={l} />
           ))}
