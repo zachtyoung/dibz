@@ -3,6 +3,8 @@ import { useState, useMemo } from "react";
 import { MapPin, Search, X } from "lucide-react";
 import { ACTIVE_CITIES, type City } from "@/lib/cities";
 
+const INK = "oklch(0.14 0.02 240)";
+
 export function CityPrompt({ onCity, onClose }: { onCity: (city: City) => void; onClose?: () => void }) {
   const [query, setQuery] = useState("");
 
@@ -12,8 +14,7 @@ export function CityPrompt({ onCity, onClose }: { onCity: (city: City) => void; 
     return ACTIVE_CITIES.filter(
       (c) =>
         c.name.toLowerCase().includes(q) ||
-        c.state.toLowerCase().includes(q) ||
-        `${c.name.toLowerCase()}, ${c.state.toLowerCase()}`.includes(q),
+        c.state.toLowerCase().includes(q),
     ).slice(0, 8);
   }, [query]);
 
@@ -22,48 +23,55 @@ export function CityPrompt({ onCity, onClose }: { onCity: (city: City) => void; 
       className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm px-4"
       onClick={onClose}
     >
-      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="mb-6 flex items-start justify-between">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15">
-            <MapPin className="h-7 w-7 text-primary" />
+      <div
+        className="w-full max-w-sm bg-surface"
+        style={{ border: `2px solid ${INK}`, boxShadow: `6px 6px 0 ${INK}` }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `2px solid ${INK}` }}>
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-primary" />
+            <span className="font-display text-2xl tracking-wide">Pick your city</span>
           </div>
           {onClose && (
-            <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground transition">
-              <X className="h-5 w-5" />
+            <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition">
+              <X className="h-4 w-4" />
             </button>
           )}
         </div>
-        <h2 className="font-display text-3xl tracking-wide">Pick your city</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Choose the city where you want to browse and sell.
-        </p>
-        <div className="relative mt-6">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+        {/* Search */}
+        <div className="relative px-5 py-3" style={{ borderBottom: `2px solid ${INK}` }}>
+          <Search className="pointer-events-none absolute left-8 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search cities…"
             autoFocus
-            className="w-full rounded-full border border-border bg-surface py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+            className="w-full bg-background py-2 pl-8 pr-3 text-sm placeholder:text-muted-foreground focus:outline-none"
+            style={{ border: `2px solid ${INK}` }}
           />
         </div>
-        <ul className="mt-3 divide-y divide-border/50 overflow-hidden rounded-2xl border border-border">
+
+        {/* City list */}
+        <div>
           {results.length === 0 && (
-            <li className="px-4 py-3 text-sm text-muted-foreground">No cities found.</li>
+            <div className="px-5 py-4 text-sm text-muted-foreground">No cities found.</div>
           )}
-          {results.map((c) => (
-            <li key={c.slug}>
-              <button
-                onClick={() => onCity(c)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:bg-surface"
-              >
-                <span className="font-semibold text-foreground">{c.name}</span>
-                <span className="text-xs text-muted-foreground">{c.state}</span>
-              </button>
-            </li>
+          {results.map((c, i) => (
+            <button
+              key={c.slug}
+              onClick={() => onCity(c)}
+              className="flex w-full items-center justify-between px-5 py-3 text-sm font-semibold transition hover:bg-primary hover:text-primary-foreground"
+              style={{ borderTop: i > 0 ? `2px solid ${INK}` : undefined }}
+            >
+              <span>{c.name}</span>
+              <span className="text-xs font-bold opacity-50">{c.state}</span>
+            </button>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
