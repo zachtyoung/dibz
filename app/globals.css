@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Archivo+Black&display=swap");
 @import "tailwindcss";
 
 @theme inline {
@@ -38,8 +38,8 @@
   --teal-dark: oklch(0.38 0.12 178);
   --ink:       oklch(0.14 0.02 240);
 
-  /* Warm cream — close to Tavus's exact base */
-  --background:       oklch(0.955 0.016 84);
+  /* Cream paper — matches Lovable editorial design */
+  --background:       oklch(0.945 0.022 85);
   --foreground:       var(--ink);
 
   --surface:          oklch(0.975 0.010 80);
@@ -72,12 +72,11 @@
     color: var(--foreground);
     font-family: var(--font-sans);
 
-    /* Stipple dot halftone — the Tavus signature texture */
+    /* Fine halftone dot + warm vignette — matches Lovable editorial */
     background-image:
-      radial-gradient(circle, oklch(0.60 0.04 70 / 0.22) 1.1px, transparent 1.1px),
-      radial-gradient(circle, oklch(0.60 0.04 70 / 0.10) 1.1px, transparent 1.1px);
-    background-size: 12px 12px, 6px 6px;
-    background-position: 0 0, 3px 3px;
+      radial-gradient(oklch(0.16 0.01 60 / 0.06) 1px, transparent 1.2px),
+      radial-gradient(ellipse at top, oklch(0.78 0.06 60 / 0.12), transparent 70%);
+    background-size: 3px 3px, auto;
     background-attachment: fixed;
   }
 

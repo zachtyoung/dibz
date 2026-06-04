@@ -8,9 +8,10 @@ const INK = "#1a1a18";
 const RED = "#c0392b";
 const TEAL_HEX = "#2a7a6f";
 const CREAM = "#f5f0e8";
-const SERIF = "'Playfair Display', Georgia, 'Times New Roman', serif";
-const MONO = "'Barlow', 'DM Mono', 'Courier New', monospace";
-const SANS = "'Barlow', system-ui, sans-serif";
+const SERIF = "'DM Serif Display', 'Playfair Display', Georgia, serif";
+const BODY = "'Libre Caslon Text', Georgia, serif";
+const MONO = "'Barlow', 'JetBrains Mono', 'Courier New', monospace";
+const SANS = "'Archivo Black', 'Barlow', system-ui, sans-serif";
 
 export default function Landing() {
   const { city } = useCityContext();
@@ -21,7 +22,7 @@ export default function Landing() {
   const edition = city ? `${city.name.toUpperCase()} EDITION · ` : "";
 
   return (
-    <div className="min-h-screen" style={{ background: CREAM, color: INK }}>
+    <div className="min-h-screen" style={{ color: INK }}>
 
       {/* ── MASTHEAD ── */}
       <header style={{ borderBottom: `2px solid ${INK}` }}>
@@ -77,11 +78,11 @@ export default function Landing() {
           <div className="hidden md:block md:col-span-3 md:border-r-2 md:pr-6" style={{ borderColor: INK }}>
             <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>▶ Feature — Page One</p>
             <p className="mt-3" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.5 }}>By the Editors</p>
-            <p className="mt-4" style={{ fontFamily: SERIF, fontSize: 14, lineHeight: 1.75 }}>
+            <p className="mt-4" style={{ fontFamily: BODY, fontSize: 14, lineHeight: 1.75 }}>
               <span style={{ float: "left", fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "5em", lineHeight: 0.75, marginRight: 6, marginTop: 8, color: RED }}>E</span>
               very Saturday morning, before the coffee is cold, somebody on your block is dragging a perfectly good armchair onto a lawn. The question has always been the same: <em>who calls dibz first?</em>
             </p>
-            <p className="mt-4" style={{ fontFamily: SERIF, fontSize: 14, lineHeight: 1.75 }}>
+            <p className="mt-4" style={{ fontFamily: BODY, fontSize: 14, lineHeight: 1.75 }}>
               Garage sales, estate sales &amp; curbside treasures — plotted on a real map of your real neighborhood. <em>Click. Claim. Carry it home.</em>
             </p>
             <div className="mt-6 flex items-center gap-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em" }}>
@@ -187,7 +188,7 @@ export default function Landing() {
             ["0%", "Platform fees", "— always"],
             ["Free", "To post forever", "— no kidding"],
           ].map(([n, l, s]) => (
-            <div key={l} style={{ background: CREAM, padding: "24px" }}>
+            <div key={l} style={{ padding: "24px" }}>
               <div style={{ fontFamily: SERIF, fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 700, lineHeight: 1, color: INK }}>{n}</div>
               <div className="mt-2" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700 }}>{l}</div>
               <div className="mt-1" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.45 }}>{s}</div>
@@ -211,7 +212,7 @@ export default function Landing() {
           <div className="grid gap-6 md:grid-cols-3">
             {sales.slice(0, 3).map((s, i) => (
               <Link key={s.id} href={`/listing/${s.id}`} style={{ textDecoration: "none", color: INK, display: "block" }}>
-                <article style={{ border: `2px solid ${INK}`, background: CREAM }}>
+                <article style={{ border: `2px solid ${INK}` }}>
                   {/* Photo with label bar */}
                   <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", borderBottom: `2px solid ${INK}` }}>
                     <img
@@ -279,7 +280,7 @@ export default function Landing() {
       </section>
 
       {/* ── SATURDAY DISPATCH CTA ── */}
-      <section style={{ borderBottom: `2px solid ${INK}`, background: CREAM, position: "relative", overflow: "hidden" }}>
+      <section style={{ borderBottom: `2px solid ${INK}`, position: "relative", overflow: "hidden" }}>
         <div className="mx-auto max-w-7xl px-6 py-20 text-center" style={{ position: "relative", zIndex: 1 }}>
           <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.4em", color: RED }}>▼ Subscribe ▼</p>
           <h2 className="mx-auto mt-4" style={{ maxWidth: 680, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,5vw,4rem)", lineHeight: 0.95 }}>
@@ -293,7 +294,7 @@ export default function Landing() {
               type="email"
               placeholder="your@address.here"
               className="flex-1"
-              style={{ border: `2px solid ${INK}`, background: CREAM, padding: "12px 16px", fontFamily: MONO, fontSize: 13, outline: "none" }}
+              style={{ border: `2px solid ${INK}`, padding: "12px 16px", fontFamily: MONO, fontSize: 13, outline: "none" }}
             />
             <button
               type="submit"
