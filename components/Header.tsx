@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { MapPin, Plus, Search, Tag } from "lucide-react";
@@ -12,6 +12,16 @@ const INK = "oklch(0.14 0.02 240)";
 export function Header() {
   const { city, setCity } = useCityContext();
   const [picking, setPicking] = useState(false);
+  const [flash, setFlash] = useState(false);
+  const prevCityRef = useRef(city?.slug);
+
+  useEffect(() => {
+    if (city?.slug && city.slug !== prevCityRef.current) {
+      prevCityRef.current = city.slug;
+      setFlash(true);
+      setTimeout(() => setFlash(false), 600);
+    }
+  }, [city?.slug]);
   const [query, setQuery] = useState("");
   const router = useRouter();
 
@@ -68,10 +78,16 @@ export function Header() {
         {/* Desktop city picker */}
         <button
           onClick={() => setPicking(true)}
-          className="hidden items-center gap-1.5 bg-background px-3 py-1.5 text-sm font-semibold text-foreground md:flex"
-          style={{ border: `2px solid ${INK}` }}
+          className="hidden items-center gap-1.5 px-3 py-1.5 text-sm font-semibold md:flex transition-all duration-300"
+          style={{
+            border: `2px solid ${INK}`,
+            background: flash ? "oklch(0.52 0.14 178)" : "var(--color-background)",
+            color: flash ? "white" : "var(--color-foreground)",
+            boxShadow: flash ? `3px 3px 0 ${INK}` : undefined,
+            transform: flash ? "translateY(-1px)" : undefined,
+          }}
         >
-          <MapPin className="h-3.5 w-3.5 text-primary" />
+          <MapPin className="h-3.5 w-3.5" style={{ color: flash ? "white" : "oklch(0.52 0.14 178)" }} />
           {city ? city.name : "Pick city"}
         </button>
 
@@ -102,9 +118,13 @@ export function Header() {
         <div className="flex items-center" style={{ borderBottom: `2px solid ${INK}` }}>
           <button
             onClick={() => setPicking(true)}
-            className="flex w-full items-center gap-2 bg-background px-4 py-2.5 text-sm font-semibold text-foreground"
+            className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold transition-all duration-300"
+            style={{
+              background: flash ? "oklch(0.52 0.14 178)" : "var(--color-background)",
+              color: flash ? "white" : "var(--color-foreground)",
+            }}
           >
-            <MapPin className="h-3.5 w-3.5 text-primary" />
+            <MapPin className="h-3.5 w-3.5" style={{ color: flash ? "white" : "oklch(0.52 0.14 178)" }} />
             <span>{city ? city.name : "Pick city"}</span>
           </button>
         </div>
