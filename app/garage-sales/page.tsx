@@ -14,6 +14,7 @@ import {
 import type { SaleType } from "@/lib/listings";
 import type { RouteStep } from "@/components/RouteMap";
 import type { Listing } from "@/lib/listings";
+import { WeekStrip } from "@/components/WeekStrip";
 
 const RouteMap = dynamic(() => import("@/components/RouteMap").then((m) => m.RouteMap), { ssr: false });
 
@@ -140,6 +141,7 @@ export default function GarageSales() {
   const [askingStart, setAskingStart] = useState(false);
   const [returnHome, setReturnHome] = useState(true);
   const [saleFilter, setSaleFilter] = useState<SaleType | "all">("all");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -168,7 +170,13 @@ export default function GarageSales() {
     if (!startLoc) setAskingStart(true);
   }
 
-  const filteredSales = saleFilter === "all" ? sales : sales.filter((s) => s.saleType === saleFilter);
+  const today = new Date().toISOString().slice(0, 10);
+  const saleDates = [...new Set(sales.filter((s) => s.dateISO).map((s) => s.dateISO as string))];
+  const filteredSales = sales.filter((s) => {
+    if (saleFilter !== "all" && s.saleType !== saleFilter) return false;
+    if (selectedDate) return s.dateISO === selectedDate;
+    return !s.dateISO || s.dateISO >= today;
+  });
   const routeSales = route.map((id) => sales.find((s) => s.id === id)).filter(Boolean) as typeof sales;
 
   const startAsListing: Listing | null = startLoc
@@ -233,6 +241,9 @@ export default function GarageSales() {
           </div>
         </div>
       </section>
+
+      {/* ── Calendar strip ── */}
+      <WeekStrip saleDates={saleDates} selected={selectedDate} onSelect={setSelectedDate} />
 
       {/* ── Route planner ── */}
       {showRoute && routeSales.length > 0 && (
@@ -495,7 +506,15 @@ export default function GarageSales() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="font-display text-3xl tracking-wide md:text-4xl">
-              {loading ? "Finding your location…" : `${filteredSales.length} ${saleFilter === "estate" ? "estate" : saleFilter === "garage" ? "garage" : ""} sale${filteredSales.length !== 1 ? "s" : ""}${city ? ` in ${city.name}` : " near you"}`}
+              {loading
+                ? "Finding your location…"
+                : selectedDate
+                ? (() => {
+                    const d = new Date(selectedDate + "T12:00:00");
+                    const label = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+                    return `${filteredSales.length} sale${filteredSales.length !== 1 ? "s" : ""} · ${label}`;
+                  })()
+                : `${filteredSales.length} upcoming sale${filteredSales.length !== 1 ? "s" : ""}${city ? ` in ${city.name}` : ""}`}
             </h2>
           </div>
           <div className="flex items-center gap-2">
