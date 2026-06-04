@@ -2,12 +2,12 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MapPin, Plus, Search, Tag } from "lucide-react";
+import { MapPin, Plus, Search, Tag, LayoutDashboard, User } from "lucide-react";
 import { useCityContext } from "@/components/CityProvider";
 import { CityPrompt } from "@/components/CityPrompt";
 
 const MOCK_USER = { initials: "ZY", name: "Zach Young" };
-const INK = "oklch(0.14 0.02 240)";
+const INK = "oklch(0.16 0.01 60)";
 
 export function Header() {
   const { city, setCity } = useCityContext();
@@ -68,7 +68,6 @@ export function Header() {
           <NavLink href="/browse">Browse</NavLink>
           <NavLink href="/map">Map</NavLink>
           <NavLink href="/garage-sales">Sales</NavLink>
-          <NavLink href="/dashboard">Dashboard</NavLink>
         </nav>
 
         {/* Desktop search */}
@@ -106,15 +105,8 @@ export function Header() {
           <span className="hidden sm:inline">Sell</span>
         </button>
 
-        {/* Profile */}
-        <Link href="/profile" className="group" title={MOCK_USER.name}>
-          <div
-            className="grid h-8 w-8 place-items-center bg-surface font-display text-sm text-foreground transition group-hover:bg-muted"
-            style={{ border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
-          >
-            {MOCK_USER.initials}
-          </div>
-        </Link>
+        {/* Avatar dropdown */}
+        <AvatarMenu />
       </div>
 
       {/* ── Mobile second row: search + city + nav ── */}
@@ -135,10 +127,64 @@ export function Header() {
           <NavLink href="/browse">Browse</NavLink>
           <NavLink href="/map">Map</NavLink>
           <NavLink href="/garage-sales">Sales</NavLink>
-          <NavLink href="/dashboard">Dashboard</NavLink>
         </nav>
       </div>
     </header>
+  );
+}
+
+function AvatarMenu() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        title={MOCK_USER.name}
+        className="grid h-8 w-8 place-items-center bg-surface font-display text-sm text-foreground transition hover:bg-muted"
+        style={{ border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
+      >
+        {MOCK_USER.initials}
+      </button>
+
+      {open && (
+        <div
+          style={{
+            position: "absolute", right: 0, top: "calc(100% + 6px)",
+            background: "var(--background)", border: `2px solid ${INK}`,
+            boxShadow: `4px 4px 0 ${INK}`, minWidth: 160, zIndex: 50,
+          }}
+        >
+          <Link
+            href="/dashboard"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold uppercase tracking-wide hover:bg-muted transition"
+            style={{ borderBottom: `1px solid ${INK}`, textDecoration: "none", color: INK }}
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Link>
+          <Link
+            href="/profile"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5 px-4 py-3 text-sm font-bold uppercase tracking-wide hover:bg-muted transition"
+            style={{ textDecoration: "none", color: INK }}
+          >
+            <User className="h-4 w-4" />
+            Profile
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }
 

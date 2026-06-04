@@ -99,28 +99,18 @@ export default function Landing() {
 
             {/* Giant headline — 4 lines matching Lovable exactly */}
             <div style={{ position: "relative" }}>
-              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.82, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,14vw,9rem)" }}>
-                {/* Line 1: Dibz */}
-                <span className="block">Dibz</span>
-                {/* Line 2: it, — "it" in red/accent, comma in black */}
-                <span className="block" style={{ marginTop: "-0.05em" }}>
-                  <span style={{ color: RED }}>it</span>
-                  <span style={{ fontFamily: BODY, fontStyle: "normal", color: INK }}>,</span>
-                </span>
-                {/* Line 3: before */}
-                <span className="block" style={{ marginTop: "-0.05em" }}>before</span>
-                {/* Line 4: they do. */}
-                <span className="block" style={{ position: "relative", marginTop: "-0.05em" }}>
-                  <span style={{ position: "relative", zIndex: 1 }}>they do</span>
-                  <span style={{ color: RED }}>.</span>
-                </span>
+              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.85, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,14vw,9rem)" }}>
+                <span className="block">Scroll</span>
+                <span className="block">Less<span style={{ color: RED }}>,</span></span>
+                <span className="block">Find</span>
+                <span className="block"><span style={{ color: RED }}>More</span><span style={{ fontFamily: BODY, fontStyle: "normal", color: INK }}>.</span></span>
               </h1>
-              {/* Halftone teal dot block — right side, ~1/3 down */}
+              {/* Halftone dot block — exact Lovable values */}
               <span aria-hidden style={{
-                position: "absolute", right: -8, top: "30%",
-                width: 130, height: 160,
-                backgroundImage: `radial-gradient(${TEAL_HEX} 1.4px, transparent 1.6px)`,
-                backgroundSize: "7px 7px", opacity: 0.22, zIndex: 0, pointerEvents: "none", display: "block",
+                position: "absolute", right: "calc(0.25rem * -4)", top: "33.3333%",
+                width: "calc(0.25rem * 40)", height: "calc(0.25rem * 40)",
+                backgroundImage: `radial-gradient(oklch(42% .09 195) 1.2px, transparent 1.4px)`,
+                backgroundSize: "6px 6px", display: "block", pointerEvents: "none",
               }} />
             </div>
 
@@ -172,12 +162,12 @@ export default function Landing() {
                   <Link href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
                     <div style={{ minWidth: 0, flex: 1 }}>
                       {/* № label */}
-                      <div style={{ fontFamily: MONO, fontSize: 9, opacity: 0.55, letterSpacing: "0.05em", marginBottom: 2 }}>
+                      <div style={{ fontFamily: MONO, fontSize: 9, opacity: 0.8, letterSpacing: "0.05em", marginBottom: 2 }}>
                         № {String(i + 1).padStart(2, "0")} ·{" "}
                         <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 14, fontWeight: 700, opacity: 1, letterSpacing: "-0.01em" }}>{l.title}</span>
                       </div>
                       {/* Category · location */}
-                      <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.6 }}>
+                      <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.85 }}>
                         {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Garage") : l.category} · {l.location.split(",")[0]}
                       </div>
                     </div>
