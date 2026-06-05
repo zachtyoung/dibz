@@ -136,7 +136,7 @@ export default function Browse() {
             <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,3vw,2.5rem)", lineHeight: 1, marginTop: 4, color: INK }}>
               {loading ? "Finding your city…" : city ? city.name : "All listings"}
               <span style={{ fontFamily: MONO, fontStyle: "normal", fontWeight: 400, fontSize: "0.35em", letterSpacing: "0.15em", textTransform: "uppercase", color: INK, opacity: 0.5, marginLeft: 16 }}>
-                {filtered.length} notices
+                {filtered.length} listings
               </span>
             </h2>
           </div>
@@ -148,7 +148,7 @@ export default function Browse() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search notices…"
+                placeholder="Search listings…"
                 className="bg-background focus:outline-none"
                 style={{ border: `2px solid ${INK}`, padding: "6px 12px 6px 32px", fontFamily: MONO, fontSize: 11, color: INK, width: 200 }}
               />
@@ -215,7 +215,7 @@ export default function Browse() {
         <div className="mx-auto max-w-7xl px-6 py-6">
           {filtered.length === 0 ? (
             <div className="py-20 text-center">
-              <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "2rem", color: INK, opacity: 0.4 }}>No notices found.</p>
+              <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "2rem", color: INK, opacity: 0.4 }}>No listings found.</p>
               <p style={{ fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, marginTop: 8 }}>Try widening your radius or clearing filters.</p>
               <button
                 onClick={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }}
@@ -237,7 +237,7 @@ export default function Browse() {
       {/* Footer */}
       <footer className="mx-auto max-w-7xl px-6 py-8" style={{ borderTop: `2px solid ${INK}` }}>
         <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.4, color: INK }}>
-          Dibz Press · {city?.name ?? "All Cities"} · {filtered.length} active notices · Free to list, always.
+          Dibz Press · {city?.name ?? "All Cities"} · {filtered.length} active listings · Free to list, always.
         </p>
       </footer>
     </div>
