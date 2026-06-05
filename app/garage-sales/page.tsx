@@ -21,6 +21,14 @@ const RouteMap = dynamic(() => import("@/components/RouteMap").then((m) => m.Rou
 const STORAGE_KEY = "dibz-route";
 const KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!;
 
+const INK   = "oklch(0.16 0.01 60)";
+const RED   = "#c0392b";
+const TEAL  = "oklch(0.48 0.13 178)";
+const CREAM = "oklch(0.965 0.018 85)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+const SANS  = "'Archivo Black', system-ui, sans-serif";
+
 type StartLocation = { lat: number; lng: number; label: string };
 
 function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) => void; onSkip: () => void }) {
@@ -82,7 +90,7 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <div
         className="w-full max-w-sm bg-card p-6 mx-4"
-        style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+        style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
       >
         <div className="mb-1 flex items-center gap-2">
           <Route className="h-5 w-5 text-accent" />
@@ -95,7 +103,7 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
             onClick={useGeo}
             disabled={geoLoading}
             className="flex items-center gap-3 bg-accent/10 px-4 py-3 text-sm font-semibold text-accent transition hover:bg-accent/20 disabled:opacity-60"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            style={{ border: "2px solid oklch(0.16 0.01 60)" }}
           >
             {geoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
             <span>Use my current location</span>
@@ -114,7 +122,7 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your address…"
             className="w-full bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            style={{ border: "2px solid oklch(0.16 0.01 60)" }}
           />
 
           <button onClick={onSkip} className="text-center text-xs text-muted-foreground hover:text-foreground transition">
@@ -210,34 +218,27 @@ export default function GarageSales() {
     <div className="min-h-screen">
       <Header />
 
-      <section>
-        <div className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
-          <span
-            className="inline-flex items-center gap-1.5 bg-accent/15 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent"
-            style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
-          >
-            <Calendar className="h-3 w-3" /> This weekend
-          </span>
-          <h1 className="mt-4 font-display text-5xl leading-[0.9] tracking-tight md:text-7xl">
+      <section style={{ borderBottom: `2px solid ${INK}` }}>
+        <div className="mx-auto max-w-7xl px-6 py-10 md:py-14">
+          <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>▶ This Weekend</p>
+          <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,6vw,5rem)", lineHeight: 0.9, letterSpacing: "-0.02em", color: INK, marginTop: 12 }}>
             Garage &amp; estate sales,<br />
-            <span className="text-accent">near you.</span>
+            <span style={{ color: TEAL }}>near you.</span>
           </h1>
-          <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+          <p style={{ fontFamily: SERIF, fontSize: 16, lineHeight: 1.6, color: INK, opacity: 0.7, marginTop: 16, maxWidth: 480 }}>
             Free to post. Free to browse. Map your route, mark your stops, and go.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={() => router.push("/dashboard?new=1")}
-              className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-semibold text-accent-foreground transition hover:-translate-x-px hover:-translate-y-px"
-              style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, background: INK, color: CREAM, padding: "11px 20px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 900, border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${RED}`, cursor: "pointer" }}
             >
               <Plus className="h-4 w-4" strokeWidth={3} /> Post your sale
             </button>
             {routeSales.length > 0 && (
               <button
                 onClick={handleViewRoute}
-                className="inline-flex items-center gap-2 border-accent/50 bg-accent/10 px-5 py-3 font-semibold text-accent transition hover:bg-accent/20"
-                style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "transparent", color: INK, padding: "11px 20px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 900, border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${TEAL}`, cursor: "pointer" }}
               >
                 <Navigation className="h-4 w-4" /> View my route · {routeSales.length} stop{routeSales.length !== 1 ? "s" : ""}
               </button>
@@ -258,15 +259,16 @@ export default function GarageSales() {
           {/* Trip summary bar */}
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 className="font-display text-3xl tracking-wide">Your route</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Route Planner</p>
+              <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "2rem", lineHeight: 1, marginTop: 4, color: INK }}>Your route</h2>
+              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.6, marginTop: 4, color: INK }}>
                 {startLoc ? `Starting from ${startLoc.label.split(",")[0]}` : "Add a start location for door-to-door directions"}
               </p>
             </div>
             <button
               onClick={() => setShowRoute(false)}
               className="p-2 hover:border-accent transition"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+              style={{ border: "2px solid oklch(0.16 0.01 60)" }}
             >
               <X className="h-4 w-4" />
             </button>
@@ -274,22 +276,17 @@ export default function GarageSales() {
 
           {/* Stats strip */}
           {totalMin > 0 && (
-            <div
-              className="mb-6 grid grid-cols-3 gap-3 bg-card p-4"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            >
-              <div className="text-center">
-                <p className="text-2xl font-bold text-accent">{totalTimeLabel}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">total drive time</p>
-              </div>
-              <div className="text-center border-x border-border">
-                <p className="text-2xl font-bold">{totalDistanceMi.toFixed(1)} mi</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">total distance</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{routeSales.length}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">stop{routeSales.length !== 1 ? "s" : ""}</p>
-              </div>
+            <div className="mb-6 grid grid-cols-3 gap-px" style={{ border: `2px solid ${INK}`, background: INK }}>
+              {[
+                { val: totalTimeLabel, label: "Drive time" },
+                { val: `${totalDistanceMi.toFixed(1)} mi`, label: "Distance" },
+                { val: String(routeSales.length), label: `Stop${routeSales.length !== 1 ? "s" : ""}` },
+              ].map(({ val, label }) => (
+                <div key={label} className="text-center" style={{ background: "var(--background)", padding: "16px 8px" }}>
+                  <p style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.75rem", lineHeight: 1, color: INK }}>{val}</p>
+                  <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.55, marginTop: 4, color: INK }}>{label}</p>
+                </div>
+              ))}
             </div>
           )}
 
@@ -297,7 +294,7 @@ export default function GarageSales() {
             {/* Map */}
             <div
               className="relative h-[500px] overflow-hidden lg:flex-1"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+              style={{ border: "2px solid oklch(0.16 0.01 60)" }}
             >
               {askingStart && (
                 <StartPrompt
@@ -315,7 +312,7 @@ export default function GarageSales() {
                 {startLoc && !askingStart ? (
                   <div
                     className="flex items-center gap-3 bg-indigo-500/10 p-3"
-                    style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                    style={{ border: "2px solid oklch(0.16 0.01 60)" }}
                   >
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-indigo-500 text-white">
                       <Crosshair className="h-4 w-4" />
@@ -336,7 +333,7 @@ export default function GarageSales() {
                   <button
                     onClick={() => setAskingStart(true)}
                     className="flex w-full items-center gap-2 border-dashed border-border px-4 py-3 text-sm text-muted-foreground transition hover:border-accent hover:text-accent"
-                    style={{ border: "2px dashed oklch(0.14 0.02 240)" }}
+                    style={{ border: "2px dashed oklch(0.16 0.01 60)" }}
                   >
                     <Crosshair className="h-4 w-4" />
                     Add your start location for total drive time
@@ -362,7 +359,7 @@ export default function GarageSales() {
                           {leg ? (
                             <div
                               className="flex items-center gap-1.5 bg-surface px-3 py-1 text-xs"
-                              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                              style={{ border: "2px solid oklch(0.16 0.01 60)" }}
                             >
                               <Car className="h-3 w-3 text-accent" />
                               <span className="font-semibold text-foreground">{leg.durationText}</span>
@@ -377,7 +374,7 @@ export default function GarageSales() {
                       {/* Stop card */}
                       <div
                         className="bg-card p-3 transition hover:border-accent/40"
-                        style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                        style={{ border: "2px solid oklch(0.16 0.01 60)" }}
                       >
                         <div className="flex items-start gap-3">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-accent text-sm font-bold text-white">
@@ -425,7 +422,7 @@ export default function GarageSales() {
                       {returnHome && steps.length >= routeSales.length ? (
                         <div
                           className="flex items-center gap-1.5 bg-surface px-3 py-1 text-xs"
-                          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                          style={{ border: "2px solid oklch(0.16 0.01 60)" }}
                         >
                           <Car className="h-3 w-3 text-accent" />
                           <span className="font-semibold text-foreground">{steps[steps.length - 1]?.durationText}</span>
@@ -446,8 +443,8 @@ export default function GarageSales() {
                       }`}
                       style={{
                         border: returnHome
-                          ? "2px solid oklch(0.14 0.02 240)"
-                          : "2px dashed oklch(0.14 0.02 240)",
+                          ? "2px solid oklch(0.16 0.01 60)"
+                          : "2px dashed oklch(0.16 0.01 60)",
                       }}
                     >
                       <div className={`flex h-8 w-8 shrink-0 items-center justify-center text-white ${returnHome ? "bg-indigo-500" : "bg-border"}`}>
@@ -478,7 +475,7 @@ export default function GarageSales() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-accent py-3 text-sm font-bold text-white transition hover:-translate-x-px hover:-translate-y-px"
-                  style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+                  style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
                 >
                   <Navigation className="h-4 w-4" />
                   Start navigation in Google Maps
@@ -500,7 +497,7 @@ export default function GarageSales() {
         <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
           <div
             className="h-[420px] overflow-hidden"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+            style={{ border: "2px solid oklch(0.16 0.01 60)" }}
           >
             <ListingsMap listings={filteredSales} center={center} zoom={12} />
           </div>
@@ -509,9 +506,10 @@ export default function GarageSales() {
 
       {/* Sales grid */}
       <section className="mx-auto max-w-7xl px-4 pb-16 md:px-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4 pb-3" style={{ borderBottom: `2px solid ${INK}` }}>
           <div>
-            <h2 className="font-display text-3xl tracking-wide md:text-4xl">
+            <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Upcoming Sales</p>
+            <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.5rem,3vw,2.5rem)", lineHeight: 1, marginTop: 4, color: INK }}>
               {loading
                 ? "Finding your location…"
                 : selectedDate
@@ -520,25 +518,13 @@ export default function GarageSales() {
                     const label = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
                     return `${filteredSales.length} sale${filteredSales.length !== 1 ? "s" : ""} · ${label}`;
                   })()
-                : `${filteredSales.length} upcoming sale${filteredSales.length !== 1 ? "s" : ""}${city ? ` in ${city.name}` : ""}`}
+                : `${filteredSales.length} upcoming${city ? ` in ${city.name}` : ""}`}
             </h2>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {(["all", "garage", "estate"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setSaleFilter(f)}
-                className={`px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition ${
-                  saleFilter === f
-                    ? f === "estate"
-                      ? "bg-amber-500/20 text-amber-300"
-                      : "bg-accent/20 text-accent"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                style={{
-                  border: "2px solid oklch(0.14 0.02 240)",
-                  boxShadow: saleFilter === f ? "3px 3px 0 oklch(0.14 0.02 240)" : undefined,
-                }}
+              <button key={f} onClick={() => setSaleFilter(f)}
+                style={{ padding: "6px 14px", fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", border: `2px solid ${INK}`, cursor: "pointer", background: saleFilter === f ? INK : "transparent", color: saleFilter === f ? CREAM : INK, boxShadow: saleFilter === f ? `2px 2px 0 ${f === "estate" ? "#b7791f" : RED}` : undefined }}
               >
                 {f === "all" ? "All" : f === "garage" ? "Garage" : "Estate"}
               </button>
@@ -550,79 +536,33 @@ export default function GarageSales() {
             const inRoute = route.includes(s.id);
             const stopNum = routeSales.findIndex((r) => r.id === s.id) + 1;
             return (
-              <article
-                key={s.id}
-                className="group overflow-hidden bg-card transition hover:-translate-x-px hover:-translate-y-px"
-                style={{
-                  border: "2px solid oklch(0.14 0.02 240)",
-                  boxShadow: inRoute ? "3px 3px 0 oklch(0.14 0.02 240)" : "3px 3px 0 oklch(0.14 0.02 240)",
-                }}
-              >
-                <Link href={`/listing/${s.id}`} className="block">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img src={s.image} alt={s.title} className="h-full w-full object-cover transition group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
-                  {inRoute && (
-                    <div
-                      className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center bg-accent text-xs font-bold text-white"
-                      style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-                    >
-                      {stopNum}
-                    </div>
-                  )}
-                  {/* Type badge */}
-                  <div className="absolute left-3 top-3">
-                    <span
-                      className={`px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
-                        s.saleType === "estate"
-                          ? "bg-amber-500/90 text-amber-950"
-                          : "bg-accent/90 text-accent-foreground"
-                      }`}
-                      style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "2px 2px 0 oklch(0.14 0.02 240)" }}
-                    >
-                      {s.saleType === "estate" ? "Estate" : "Garage"}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <div className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${s.saleType === "estate" ? "text-amber-400" : "text-accent"}`}>
-                      <Calendar className="h-3 w-3" /> {s.date}
-                    </div>
-                    <h3 className="mt-1 font-display text-2xl leading-tight tracking-wide">{s.title}</h3>
-                  </div>
-                </div>
-                <div className="space-y-3 p-5">
-                  <p className="text-sm text-muted-foreground">{s.description}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="h-3 w-3 text-accent" /> {s.location} · {s.distance}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Users className="h-3 w-3" /> {s.seller}
-                    </span>
-                  </div>
-                </div>
-                </Link>
-                <div className="px-5 pb-5">
-                  <button
-                    onClick={() => toggleRoute(s.id)}
-                    className={`w-full py-2 text-sm font-semibold transition ${
-                      inRoute
-                        ? "bg-accent/10 text-accent hover:bg-red-500/10 hover:text-red-400"
-                        : s.saleType === "estate"
-                          ? "bg-surface text-foreground hover:text-amber-400"
-                          : "bg-surface text-foreground hover:text-accent"
-                    }`}
-                    style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-                  >
-                    {inRoute ? (
-                      <span className="inline-flex items-center justify-center gap-1.5">
-                        <Check className="h-3.5 w-3.5" /> Stop #{stopNum} — tap to remove
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center justify-center gap-1.5">
-                        <Plus className="h-3.5 w-3.5" /> Add to my route
-                      </span>
+              <article key={s.id} className="group" style={{ border: `2px solid ${INK}`, boxShadow: inRoute ? `3px 3px 0 ${RED}` : `3px 3px 0 ${INK}`, background: "var(--background)" }}>
+                <Link href={`/listing/${s.id}`} style={{ display: "block", textDecoration: "none", color: INK }}>
+                  {/* Image */}
+                  <div className="relative overflow-hidden" style={{ aspectRatio: "4/3", borderBottom: `2px solid ${INK}` }}>
+                    <img src={s.image} alt={s.title} className="h-full w-full object-cover transition group-hover:scale-105" style={{ filter: "saturate(0.8) contrast(1.05)" }} />
+                    {inRoute && (
+                      <div style={{ position: "absolute", right: 10, top: 10, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", background: INK, color: CREAM, fontFamily: MONO, fontSize: 11, fontWeight: 700, border: `2px solid ${CREAM}` }}>
+                        {stopNum}
+                      </div>
                     )}
+                    <div style={{ position: "absolute", left: 10, top: 10, background: s.saleType === "estate" ? "#b7791f" : INK, color: CREAM, padding: "2px 8px", fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
+                      {s.saleType === "estate" ? "Estate" : "Garage"}
+                    </div>
+                  </div>
+                  {/* Content */}
+                  <div style={{ padding: "14px 16px" }}>
+                    {s.date && <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: s.saleType === "estate" ? "#b7791f" : TEAL, marginBottom: 6 }}>{s.date}</p>}
+                    <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 18, lineHeight: 1.25, color: INK }}>{s.title}</h3>
+                    <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.6, marginTop: 6 }}>◉ {s.location}{s.distance ? ` · ${s.distance}` : ""}</p>
+                    {s.description && <p style={{ fontFamily: "'Libre Caslon Text', Georgia, serif", fontSize: 13, lineHeight: 1.6, marginTop: 8, opacity: 0.75 }} className="line-clamp-2">{s.description}</p>}
+                  </div>
+                </Link>
+                <div style={{ padding: "0 16px 14px" }}>
+                  <button onClick={() => toggleRoute(s.id)}
+                    style={{ width: "100%", padding: "8px", fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", cursor: "pointer", border: `2px solid ${INK}`, background: inRoute ? INK : "transparent", color: inRoute ? CREAM : INK, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                  >
+                    {inRoute ? <><Check className="h-3 w-3" /> Stop #{stopNum} — remove</> : <><Plus className="h-3 w-3" /> Add to my route</>}
                   </button>
                 </div>
               </article>
