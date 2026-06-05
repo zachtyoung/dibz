@@ -160,7 +160,7 @@ export default function Landing() {
           {/* Right late edition col */}
           <aside className="md:col-span-3 md:border-l-2 md:pl-6" style={{ borderColor: INK }}>
             <div className="flex items-center justify-between pb-2" style={{ borderBottom: `1px solid ${INK}` }}>
-              <span style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>Late Edition</span>
+              <span style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>Latest Edition</span>
               <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: RED, fontWeight: 700 }}>Live</span>
             </div>
             <ol className="mt-2">
