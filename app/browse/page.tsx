@@ -11,7 +11,11 @@ const RADII = [5, 10, 25, 50] as const;
 type Radius = typeof RADII[number] | "All";
 type SortKey = "distance" | "price-asc" | "price-desc" | "newest";
 
-const INK = "oklch(0.14 0.02 240)";
+const INK = "oklch(0.16 0.01 60)";
+const RED = "#c0392b";
+const MONO = "'JetBrains Mono', 'Courier New', monospace";
+const SANS = "'Archivo Black', system-ui, sans-serif";
+const SERIF = "'DM Serif Display', Georgia, serif";
 
 function distanceMiNum(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const dLat = lat2 - lat1;
@@ -84,27 +88,21 @@ export default function Browse() {
       <Header />
 
       {/* Toolbar */}
-      <div
-        className="sticky top-[48px] z-30 bg-surface md:top-[52px]"
-        style={{ borderBottom: `2px solid ${INK}` }}
-      >
+      <div className="sticky top-[48px] z-30 bg-background md:top-[52px]" style={{ borderBottom: `2px solid ${INK}` }}>
         <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2 md:px-8">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-40" style={{ color: INK }} />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search listings…"
-              className="w-full bg-background py-2 pl-9 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none"
-              style={{ border: `2px solid ${INK}` }}
+              className="w-full bg-background py-2 pl-9 pr-4 focus:outline-none"
+              style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 12, color: INK }}
             />
             {query && (
-              <button
-                onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
+              <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100" style={{ color: INK }}>
                 <X className="h-4 w-4" />
               </button>
             )}
@@ -114,8 +112,8 @@ export default function Browse() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="hidden bg-background px-3 py-2 text-xs font-bold uppercase tracking-widest text-foreground focus:outline-none md:block"
-            style={{ border: `2px solid ${INK}` }}
+            className="hidden bg-background focus:outline-none md:block"
+            style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", padding: "8px 12px", color: INK }}
           >
             <option value="distance">Nearest</option>
             <option value="price-asc">Price ↑</option>
@@ -126,10 +124,8 @@ export default function Browse() {
           {/* Filter toggle (mobile) */}
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-widest transition md:hidden ${
-              showFilters ? "bg-primary text-primary-foreground" : "bg-background text-foreground"
-            }`}
-            style={{ border: `2px solid ${INK}` }}
+            className="flex items-center gap-1.5 px-3 py-2 transition md:hidden"
+            style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", background: showFilters ? INK : "transparent", color: showFilters ? "oklch(0.96 0.018 85)" : INK }}
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
             Filters
@@ -138,8 +134,8 @@ export default function Browse() {
           {/* Map/Grid toggle */}
           <button
             onClick={() => setView(view === "grid" ? "map" : "grid")}
-            className="flex items-center gap-1.5 bg-background px-3 py-2 text-xs font-bold uppercase tracking-widest text-foreground transition hover:bg-muted"
-            style={{ border: `2px solid ${INK}` }}
+            className="flex items-center gap-1.5 px-3 py-2 transition hover:bg-muted"
+            style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", background: "transparent", color: INK }}
           >
             {view === "grid" ? <Map className="h-3.5 w-3.5" /> : <LayoutGrid className="h-3.5 w-3.5" />}
             <span className="hidden sm:inline">{view === "grid" ? "Map" : "Grid"}</span>
@@ -147,23 +143,21 @@ export default function Browse() {
         </div>
 
         {/* Filter rows */}
-        <div
-          className={`mx-auto max-w-7xl px-4 pb-2 md:px-8 ${
-            showFilters ? "flex flex-col gap-2" : "hidden md:flex md:flex-col md:gap-2"
-          }`}
-        >
+        <div className={`mx-auto max-w-7xl px-4 pb-2 md:px-8 ${showFilters ? "flex flex-col gap-2" : "hidden md:flex md:flex-col md:gap-2"}`}>
           {/* Categories */}
           <div className="flex gap-2 overflow-x-auto">
             {CATEGORIES.map((c) => (
               <button
                 key={c}
                 onClick={() => setCat(c)}
-                className={`whitespace-nowrap px-3 py-1 text-xs font-bold uppercase tracking-widest transition ${
-                  cat === c
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background text-foreground hover:bg-muted"
-                }`}
-                style={{ border: `2px solid ${INK}` }}
+                className="whitespace-nowrap px-3 py-1 transition"
+                style={{
+                  border: `2px solid ${INK}`,
+                  fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em",
+                  background: cat === c ? INK : "transparent",
+                  color: cat === c ? "oklch(0.96 0.018 85)" : INK,
+                  boxShadow: cat === c ? `2px 2px 0 ${RED}` : undefined,
+                }}
               >
                 {c}
               </button>
@@ -172,44 +166,23 @@ export default function Browse() {
 
           {/* Condition + Radius + Sort (mobile) */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cond:</span>
+            <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.5, color: INK }}>Cond:</span>
             {(["All", ...CONDITIONS] as const).map((c) => (
-              <button
-                key={c}
-                onClick={() => setCond(c)}
-                className={`whitespace-nowrap px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition ${
-                  cond === c
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background text-muted-foreground hover:text-foreground"
-                }`}
-                style={{ border: `2px solid ${INK}` }}
-              >
+              <button key={c} onClick={() => setCond(c)} className="whitespace-nowrap px-2.5 py-0.5 transition"
+                style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", background: cond === c ? INK : "transparent", color: cond === c ? "oklch(0.96 0.018 85)" : INK }}>
                 {c}
               </button>
             ))}
-
-            <span className="ml-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Radius:</span>
+            <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.5, color: INK, marginLeft: 8 }}>Radius:</span>
             {(["All", ...RADII] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRadius(r)}
-                className={`whitespace-nowrap px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition ${
-                  radius === r
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background text-muted-foreground hover:text-foreground"
-                }`}
-                style={{ border: `2px solid ${INK}` }}
-              >
+              <button key={r} onClick={() => setRadius(r)} className="whitespace-nowrap px-2.5 py-0.5 transition"
+                style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", background: radius === r ? INK : "transparent", color: radius === r ? "oklch(0.96 0.018 85)" : INK }}>
                 {r === "All" ? "Any" : `${r} mi`}
               </button>
             ))}
-
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="ml-auto bg-background px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-foreground focus:outline-none md:hidden"
-              style={{ border: `2px solid ${INK}` }}
-            >
+            <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}
+              className="ml-auto bg-background focus:outline-none md:hidden"
+              style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", padding: "2px 8px", color: INK }}>
               <option value="distance">Nearest</option>
               <option value="price-asc">Price ↑</option>
               <option value="price-desc">Price ↓</option>
@@ -228,15 +201,15 @@ export default function Browse() {
 
       {/* Results */}
       <section className="mx-auto max-w-7xl px-4 py-6 md:px-8">
-        <div className="mb-4 flex items-end justify-between border-b-2 pb-2" style={{ borderColor: "oklch(0.16 0.01 60)" }}>
+        <div className="mb-4 flex items-end justify-between pb-2" style={{ borderBottom: `2px solid ${INK}` }}>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">§ Latest Edition</p>
-            <h2 className="mt-1 font-display text-2xl tracking-wide md:text-3xl">
+            <p style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>§ Latest Edition</p>
+            <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.5rem,3vw,2rem)", marginTop: 4, color: INK, lineHeight: 1 }}>
               {loading ? "Finding your city…" : city ? city.name : "All listings"}{" "}
-              <span className="text-primary">· {filtered.length} items</span>
+              <span style={{ color: "oklch(0.48 0.13 178)" }}>· {filtered.length} items</span>
             </h2>
           </div>
-          <a href="/map" className="hidden font-mono text-xs uppercase tracking-widest text-foreground opacity-60 hover:opacity-100 md:inline">
+          <a href="/map" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, textDecoration: "none", opacity: 0.6 }}>
             Full map →
           </a>
         </div>

@@ -6,9 +6,12 @@ import { timeAgo } from "@/lib/listings";
 import type { Listing } from "@/lib/listings";
 import { SellerBadgesCompact } from "@/components/SellerBadges";
 
-const INK = "oklch(0.14 0.02 240)";
+const INK = "oklch(0.16 0.01 60)";
 const RED = "#c0392b";
-const TEAL = "oklch(0.52 0.14 178)";
+const TEAL = "oklch(0.48 0.13 178)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO = "'JetBrains Mono', 'Courier New', monospace";
+const SANS = "'Archivo Black', system-ui, sans-serif";
 const FAVS_KEY = "dibz-favorites";
 
 function useFavorite(id: string) {
@@ -78,31 +81,20 @@ export function ListingCard({ listing }: { listing: Listing }) {
         {/* Copy */}
         <div className="flex flex-1 flex-col justify-between p-3">
           <div>
-            <span
-              className="font-display leading-none"
-              style={{ fontSize: 20, color: isBlock ? (isEstate ? "#b7791f" : RED) : INK }}
-            >
-              {isBlock ? "FREE" : `$${listing.price.toLocaleString()}`}
+            <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 20, color: isBlock ? (isEstate ? "#b7791f" : RED) : INK, lineHeight: 1 }}>
+              {isBlock ? "Free" : `$${listing.price.toLocaleString()}`}
             </span>
-            <h3
-              className="mt-1 line-clamp-2 leading-snug"
-              style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontStyle: "italic", fontSize: 13, fontWeight: 700, color: INK }}
-            >
+            <h3 className="mt-1 line-clamp-2 leading-snug" style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 13, fontWeight: 700, color: INK, letterSpacing: "-0.01em" }}>
               {listing.title}
             </h3>
           </div>
           <div className="mt-2 space-y-0.5">
-            <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-              <MapPin className="h-2.5 w-2.5 shrink-0" />
-              <span className="truncate">{listing.location}</span>
+            <div className="flex items-center gap-1" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, opacity: 0.7 }}>
+              <span className="truncate">◉ {listing.location.split(",")[0]}</span>
               {listing.distance && <span className="ml-auto shrink-0">{listing.distance}</span>}
             </div>
-            <div className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
-              {isBlock && listing.date ? (
-                <><Calendar className="h-2.5 w-2.5 shrink-0" /><span>{listing.date}</span></>
-              ) : (
-                <><Clock className="h-2.5 w-2.5 shrink-0" /><span>{listing.postedHoursAgo != null ? timeAgo(listing.postedHoursAgo) : ""}</span></>
-              )}
+            <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", color: isBlock ? RED : INK, opacity: isBlock ? 1 : 0.6 }}>
+              {isBlock && listing.date ? listing.date.split("·")[0].trim() : listing.postedHoursAgo != null ? timeAgo(listing.postedHoursAgo) : ""}
             </div>
           </div>
         </div>
