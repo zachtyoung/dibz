@@ -122,7 +122,7 @@ export default function Landing() {
 
             {/* Giant headline — 4 lines matching Lovable exactly */}
             <div style={{ position: "relative" }}>
-              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.85, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,14vw,9rem)" }}>
+              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,14vw,9rem)" }}>
                 <span className="block">Scroll</span>
                 <span className="block">Less<span style={{ color: RED }}>,</span></span>
                 <span className="block">Find</span>
