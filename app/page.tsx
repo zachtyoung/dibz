@@ -17,7 +17,7 @@ export default function Landing() {
   const { city } = useCityContext();
   const listings = useMemo(() => city ? getListings(city) : [], [city]);
   const sales = listings.filter((l) => l.isGarageSale);
-  const lateEdition = listings.slice(0, 8);
+  const lateEdition = listings.filter((l) => !l.isGarageSale).slice(0, 8);
   const today = new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase();
   const edition = city ? `${city.name.toUpperCase()} EDITION · ` : "";
 
@@ -84,18 +84,34 @@ export default function Landing() {
       <section className="mx-auto max-w-7xl px-6 py-10" style={{ borderBottom: `2px solid ${INK}` }}>
         <div className="grid gap-8 md:grid-cols-12">
 
-          {/* Left editorial col */}
+          {/* Left col — Upcoming Sales */}
           <div className="hidden md:block md:col-span-3 md:border-r-2 md:pr-6" style={{ borderColor: INK }}>
-            <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>▶ Feature — Page One</p>
-            <p className="mt-3" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.7 }}>By the Editors</p>
-            <p className="mt-4" style={{ fontFamily: BODY, fontSize: 14, lineHeight: 1.75 }}>
-              <span style={{ float: "left", fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "5em", lineHeight: 0.75, marginRight: 6, marginTop: 8, color: RED }}>E</span>
-              very Saturday morning, before the coffee is cold, somebody on your block is dragging a perfectly good armchair onto a lawn. The question has always been the same: <em>who calls dibz first?</em>
-            </p>
-            <div className="mt-6 flex items-center gap-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em" }}>
-              <span style={{ display: "inline-block", width: 6, height: 6, background: RED }} />
-              Continued on Pg. 2
+            <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>▶ This Weekend</p>
+            <div className="flex items-center justify-between pb-1 mt-3" style={{ borderBottom: `1px solid ${INK}` }}>
+              <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.7 }}>Upcoming Sales</span>
+              <Link href="/garage-sales" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: RED, textDecoration: "none" }}>All →</Link>
             </div>
+            <ol className="mt-2">
+              {sales.slice(0, 5).map((s, i) => (
+                <li key={s.id} style={{ borderBottom: `1px dotted ${INK}`, paddingTop: 8, paddingBottom: 8 }}>
+                  <Link href={`/listing/${s.id}`} style={{ textDecoration: "none", color: INK, display: "block" }}>
+                    <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: RED, marginBottom: 2 }}>
+                      {s.saleType === "estate" ? "Estate Sale" : "Garage Sale"} · No. {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, lineHeight: 1.25, letterSpacing: "-0.01em" }}>
+                      {s.title}
+                    </div>
+                    <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.7, marginTop: 3, display: "flex", justifyContent: "space-between" }}>
+                      <span>◉ {s.location.split(",")[0]}</span>
+                      {s.date && <span style={{ color: TEAL_HEX }}>{s.date.split("·")[0].trim()}</span>}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+            {sales.length === 0 && (
+              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.4, marginTop: 12 }}>No sales yet — pick a city above.</p>
+            )}
           </div>
 
           {/* Center headline col — no border on center itself; left/right cols carry the rules */}
