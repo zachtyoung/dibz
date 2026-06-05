@@ -17,7 +17,7 @@ export default function Landing() {
   const { city } = useCityContext();
   const listings = useMemo(() => city ? getListings(city) : [], [city]);
   const sales = listings.filter((l) => l.isGarageSale);
-  const lateEdition = listings.slice(0, 5);
+  const lateEdition = listings.slice(0, 8);
   const today = new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase();
   const edition = city ? `${city.name.toUpperCase()} EDITION · ` : "";
 

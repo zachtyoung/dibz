@@ -227,13 +227,16 @@ export default function Browse() {
       )}
 
       {/* Results */}
-      <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
-        <div className="mb-5 flex items-end justify-between">
-          <h2 className="font-display text-3xl tracking-wide md:text-4xl">
-            {loading ? "Finding your city…" : city ? city.name : "All listings"}{" "}
-            <span className="text-primary">/ {filtered.length} items</span>
-          </h2>
-          <a href="/map" className="hidden text-sm font-medium text-primary hover:underline md:inline">
+      <section className="mx-auto max-w-7xl px-4 py-6 md:px-8">
+        <div className="mb-4 flex items-end justify-between border-b-2 pb-2" style={{ borderColor: "oklch(0.16 0.01 60)" }}>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary">§ Latest Edition</p>
+            <h2 className="mt-1 font-display text-2xl tracking-wide md:text-3xl">
+              {loading ? "Finding your city…" : city ? city.name : "All listings"}{" "}
+              <span className="text-primary">· {filtered.length} items</span>
+            </h2>
+          </div>
+          <a href="/map" className="hidden font-mono text-xs uppercase tracking-widest text-foreground opacity-60 hover:opacity-100 md:inline">
             Full map →
           </a>
         </div>
@@ -250,7 +253,7 @@ export default function Browse() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((l) => (
               <ListingCard key={l.id} listing={l} />
             ))}
