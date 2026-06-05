@@ -224,33 +224,40 @@ export default function Browse() {
       {view === "list" && (
         <div className="mx-auto max-w-7xl px-6 py-4">
           {filtered.length === 0 ? <EmptyState onClear={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }} /> : (
-            <div style={{ borderTop: `2px solid ${INK}` }}>
-              {filtered.map((l, i) => (
-                <a key={l.id} href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "baseline", gap: 0, borderBottom: `1px solid ${INK}`, padding: "10px 0" }}>
-                  {/* № */}
-                  <span style={{ fontFamily: MONO, fontSize: 9, opacity: 0.4, flexShrink: 0, width: 36 }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {/* Image thumbnail */}
-                  <div style={{ width: 48, height: 48, flexShrink: 0, overflow: "hidden", marginRight: 12 }}>
-                    <img src={l.image} alt={l.title} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.7)" }} />
-                  </div>
-                  {/* Title */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</span>
-                    <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.55 }}>
-                      {l.category} · {l.location.split(",")[0]}
-                    </span>
-                  </div>
-                  {/* Distance */}
-                  <span className="hidden md:block" style={{ fontFamily: MONO, fontSize: 9, opacity: 0.4, flexShrink: 0, width: 56, textAlign: "right" }}>{l.distance}</span>
-                  {/* Price */}
-                  <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: 18, flexShrink: 0, width: 80, textAlign: "right", color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
-                    {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
-                  </span>
-                </a>
-              ))}
-            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse", borderTop: `2px solid ${INK}` }}>
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${INK}` }}>
+                  {["#", "", "Item", "Category", "Location", "Distance", "Price"].map((h) => (
+                    <th key={h} style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.45, color: INK, fontWeight: 400, padding: "6px 8px", textAlign: h === "Price" || h === "Distance" ? "right" : "left" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((l, i) => (
+                  <tr key={l.id} style={{ borderBottom: `1px dotted ${INK}`, cursor: "pointer" }}
+                    onClick={() => window.location.href = `/listing/${l.id}`}
+                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.025)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                  >
+                    <td style={{ fontFamily: MONO, fontSize: 9, opacity: 0.35, padding: "8px 8px", width: 28 }}>{String(i + 1).padStart(2, "0")}</td>
+                    <td style={{ padding: "6px 8px", width: 52 }}>
+                      <div style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
+                        <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.75) contrast(1.05)", display: "block" }} />
+                      </div>
+                    </td>
+                    <td style={{ padding: "8px 8px", maxWidth: 320 }}>
+                      <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</span>
+                    </td>
+                    <td className="hidden md:table-cell" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.55, padding: "8px 8px", whiteSpace: "nowrap" }}>{l.category}</td>
+                    <td className="hidden md:table-cell" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.55, padding: "8px 8px", whiteSpace: "nowrap" }}>{l.location.split(",")[0]}</td>
+                    <td className="hidden md:table-cell" style={{ fontFamily: MONO, fontSize: 9, opacity: 0.35, padding: "8px 8px", textAlign: "right", whiteSpace: "nowrap" }}>{l.distance}</td>
+                    <td style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, padding: "8px 8px", textAlign: "right", whiteSpace: "nowrap", color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
+                      {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       )}
