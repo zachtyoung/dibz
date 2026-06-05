@@ -5,7 +5,7 @@ import { ListingCard } from "@/components/ListingCard";
 import { ListingsMap } from "@/components/ListingsMap";
 import { getListings, distanceMi, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
-import { LayoutGrid, Map, Search, SlidersHorizontal, X } from "lucide-react";
+import { LayoutGrid, List, Map, Search, SlidersHorizontal, X } from "lucide-react";
 
 const RADII = [5, 10, 25, 50] as const;
 type Radius = typeof RADII[number] | "All";
@@ -33,7 +33,7 @@ export default function Browse() {
   const [cond, setCond] = useState<Condition | "All">("All");
   const [radius, setRadius] = useState<Radius>("All");
   const [sort, setSort] = useState<SortKey>("distance");
-  const [view, setView] = useState<"grid" | "map">("grid");
+  const [view, setView] = useState<"grid" | "list" | "map">("grid");
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -118,13 +118,15 @@ export default function Browse() {
             <option value="price-desc" style={{ background: INK }}>Price ↓</option>
             <option value="newest" style={{ background: INK }}>Newest</option>
           </select>
-          <button
-            onClick={() => setView(view === "grid" ? "map" : "grid")}
-            style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", padding: "10px 12px", background: "transparent", color: "oklch(0.965 0.018 85)", border: "none", borderLeft: `1px solid rgba(255,255,255,0.15)`, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}
-          >
-            {view === "grid" ? <Map className="h-3 w-3" /> : <LayoutGrid className="h-3 w-3" />}
-            <span className="hidden sm:inline">{view === "grid" ? "Map" : "Grid"}</span>
-          </button>
+          {(["grid", "list", "map"] as const).map((v) => (
+            <button key={v} onClick={() => setView(v)}
+              style={{ padding: "10px 12px", background: view === v ? "rgba(255,255,255,0.15)" : "transparent", color: "oklch(0.965 0.018 85)", border: "none", borderLeft: `1px solid rgba(255,255,255,0.15)`, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}
+            >
+              {v === "grid" && <LayoutGrid className="h-3 w-3" />}
+              {v === "list" && <List className="h-3 w-3" />}
+              {v === "map"  && <Map className="h-3 w-3" />}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -161,9 +163,6 @@ export default function Browse() {
             >
               <SlidersHorizontal className="h-3 w-3" /> Filter
             </button>
-            <a href="/map" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, textDecoration: "none", opacity: 0.5 }}>
-              Map →
-            </a>
           </div>
         </div>
 
@@ -210,24 +209,46 @@ export default function Browse() {
         </div>
       )}
 
-      {/* ── CLASSIFIEDS GRID ── */}
+      {/* ── GRID VIEW ── */}
       {view === "grid" && (
         <div className="mx-auto max-w-7xl px-6 py-6">
-          {filtered.length === 0 ? (
-            <div className="py-20 text-center">
-              <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "2rem", color: INK, opacity: 0.4 }}>No listings found.</p>
-              <p style={{ fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, marginTop: 8 }}>Try widening your radius or clearing filters.</p>
-              <button
-                onClick={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }}
-                style={{ marginTop: 16, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: RED, background: "none", border: "none", cursor: "pointer" }}
-              >
-                Clear all filters
-              </button>
-            </div>
-          ) : (
+          {filtered.length === 0 ? <EmptyState onClear={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }} /> : (
             <div className="grid grid-cols-2 gap-px md:grid-cols-3 xl:grid-cols-4" style={{ background: INK }}>
-              {filtered.map((l) => (
-                <ListingCard key={l.id} listing={l} />
+              {filtered.map((l) => <ListingCard key={l.id} listing={l} />)}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── LIST VIEW ── */}
+      {view === "list" && (
+        <div className="mx-auto max-w-7xl px-6 py-4">
+          {filtered.length === 0 ? <EmptyState onClear={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }} /> : (
+            <div style={{ borderTop: `2px solid ${INK}` }}>
+              {filtered.map((l, i) => (
+                <a key={l.id} href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "baseline", gap: 0, borderBottom: `1px solid ${INK}`, padding: "10px 0" }}>
+                  {/* № */}
+                  <span style={{ fontFamily: MONO, fontSize: 9, opacity: 0.4, flexShrink: 0, width: 36 }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {/* Image thumbnail */}
+                  <div style={{ width: 48, height: 48, flexShrink: 0, overflow: "hidden", marginRight: 12 }}>
+                    <img src={l.image} alt={l.title} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.7)" }} />
+                  </div>
+                  {/* Title */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: 15, letterSpacing: "-0.01em", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</span>
+                    <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.55 }}>
+                      {l.category} · {l.location.split(",")[0]}
+                    </span>
+                  </div>
+                  {/* Distance */}
+                  <span className="hidden md:block" style={{ fontFamily: MONO, fontSize: 9, opacity: 0.4, flexShrink: 0, width: 56, textAlign: "right" }}>{l.distance}</span>
+                  {/* Price */}
+                  <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: 18, flexShrink: 0, width: 80, textAlign: "right", color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
+                    {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
+                  </span>
+                </a>
               ))}
             </div>
           )}
@@ -240,6 +261,18 @@ export default function Browse() {
           Dibz Press · {city?.name ?? "All Cities"} · {filtered.length} active listings · Free to list, always.
         </p>
       </footer>
+    </div>
+  );
+}
+
+function EmptyState({ onClear }: { onClear: () => void }) {
+  return (
+    <div className="py-20 text-center">
+      <p style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontSize: "2rem", color: "oklch(0.16 0.01 60)", opacity: 0.4 }}>No listings found.</p>
+      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, marginTop: 8 }}>Try widening your radius or clearing filters.</p>
+      <button onClick={onClear} style={{ marginTop: 16, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: "#c0392b", background: "none", border: "none", cursor: "pointer" }}>
+        Clear all filters
+      </button>
     </div>
   );
 }
