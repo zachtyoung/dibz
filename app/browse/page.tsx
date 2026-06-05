@@ -10,6 +10,7 @@ import { LayoutGrid, List, Map, Search, SlidersHorizontal, X } from "lucide-reac
 const RADII = [5, 10, 25, 50] as const;
 type Radius = typeof RADII[number] | "All";
 type SortKey = "distance" | "price-asc" | "price-desc" | "newest";
+type ColKey = "title" | "category" | "location" | "distance" | "price";
 
 const INK = "oklch(0.16 0.01 60)";
 const RED = "#c0392b";
@@ -34,6 +35,7 @@ export default function Browse() {
   const [radius, setRadius] = useState<Radius>("All");
   const [sort, setSort] = useState<SortKey>("distance");
   const [view, setView] = useState<"grid" | "list" | "map">("grid");
+  const [colSort, setColSort] = useState<{ col: ColKey; dir: "asc" | "desc" } | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -67,18 +69,30 @@ export default function Browse() {
     if (radius !== "All" && origin) {
       r = r.filter((l) => distanceMiNum(origin[0], origin[1], l.lat, l.lng) <= radius);
     }
-    r = [...r].sort((a, b) => {
-      if (sort === "price-asc") return a.price - b.price;
-      if (sort === "price-desc") return b.price - a.price;
-      if (sort === "newest") return (a.postedHoursAgo ?? 999) - (b.postedHoursAgo ?? 999);
-      if (!origin) return 0;
-      return (
-        distanceMiNum(origin[0], origin[1], a.lat, a.lng) -
-        distanceMiNum(origin[0], origin[1], b.lat, b.lng)
-      );
-    });
+    // Grid/dropdown sort
+    if (!colSort) {
+      r = [...r].sort((a, b) => {
+        if (sort === "price-asc") return a.price - b.price;
+        if (sort === "price-desc") return b.price - a.price;
+        if (sort === "newest") return (a.postedHoursAgo ?? 999) - (b.postedHoursAgo ?? 999);
+        if (!origin) return 0;
+        return distanceMiNum(origin[0], origin[1], a.lat, a.lng) - distanceMiNum(origin[0], origin[1], b.lat, b.lng);
+      });
+    } else {
+      const { col, dir } = colSort;
+      const d = dir === "asc" ? 1 : -1;
+      r = [...r].sort((a, b) => {
+        if (col === "title")    return d * a.title.localeCompare(b.title);
+        if (col === "category") return d * a.category.localeCompare(b.category);
+        if (col === "location") return d * a.location.localeCompare(b.location);
+        if (col === "price")    return d * (a.price - b.price);
+        if (col === "distance" && origin)
+          return d * (distanceMiNum(origin[0], origin[1], a.lat, a.lng) - distanceMiNum(origin[0], origin[1], b.lat, b.lng));
+        return 0;
+      });
+    }
     return r;
-  }, [listings, cat, cond, query, radius, sort, origin]);
+  }, [listings, cat, cond, query, radius, sort, colSort, origin]);
 
   const center: [number, number] | undefined =
     userLocation ?? (city ? [city.lat, city.lng] : undefined);
@@ -226,10 +240,28 @@ export default function Browse() {
           {filtered.length === 0 ? <EmptyState onClear={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }} /> : (
             <table style={{ width: "100%", borderCollapse: "collapse", borderTop: `2px solid ${INK}` }}>
               <thead>
-                <tr style={{ borderBottom: `1px solid ${INK}` }}>
-                  {["#", "", "Item", "Category", "Location", "Distance", "Price"].map((h) => (
-                    <th key={h} style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.45, color: INK, fontWeight: 400, padding: "6px 8px", textAlign: h === "Price" || h === "Distance" ? "right" : "left" }}>{h}</th>
-                  ))}
+                <tr style={{ borderBottom: `2px solid ${INK}` }}>
+                  <th style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.4, fontWeight: 400, padding: "6px 8px", textAlign: "left", width: 28 }}>#</th>
+                  <th style={{ padding: "6px 8px", width: 52 }} />
+                  {([
+                    { key: "title" as ColKey,    label: "Item",     align: "left" },
+                    { key: "category" as ColKey, label: "Category", align: "left",  cls: "hidden md:table-cell" },
+                    { key: "location" as ColKey, label: "Location", align: "left",  cls: "hidden md:table-cell" },
+                    { key: "distance" as ColKey, label: "Distance", align: "right", cls: "hidden md:table-cell" },
+                    { key: "price" as ColKey,    label: "Price",    align: "right" },
+                  ]).map(({ key, label, align, cls }) => {
+                    const active = colSort?.col === key;
+                    const dir = active ? colSort!.dir : null;
+                    return (
+                      <th key={key} className={cls}
+                        onClick={() => setColSort(active ? { col: key, dir: dir === "asc" ? "desc" : "asc" } : { col: key, dir: "asc" })}
+                        style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: active ? 700 : 400, color: active ? RED : INK, opacity: active ? 1 : 0.5, padding: "6px 8px", textAlign: align as "left"|"right", cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+                      >
+                        {label}{" "}
+                        {active ? (dir === "asc" ? "↑" : "↓") : <span style={{ opacity: 0.3 }}>↕</span>}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
