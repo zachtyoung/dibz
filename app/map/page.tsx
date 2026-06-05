@@ -30,6 +30,7 @@ function MapContent() {
   const [cond, setCond] = useState<Condition | "All">("All");
   const [radius, setRadius] = useState<Radius>("All");
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.toLowerCase().trim() ?? "";
   const listings = useMemo(() => {
@@ -116,10 +117,9 @@ function MapContent() {
             <p style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, padding: "24px 16px", color: INK }}>No listings found.</p>
           ) : (
             filtered.map((l, i) => (
-              <a key={l.id} href={`/listing/${l.id}`}
-                style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: `1px dotted ${INK}` }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.025)")}
-                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              <div key={l.id}
+                onClick={() => setSelectedId(selectedId === l.id ? null : l.id)}
+                style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: `1px dotted ${INK}`, cursor: "pointer", background: selectedId === l.id ? `${INK}08` : "transparent", borderLeft: selectedId === l.id ? `3px solid ${RED}` : "3px solid transparent" }}
               >
                 <span style={{ fontFamily: MONO, fontSize: 8, opacity: 0.3, flexShrink: 0, width: 20 }}>{String(i+1).padStart(2,"0")}</span>
                 <div style={{ width: 52, height: 52, flexShrink: 0, overflow: "hidden" }}>
@@ -134,8 +134,14 @@ function MapContent() {
                     {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
                   </div>
                   {l.distance && <div style={{ fontFamily: MONO, fontSize: 8, opacity: 0.35, marginTop: 1 }}>{l.distance}</div>}
+                  {selectedId === l.id && (
+                    <a href={`/listing/${l.id}`} onClick={e => e.stopPropagation()}
+                      style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: RED, textDecoration: "none", display: "block", marginTop: 4 }}>
+                      View →
+                    </a>
+                  )}
                 </div>
-              </a>
+              </div>
             ))
           )}
         </div>
@@ -143,7 +149,7 @@ function MapContent() {
 
       {/* Map */}
       <div className="relative order-1 h-[46vh] min-h-[340px] shrink-0 lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
-        <ListingsMap listings={filtered} center={center} height="100%" />
+        <ListingsMap listings={filtered} center={center} height="100%" selectedId={selectedId} onSelectId={setSelectedId} />
       </div>
     </div>
   );

@@ -147,19 +147,25 @@ export function ListingsMap({
   center,
   zoom = 13,
   height = "100%",
+  selectedId: controlledId,
+  onSelectId,
 }: {
   listings: Listing[];
   center?: [number, number];
   zoom?: number;
   height?: string;
+  selectedId?: string | null;
+  onSelectId?: (id: string | null) => void;
 }) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [internalId, setInternalId] = useState<string | null>(null);
+  const selectedId = controlledId !== undefined ? controlledId : internalId;
+  const setSelectedId = onSelectId ?? setInternalId;
   const initialCenter = center ?? [37.6872, -97.3301] as [number, number];
   const selectedListing = listings.find((l) => l.id === selectedId) ?? null;
 
   const handleMarkerClick = useCallback((id: string) => {
-    setSelectedId((prev) => (prev === id ? null : id));
-  }, []);
+    setSelectedId(selectedId === id ? null : id);
+  }, [selectedId, setSelectedId]);
 
   return (
     <Map
