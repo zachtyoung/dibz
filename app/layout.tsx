@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CityProvider } from "@/components/CityProvider";
-import { SaleTicker } from "@/components/SaleTicker";
 import { MapsProvider } from "@/components/MapsProvider";
 
 export const metadata: Metadata = {
@@ -42,7 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MapsProvider>
           <CityProvider>
             {children}
-            <SaleTicker />
           </CityProvider>
         </MapsProvider>
       </body>
