@@ -46,11 +46,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link href={`/listing/${listing.id}`} className="flex">
       <article
-        className="group relative flex w-full flex-col overflow-hidden bg-card transition hover:-translate-x-px hover:-translate-y-px"
-        style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
+        className="group relative flex w-full flex-col overflow-hidden bg-background transition hover:bg-muted/40"
+        style={{ }}
       >
         {/* Photo — top, fixed aspect ratio */}
-        <div className="relative overflow-hidden" style={{ aspectRatio: "4/3", borderBottom: `2px solid ${INK}` }}>
+        <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
           <img
             src={listing.image}
             alt={listing.title}

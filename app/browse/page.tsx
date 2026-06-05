@@ -84,110 +84,121 @@ export default function Browse() {
     userLocation ?? (city ? [city.lat, city.lng] : undefined);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ color: INK }}>
       <Header />
 
-      {/* Toolbar */}
-      <div className="sticky top-[48px] z-30 bg-background md:top-[52px]" style={{ borderBottom: `2px solid ${INK}` }}>
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2 md:px-8">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-40" style={{ color: INK }} />
+      {/* ── CLASSIFIEDS INDEX BAR ── */}
+      <div style={{ borderBottom: `4px solid ${INK}`, background: INK }}>
+        <div className="mx-auto flex max-w-7xl items-center overflow-x-auto px-6" style={{ gap: 0 }}>
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              style={{
+                fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em",
+                fontWeight: 900, padding: "10px 16px", whiteSpace: "nowrap",
+                background: cat === c ? RED : "transparent",
+                color: "oklch(0.965 0.018 85)",
+                borderRight: `1px solid rgba(255,255,255,0.15)`,
+                cursor: "pointer", border: "none",
+              }}
+            >
+              {c}
+            </button>
+          ))}
+          {/* Sort — right aligned */}
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="ml-auto focus:outline-none"
+            style={{ background: "transparent", color: "oklch(0.965 0.018 85)", fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", padding: "10px 8px", border: "none", cursor: "pointer" }}
+          >
+            <option value="distance" style={{ background: INK }}>Nearest</option>
+            <option value="price-asc" style={{ background: INK }}>Price ↑</option>
+            <option value="price-desc" style={{ background: INK }}>Price ↓</option>
+            <option value="newest" style={{ background: INK }}>Newest</option>
+          </select>
+          <button
+            onClick={() => setView(view === "grid" ? "map" : "grid")}
+            style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", padding: "10px 12px", background: "transparent", color: "oklch(0.965 0.018 85)", border: "none", borderLeft: `1px solid rgba(255,255,255,0.15)`, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}
+          >
+            {view === "grid" ? <Map className="h-3 w-3" /> : <LayoutGrid className="h-3 w-3" />}
+            <span className="hidden sm:inline">{view === "grid" ? "Map" : "Grid"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── SECTION HEADER ── */}
+      <div className="mx-auto max-w-7xl px-6" style={{ borderBottom: `2px solid ${INK}` }}>
+        <div className="flex items-end justify-between py-4">
+          <div>
+            <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Classifieds — Latest Edition</p>
+            <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,3vw,2.5rem)", lineHeight: 1, marginTop: 4, color: INK }}>
+              {loading ? "Finding your city…" : city ? city.name : "All listings"}
+              <span style={{ fontFamily: MONO, fontStyle: "normal", fontWeight: 400, fontSize: "0.35em", letterSpacing: "0.15em", textTransform: "uppercase", color: INK, opacity: 0.5, marginLeft: 16 }}>
+                {filtered.length} notices
+              </span>
+            </h2>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Search */}
+            <div className="relative hidden md:block">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: INK, opacity: 0.4 }} />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search notices…"
+                className="bg-background focus:outline-none"
+                style={{ border: `2px solid ${INK}`, padding: "6px 12px 6px 32px", fontFamily: MONO, fontSize: 11, color: INK, width: 200 }}
+              />
+            </div>
+            {/* Filters toggle mobile */}
+            <button
+              onClick={() => setShowFilters((v) => !v)}
+              className="flex items-center gap-1.5 md:hidden"
+              style={{ border: `2px solid ${INK}`, padding: "6px 12px", fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", background: showFilters ? INK : "transparent", color: showFilters ? "oklch(0.965 0.018 85)" : INK, cursor: "pointer" }}
+            >
+              <SlidersHorizontal className="h-3 w-3" /> Filter
+            </button>
+            <a href="/map" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, textDecoration: "none", opacity: 0.5 }}>
+              Map →
+            </a>
+          </div>
+        </div>
+
+        {/* ── CONDITION + RADIUS filters ── */}
+        <div className={`pb-3 ${showFilters ? "flex" : "hidden md:flex"} flex-wrap items-center gap-x-6 gap-y-2`}>
+          <div className="flex items-center gap-2">
+            <span style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.45, color: INK }}>Condition</span>
+            <div style={{ height: 1, width: 1, background: INK, opacity: 0.2 }} />
+            {(["All", ...CONDITIONS] as const).map((c) => (
+              <button key={c} onClick={() => setCond(c)}
+                style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", padding: "2px 8px", background: "none", border: "none", cursor: "pointer", color: cond === c ? RED : INK, fontWeight: cond === c ? 700 : 400, borderBottom: cond === c ? `2px solid ${RED}` : "2px solid transparent" }}>
+                {c}
+              </button>
+            ))}
+          </div>
+          <div style={{ width: 1, height: 16, background: INK, opacity: 0.2 }} />
+          <div className="flex items-center gap-2">
+            <span style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.45, color: INK }}>Radius</span>
+            {(["All", ...RADII] as const).map((r) => (
+              <button key={r} onClick={() => setRadius(r)}
+                style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", padding: "2px 8px", background: "none", border: "none", cursor: "pointer", color: radius === r ? RED : INK, fontWeight: radius === r ? 700 : 400, borderBottom: radius === r ? `2px solid ${RED}` : "2px solid transparent" }}>
+                {r === "All" ? "Any" : `${r} mi`}
+              </button>
+            ))}
+          </div>
+          {/* Mobile search */}
+          <div className="relative ml-auto md:hidden">
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search listings…"
-              className="w-full bg-background py-2 pl-9 pr-4 focus:outline-none"
-              style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 12, color: INK }}
+              placeholder="Search…"
+              className="bg-background focus:outline-none"
+              style={{ border: `2px solid ${INK}`, padding: "4px 10px", fontFamily: MONO, fontSize: 11, color: INK, width: 140 }}
             />
-            {query && (
-              <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100" style={{ color: INK }}>
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Sort */}
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            className="hidden bg-background focus:outline-none md:block"
-            style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", padding: "8px 12px", color: INK }}
-          >
-            <option value="distance">Nearest</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-            <option value="newest">Newest</option>
-          </select>
-
-          {/* Filter toggle (mobile) */}
-          <button
-            onClick={() => setShowFilters((v) => !v)}
-            className="flex items-center gap-1.5 px-3 py-2 transition md:hidden"
-            style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", background: showFilters ? INK : "transparent", color: showFilters ? "oklch(0.96 0.018 85)" : INK }}
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            Filters
-          </button>
-
-          {/* Map/Grid toggle */}
-          <button
-            onClick={() => setView(view === "grid" ? "map" : "grid")}
-            className="flex items-center gap-1.5 px-3 py-2 transition hover:bg-muted"
-            style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", background: "transparent", color: INK }}
-          >
-            {view === "grid" ? <Map className="h-3.5 w-3.5" /> : <LayoutGrid className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">{view === "grid" ? "Map" : "Grid"}</span>
-          </button>
-        </div>
-
-        {/* Filter rows */}
-        <div className={`mx-auto max-w-7xl px-4 pb-2 md:px-8 ${showFilters ? "flex flex-col gap-2" : "hidden md:flex md:flex-col md:gap-2"}`}>
-          {/* Categories */}
-          <div className="flex gap-2 overflow-x-auto">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCat(c)}
-                className="whitespace-nowrap px-3 py-1 transition"
-                style={{
-                  border: `2px solid ${INK}`,
-                  fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em",
-                  background: cat === c ? INK : "transparent",
-                  color: cat === c ? "oklch(0.96 0.018 85)" : INK,
-                  boxShadow: cat === c ? `2px 2px 0 ${RED}` : undefined,
-                }}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-
-          {/* Condition + Radius + Sort (mobile) */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.5, color: INK }}>Cond:</span>
-            {(["All", ...CONDITIONS] as const).map((c) => (
-              <button key={c} onClick={() => setCond(c)} className="whitespace-nowrap px-2.5 py-0.5 transition"
-                style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", background: cond === c ? INK : "transparent", color: cond === c ? "oklch(0.96 0.018 85)" : INK }}>
-                {c}
-              </button>
-            ))}
-            <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.5, color: INK, marginLeft: 8 }}>Radius:</span>
-            {(["All", ...RADII] as const).map((r) => (
-              <button key={r} onClick={() => setRadius(r)} className="whitespace-nowrap px-2.5 py-0.5 transition"
-                style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", background: radius === r ? INK : "transparent", color: radius === r ? "oklch(0.96 0.018 85)" : INK }}>
-                {r === "All" ? "Any" : `${r} mi`}
-              </button>
-            ))}
-            <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}
-              className="ml-auto bg-background focus:outline-none md:hidden"
-              style={{ border: `2px solid ${INK}`, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", padding: "2px 8px", color: INK }}>
-              <option value="distance">Nearest</option>
-              <option value="price-asc">Price ↑</option>
-              <option value="price-desc">Price ↓</option>
-              <option value="newest">Newest</option>
-            </select>
           </div>
         </div>
       </div>
@@ -199,43 +210,35 @@ export default function Browse() {
         </div>
       )}
 
-      {/* Results */}
-      <section className="mx-auto max-w-7xl px-4 py-6 md:px-8">
-        <div className="mb-4 flex items-end justify-between pb-2" style={{ borderBottom: `2px solid ${INK}` }}>
-          <div>
-            <p style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>§ Latest Edition</p>
-            <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.5rem,3vw,2rem)", marginTop: 4, color: INK, lineHeight: 1 }}>
-              {loading ? "Finding your city…" : city ? city.name : "All listings"}{" "}
-              <span style={{ color: "oklch(0.48 0.13 178)" }}>· {filtered.length} items</span>
-            </h2>
-          </div>
-          <a href="/map" style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, textDecoration: "none", opacity: 0.6 }}>
-            Full map →
-          </a>
+      {/* ── CLASSIFIEDS GRID ── */}
+      {view === "grid" && (
+        <div className="mx-auto max-w-7xl px-6 py-6">
+          {filtered.length === 0 ? (
+            <div className="py-20 text-center">
+              <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "2rem", color: INK, opacity: 0.4 }}>No notices found.</p>
+              <p style={{ fontFamily: MONO, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, marginTop: 8 }}>Try widening your radius or clearing filters.</p>
+              <button
+                onClick={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }}
+                style={{ marginTop: 16, fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: RED, background: "none", border: "none", cursor: "pointer" }}
+              >
+                Clear all filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-px md:grid-cols-3 xl:grid-cols-4" style={{ background: INK }}>
+              {filtered.map((l) => (
+                <ListingCard key={l.id} listing={l} />
+              ))}
+            </div>
+          )}
         </div>
+      )}
 
-        {filtered.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="font-display text-3xl text-muted-foreground">No results</p>
-            <p className="mt-2 text-sm text-muted-foreground">Try widening your radius or clearing filters.</p>
-            <button
-              onClick={() => { setCat("All"); setCond("All"); setRadius("All"); setQuery(""); }}
-              className="mt-4 px-5 py-2 text-sm font-bold text-primary hover:underline"
-            >
-              Clear all filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((l) => (
-              <ListingCard key={l.id} listing={l} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <footer className="border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        Built for neighbors. <span className="text-primary">Dibz</span> — list free, sell local.
+      {/* Footer */}
+      <footer className="mx-auto max-w-7xl px-6 py-8" style={{ borderTop: `2px solid ${INK}` }}>
+        <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.4, color: INK }}>
+          Dibz Press · {city?.name ?? "All Cities"} · {filtered.length} active notices · Free to list, always.
+        </p>
       </footer>
     </div>
   );
