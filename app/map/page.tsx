@@ -10,6 +10,13 @@ import { useCityContext } from "@/components/CityProvider";
 const RADII = [5, 10, 25, 50] as const;
 type Radius = typeof RADII[number] | "All";
 
+const INK   = "oklch(0.16 0.01 60)";
+const RED   = "#c0392b";
+const CREAM = "oklch(0.965 0.018 85)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+const SANS  = "'Archivo Black', system-ui, sans-serif";
+
 function distanceMiNum(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const dLat = lat2 - lat1;
   const dLng = lng2 - lng1;
@@ -58,84 +65,84 @@ function MapContent() {
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
-      {/* List panel */}
-      <aside className="order-2 flex w-full flex-col border-r border-border/60 bg-background lg:order-1 lg:w-[480px] lg:max-w-[40vw]">
-        <div className="border-b border-border/60 px-5 py-4">
-          <h1 className="font-display text-3xl tracking-wide">
-            {q ? `"${q}"` : "On the map"}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {loading
-              ? "Finding your location…"
-              : `${filtered.length} ${filtered.length === 1 ? "result" : "results"}${city ? ` in ${city.name}` : ""}`}
-          </p>
+      {/* ── Sidebar ── */}
+      <aside className="order-2 flex w-full flex-col lg:order-1 lg:w-[400px] lg:max-w-[35vw]" style={{ borderRight: `2px solid ${INK}` }}>
 
-          {/* Category filter */}
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        {/* Category index bar */}
+        <div style={{ borderBottom: `4px solid ${INK}`, background: INK, flexShrink: 0 }}>
+          <div className="flex overflow-x-auto">
             {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCat(c)}
-                className={`whitespace-nowrap px-3 py-1 text-xs font-semibold transition ${
-                  cat === c
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-surface text-muted-foreground hover:text-foreground"
-                }`}
-                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-
-          {/* Condition filter */}
-          <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1">
-            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cond:</span>
-            {(["All", ...CONDITIONS] as const).map((c) => (
-              <button
-                key={c}
-                onClick={() => setCond(c)}
-                className={`whitespace-nowrap px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition ${
-                  cond === c
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-surface text-muted-foreground hover:text-foreground"
-                }`}
-                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-
-          {/* Radius filter */}
-          <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1">
-            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Radius:</span>
-            {(["All", ...RADII] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRadius(r)}
-                className={`whitespace-nowrap px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition ${
-                  radius === r
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-surface text-muted-foreground hover:text-foreground"
-                }`}
-                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-              >
-                {r === "All" ? "Any" : `${r} mi`}
-              </button>
+              <button key={c} onClick={() => setCat(c)}
+                style={{ fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, padding: "8px 12px", whiteSpace: "nowrap", background: cat === c ? RED : "transparent", color: CREAM, border: "none", borderRight: `1px solid rgba(255,255,255,0.12)`, cursor: "pointer", flexShrink: 0 }}
+              >{c}</button>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 p-4 lg:flex-1 lg:overflow-y-auto">
-          {filtered.map((l) => (
-            <ListingCard key={l.id} listing={l} />
-          ))}
+        {/* Section header */}
+        <div style={{ borderBottom: `2px solid ${INK}`, padding: "12px 16px", flexShrink: 0 }}>
+          <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>§ On the Map</p>
+          <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.6rem", lineHeight: 1, marginTop: 4, color: INK }}>
+            {q ? `"${q}"` : (city?.name ?? "All Cities")}
+            <span style={{ fontFamily: MONO, fontStyle: "normal", fontWeight: 400, fontSize: "0.35em", letterSpacing: "0.15em", textTransform: "uppercase", opacity: 0.5, marginLeft: 12 }}>
+              {loading ? "…" : `${filtered.length} listings`}
+            </span>
+          </h1>
+
+          {/* Condition + Radius */}
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+            <div className="flex items-center gap-1.5">
+              <span style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.4, color: INK }}>Cond</span>
+              {(["All", ...CONDITIONS] as const).map((c) => (
+                <button key={c} onClick={() => setCond(c)}
+                  style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", padding: "1px 6px", background: "none", border: "none", cursor: "pointer", color: cond === c ? RED : INK, fontWeight: cond === c ? 700 : 400, borderBottom: cond === c ? `2px solid ${RED}` : "2px solid transparent" }}
+                >{c}</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.4, color: INK }}>Radius</span>
+              {(["All", ...RADII] as const).map((r) => (
+                <button key={r} onClick={() => setRadius(r)}
+                  style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", padding: "1px 6px", background: "none", border: "none", cursor: "pointer", color: radius === r ? RED : INK, fontWeight: radius === r ? 700 : 400, borderBottom: radius === r ? `2px solid ${RED}` : "2px solid transparent" }}
+                >{r === "All" ? "Any" : `${r} mi`}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Listing list */}
+        <div className="lg:flex-1 lg:overflow-y-auto" style={{ borderTop: "none" }}>
+          {filtered.length === 0 ? (
+            <p style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.4, padding: "24px 16px", color: INK }}>No listings found.</p>
+          ) : (
+            filtered.map((l, i) => (
+              <a key={l.id} href={`/listing/${l.id}`}
+                style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: `1px dotted ${INK}` }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.025)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <span style={{ fontFamily: MONO, fontSize: 8, opacity: 0.3, flexShrink: 0, width: 20 }}>{String(i+1).padStart(2,"0")}</span>
+                <div style={{ width: 52, height: 52, flexShrink: 0, overflow: "hidden" }}>
+                  <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.75) contrast(1.05)", display: "block" }} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</div>
+                  <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.55, marginTop: 2 }}>{l.category} · {l.location.split(",")[0]}</div>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
+                    {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
+                  </div>
+                  {l.distance && <div style={{ fontFamily: MONO, fontSize: 8, opacity: 0.35, marginTop: 1 }}>{l.distance}</div>}
+                </div>
+              </a>
+            ))
+          )}
         </div>
       </aside>
 
       {/* Map */}
-      <div className="relative order-1 h-[46vh] min-h-[340px] shrink-0 bg-surface lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
+      <div className="relative order-1 h-[46vh] min-h-[340px] shrink-0 lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
         <ListingsMap listings={filtered} center={center} height="100%" />
       </div>
     </div>
