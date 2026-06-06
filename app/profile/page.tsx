@@ -3,7 +3,13 @@ import { Header } from "@/components/Header";
 import { LISTINGS } from "@/lib/listings";
 import { MapPin, Star, CheckCircle2, Package, DollarSign, Heart, ArrowRight } from "lucide-react";
 
-const INK = "oklch(0.14 0.02 240)";
+const INK   = "oklch(0.16 0.01 60)";
+const RED   = "#c0392b";
+const TEAL  = "oklch(0.48 0.13 178)";
+const CREAM = "oklch(0.965 0.018 85)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+const SANS  = "'Archivo Black', system-ui, sans-serif";
 
 const USER = {
   initials: "ZY",
@@ -22,106 +28,94 @@ const USER = {
 const MY_LISTINGS = LISTINGS.slice(0, 5);
 
 export default function ProfilePage() {
-  const totalViews = 1204;
   const saved = 8;
   const earnings = 2340;
 
   return (
-    <div className="min-h-screen">
+    <div style={{ minHeight: "100vh" }}>
       <Header />
 
-      <main className="mx-auto max-w-4xl px-4 py-10 md:px-8">
+      <main style={{ maxWidth: 860, margin: "0 auto", padding: "40px 24px" }}>
 
         {/* Profile card */}
-        <div
-          className="mb-8 flex flex-col gap-6 bg-surface p-6 sm:flex-row sm:items-start"
-          style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}
-        >
-          {/* Avatar */}
-          <div
-            className="grid h-20 w-20 shrink-0 place-items-center bg-primary font-display text-4xl text-primary-foreground"
-            style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
-          >
-            {USER.initials}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "24px", border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}`, marginBottom: 24, background: "var(--background)" }}>
+          <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", gap: 20, flexWrap: "wrap" }}>
+            {/* Avatar */}
+            <div style={{ width: 72, height: 72, flexShrink: 0, display: "grid", placeItems: "center", background: INK, color: CREAM, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 28, border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${RED}` }}>
+              {USER.initials}
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 }}>
+                <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.8rem,4vw,2.8rem)", lineHeight: 1, color: INK, margin: 0 }}>{USER.name}</h1>
+                {USER.topSeller && (
+                  <span style={{ fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: 900, color: CREAM, background: INK, padding: "3px 8px", border: `1.5px solid ${INK}`, boxShadow: `2px 2px 0 ${RED}` }}>
+                    Top Seller
+                  </span>
+                )}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 5, fontFamily: MONO, fontSize: 10, color: INK, opacity: 0.55, marginTop: 6 }}>
+                <MapPin style={{ width: 11, height: 11 }} />
+                {USER.location} · Member since {USER.memberSince}
+              </div>
+
+              {/* Trust badges */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
+                {USER.phoneVerified && (
+                  <Badge icon={<CheckCircle2 style={{ width: 10, height: 10, color: TEAL }} />} label="Phone verified" />
+                )}
+                {USER.idVerified && (
+                  <Badge icon={<CheckCircle2 style={{ width: 10, height: 10, color: TEAL }} />} label="ID verified" />
+                )}
+                <Badge icon={<Star style={{ width: 10, height: 10, fill: "#f59e0b", color: "#f59e0b" }} />} label={`${USER.rating} · ${USER.sales} sales`} />
+                <Badge icon={null} label={`${USER.responseRate}% response · ${USER.responseTime}`} />
+              </div>
+            </div>
+
+            <Link href="/dashboard"
+              style={{ flexShrink: 0, alignSelf: "flex-start", padding: "8px 16px", fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, color: INK, background: "transparent", border: `2px solid ${INK}`, textDecoration: "none", boxShadow: `2px 2px 0 ${INK}` }}
+            >
+              Edit Profile
+            </Link>
           </div>
-
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-4xl tracking-wide">{USER.name}</h1>
-              {USER.topSeller && (
-                <span
-                  className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary-foreground bg-primary"
-                  style={{ border: `1.5px solid ${INK}` }}
-                >
-                  Top Seller
-                </span>
-              )}
-            </div>
-
-            <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" />
-              {USER.location} · Member since {USER.memberSince}
-            </div>
-
-            {/* Trust badges */}
-            <div className="mt-3 flex flex-wrap gap-2">
-              {USER.phoneVerified && (
-                <Badge icon={<CheckCircle2 className="h-3 w-3" />} label="Phone verified" />
-              )}
-              {USER.idVerified && (
-                <Badge icon={<CheckCircle2 className="h-3 w-3" />} label="ID verified" />
-              )}
-              <Badge icon={<Star className="h-3 w-3 fill-amber-400 text-amber-400" />} label={`${USER.rating} · ${USER.sales} sales`} />
-              <Badge icon={null} label={`${USER.responseRate}% response · ${USER.responseTime}`} />
-            </div>
-          </div>
-
-          <Link
-            href="/dashboard"
-            className="shrink-0 self-start px-4 py-2 text-xs font-bold uppercase tracking-widest transition hover:bg-muted"
-            style={{ border: `2px solid ${INK}` }}
-          >
-            Edit profile
-          </Link>
         </div>
 
-        {/* Stats row */}
-        <div
-          className="mb-8 grid grid-cols-3"
-          style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
-        >
-          <Stat icon={<Package className="h-5 w-5 text-primary" />} n={MY_LISTINGS.length.toString()} label="Active listings" />
-          <Stat icon={<DollarSign className="h-5 w-5 text-primary" />} n={`$${earnings.toLocaleString()}`} label="Earned" border />
-          <Stat icon={<Heart className="h-5 w-5 text-primary" />} n={saved.toString()} label="Saved items" border />
+        {/* Stats row — almanac style */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: `2px solid ${INK}`, background: INK, gap: 1, marginBottom: 32 }}>
+          {[
+            { icon: <Package style={{ width: 18, height: 18, color: INK, opacity: 0.5 }} />, n: MY_LISTINGS.length.toString(), label: "Active listings" },
+            { icon: <DollarSign style={{ width: 18, height: 18, color: INK, opacity: 0.5 }} />, n: `$${earnings.toLocaleString()}`, label: "Earned" },
+            { icon: <Heart style={{ width: 18, height: 18, color: INK, opacity: 0.5 }} />, n: saved.toString(), label: "Saved items" },
+          ].map(({ icon, n, label }) => (
+            <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "20px 16px", background: "var(--background)" }}>
+              {icon}
+              <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.5rem,3vw,2rem)", color: INK, lineHeight: 1 }}>{n}</div>
+              <div style={{ fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, color: INK, opacity: 0.5 }}>{label}</div>
+            </div>
+          ))}
         </div>
 
         {/* My listings */}
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-2xl tracking-wide">My Listings</h2>
-          <Link href="/dashboard" className="flex items-center gap-1 text-xs font-bold text-primary hover:underline">
-            Manage all <ArrowRight className="h-3 w-3" />
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
+          <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 24, color: INK, margin: 0 }}>My Listings</h2>
+          <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 4, fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, color: TEAL, textDecoration: "none" }}>
+            Manage all <ArrowRight style={{ width: 11, height: 11 }} />
           </Link>
         </div>
 
-        <div className="flex flex-col gap-0" style={{ border: `2px solid ${INK}` }}>
+        <div style={{ border: `2px solid ${INK}` }}>
           {MY_LISTINGS.map((l, i) => (
-            <Link
-              key={l.id}
-              href={`/listing/${l.id}`}
-              className="flex items-center gap-4 bg-surface p-3 transition hover:bg-muted"
-              style={i > 0 ? { borderTop: `2px solid ${INK}` } : {}}
+            <Link key={l.id} href={`/listing/${l.id}`}
+              className="profile-listing-row"
+              style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 14px", borderTop: i > 0 ? `1px dotted ${INK}` : undefined, textDecoration: "none" }}
             >
-              <img
-                src={l.image}
-                alt={l.title}
-                className="h-14 w-14 shrink-0 object-cover"
-                style={{ border: `1.5px solid ${INK}` }}
-              />
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-bold">{l.title}</div>
-                <div className="text-xs text-muted-foreground">{l.location}</div>
+              <img src={l.image} alt={l.title} style={{ width: 52, height: 52, flexShrink: 0, objectFit: "cover", filter: "saturate(0.8)", border: `1.5px solid ${INK}` }} />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</div>
+                <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, opacity: 0.45, marginTop: 2 }}>{l.location}</div>
               </div>
-              <div className="shrink-0 font-display text-xl text-primary">
+              <div style={{ flexShrink: 0, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 18, color: l.isGarageSale ? TEAL : RED }}>
                 {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Sale") : `$${l.price.toLocaleString()}`}
               </div>
             </Link>
@@ -130,8 +124,8 @@ export default function ProfilePage() {
 
       </main>
 
-      <footer className="mt-10 border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
-        Built for neighbors. <span className="text-primary">Dibz</span> — list free, sell local.
+      <footer style={{ marginTop: 40, borderTop: `1px solid ${INK}20`, padding: "32px 0", textAlign: "center", fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", color: INK, opacity: 0.45 }}>
+        Built for neighbors. <span style={{ color: TEAL, opacity: 1 }}>Dibz</span> — list free, sell local.
       </footer>
     </div>
   );
@@ -139,25 +133,9 @@ export default function ProfilePage() {
 
 function Badge({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <span
-      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-      style={{ border: `1.5px solid ${INK}` }}
-    >
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 8px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, color: INK, border: `1.5px solid ${INK}` }}>
       {icon}
       {label}
     </span>
-  );
-}
-
-function Stat({ icon, n, label, border }: { icon: React.ReactNode; n: string; label: string; border?: boolean }) {
-  return (
-    <div
-      className="flex flex-col items-center gap-1 px-4 py-5"
-      style={border ? { borderLeft: `2px solid ${INK}` } : {}}
-    >
-      {icon}
-      <div className="font-display text-3xl">{n}</div>
-      <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</div>
-    </div>
   );
 }

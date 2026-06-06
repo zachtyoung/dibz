@@ -119,3 +119,4 @@
 .gm-style .gm-style-iw-d { overflow: hidden !important; padding: 12px !important; }
 .gm-style .gm-style-iw-t::after { display: none !important; }
 .gm-style .gm-ui-hover-effect { display: none !important; }
+.profile-listing-row:hover { background: oklch(0.16 0.01 60 / 0.04) !important; }

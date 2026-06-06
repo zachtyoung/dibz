@@ -33,6 +33,14 @@ import {
 } from "lucide-react";
 
 
+const INK   = "oklch(0.16 0.01 60)";
+const RED   = "#c0392b";
+const TEAL  = "oklch(0.48 0.13 178)";
+const CREAM = "oklch(0.965 0.018 85)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+const SANS  = "'Archivo Black', system-ui, sans-serif";
+
 type Status = "active" | "sold" | "draft";
 
 type SellerListing = Listing & {
@@ -251,131 +259,104 @@ function Dashboard() {
       <Header />
 
       {/* Title bar */}
-      <section style={{ borderBottom: "2px solid oklch(0.16 0.01 60)" }}>
-        <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">
-          <p
-            className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-primary px-3 py-1"
-            style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
-          >
-            Seller dashboard
-          </p>
-          <h1 className="mt-3 font-display text-5xl tracking-wide md:text-6xl">
-            Hey, Zach<span className="text-primary">.</span>
+      <section style={{ borderBottom: `2px solid ${INK}` }}>
+        <div className="mx-auto max-w-7xl px-6 py-8">
+          <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Seller Dashboard</p>
+          <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,5vw,4rem)", lineHeight: 1, marginTop: 8, color: INK }}>
+            Hey, Zach<span style={{ color: TEAL }}>.</span>
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            You have <span className="text-foreground font-semibold">{stats.unread} new messages</span> and{" "}
-            <span className="text-foreground font-semibold">{stats.active} active listings</span>.
+          <p style={{ fontFamily: MONO, fontSize: 11, color: INK, marginTop: 8, opacity: 0.7 }}>
+            You have <span style={{ fontWeight: 700, opacity: 1 }}>{stats.unread} new messages</span> and{" "}
+            <span style={{ fontWeight: 700, opacity: 1 }}>{stats.active} active listings</span>.
           </p>
-          {/* Actions — full width row on mobile */}
           <div className="mt-5 flex flex-col gap-2">
-            <button
-              onClick={openNew}
-              className="inline-flex items-center justify-center gap-2 bg-primary px-5 py-3 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px w-full"
-              style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
+            <button onClick={openNew}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: INK, color: CREAM, padding: "12px 20px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 900, border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${RED}`, cursor: "pointer", width: "100%" }}
             >
               <Plus className="h-4 w-4" strokeWidth={3} /> New listing
             </button>
             <div className="flex gap-2">
-              <Link
-                href="/garage-sales"
-                className="inline-flex flex-1 items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px"
-                style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
+              <Link href="/garage-sales"
+                style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", gap: 8, background: "transparent", color: INK, padding: "10px 16px", fontFamily: SANS, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 900, border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}`, textDecoration: "none" }}
               >
-                <Calendar className="h-4 w-4 text-primary" /> Host a sale
+                <Calendar className="h-4 w-4" /> Host a sale
               </Link>
-              <button
-                onClick={() => setImporter(true)}
-                className="inline-flex flex-1 items-center justify-center gap-2 bg-surface px-4 py-3 text-sm font-semibold transition hover:-translate-x-px hover:-translate-y-px"
-                style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
+              <button onClick={() => setImporter(true)}
+                style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", gap: 8, background: "transparent", color: INK, padding: "10px 16px", fontFamily: SANS, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 900, border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}`, cursor: "pointer" }}
               >
-                <Upload className="h-4 w-4 text-primary" /> Import
+                <Upload className="h-4 w-4" /> Import
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stat cards */}
-      <section className="mx-auto max-w-7xl px-4 pt-8 md:px-8">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatCard icon={DollarSign} label="Earnings" value={`$${stats.earnings.toLocaleString()}`} sub="This month" trend="+18%" />
-          <StatCard icon={Eye} label="Total views" value={stats.views.toLocaleString()} sub="Last 30 days" trend="+24%" />
-          <StatCard icon={Package} label="Active listings" value={String(stats.active)} sub={`${stats.sold} sold`} />
-          <StatCard
-            icon={MessageCircle}
-            label="Unread"
-            value={String(stats.unread)}
-            sub={`${threads.length} total`}
-            highlight={stats.unread > 0}
-            onClick={() => setTab("messages")}
-          />
+      {/* Stat cards — almanac style */}
+      <section className="mx-auto max-w-7xl px-6 pt-6">
+        <div className="grid grid-cols-2 gap-px md:grid-cols-4" style={{ border: `2px solid ${INK}`, background: INK }}>
+          {[
+            { val: `$${stats.earnings.toLocaleString()}`, label: "Earnings", sub: "This month", trend: "+18%", onClick: undefined },
+            { val: stats.views.toLocaleString(), label: "Total views", sub: "Last 30 days", trend: "+24%", onClick: undefined },
+            { val: String(stats.active), label: "Active listings", sub: `${stats.sold} sold`, trend: undefined, onClick: undefined },
+            { val: String(stats.unread), label: "Unread msgs", sub: `${threads.length} total`, trend: undefined, onClick: () => setTab("messages") },
+          ].map(({ val, label, sub, trend, onClick }) => (
+            <div key={label} onClick={onClick} style={{ background: "var(--background)", padding: "20px 20px", cursor: onClick ? "pointer" : undefined }}>
+              <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,3vw,2.5rem)", lineHeight: 1, color: INK }}>{val}</div>
+              <div style={{ fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, marginTop: 6, color: INK }}>{label}</div>
+              <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.5, marginTop: 3, color: INK }}>
+                {trend && <span style={{ color: TEAL, fontWeight: 700, marginRight: 4 }}>↑ {trend}</span>}{sub}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Tabs */}
-      <section className="mx-auto max-w-7xl px-4 pt-10 md:px-8">
-        <div
-          className="flex flex-wrap items-stretch"
-          style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}
-        >
-          <TabBtn active={tab === "listings"} onClick={() => setTab("listings")}>
-            Listings <span className="ml-1.5 text-xs text-muted-foreground">{listings.length}</span>
-          </TabBtn>
-          <TabBtn active={tab === "messages"} onClick={() => setTab("messages")}>
-            Messages
-            {stats.unread > 0 && (
-              <span
-                className="ml-1.5 bg-accent px-1.5 text-[10px] font-bold text-accent-foreground"
-                style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-              >
-                {stats.unread}
-              </span>
-            )}
-          </TabBtn>
-          <TabBtn active={tab === "sales"} onClick={() => setTab("sales")}>
-            Performance
-          </TabBtn>
+      <section className="mx-auto max-w-7xl px-6 pt-8">
+        <div className="flex items-end" style={{ borderBottom: `2px solid ${INK}` }}>
+          {[
+            { key: "listings", label: "Listings", badge: listings.length },
+            { key: "messages", label: "Messages", badge: stats.unread > 0 ? stats.unread : null },
+            { key: "sales", label: "Performance", badge: null },
+          ].map(({ key, label, badge }) => (
+            <button key={key} onClick={() => setTab(key as typeof tab)}
+              style={{ padding: "10px 20px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, cursor: "pointer", background: "transparent", border: "none", borderBottom: tab === key ? `3px solid ${RED}` : "3px solid transparent", color: tab === key ? INK : `${INK}80`, marginBottom: -2, display: "flex", alignItems: "center", gap: 6 }}
+            >
+              {label}
+              {badge !== null && badge !== undefined && (
+                <span style={{ fontFamily: MONO, fontSize: 8, padding: "1px 5px", background: tab === key ? RED : INK, color: CREAM, fontWeight: 700 }}>{badge}</span>
+              )}
+            </button>
+          ))}
         </div>
       </section>
 
       {/* Tab content */}
-      <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+      <section className="mx-auto max-w-7xl px-6 py-6">
         {tab === "listings" && (
           <>
-            <div className="mb-5 flex flex-wrap items-center gap-3">
-              <div className="relative flex-1 min-w-[220px] max-w-md">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <div className="relative flex-1 min-w-[200px] max-w-sm">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" style={{ color: INK, opacity: 0.4 }} />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search your listings…"
-                  className="w-full bg-surface py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                  style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+                  className="w-full focus:outline-none"
+                  style={{ border: `2px solid ${INK}`, padding: "7px 12px 7px 32px", fontFamily: MONO, fontSize: 11, color: INK, background: "transparent" }}
                 />
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 {(["all", "active", "sold", "draft"] as const).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
-                      filter === f
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-surface text-muted-foreground hover:text-foreground"
-                    }`}
-                    style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-                  >
-                    {f}
-                  </button>
+                  <button key={f} onClick={() => setFilter(f)}
+                    style={{ padding: "6px 12px", fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", cursor: "pointer", border: `2px solid ${INK}`, background: filter === f ? INK : "transparent", color: filter === f ? CREAM : INK, boxShadow: filter === f ? `2px 2px 0 ${RED}` : undefined }}
+                  >{f}</button>
                 ))}
               </div>
             </div>
 
-            <div
-              className="overflow-x-auto bg-card"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            >
-              <table className="w-full border-collapse text-sm" style={{ tableLayout: "fixed" }}>
+            <div className="overflow-x-auto" style={{ border: `2px solid ${INK}` }}>
+              <table className="w-full border-collapse" style={{ tableLayout: "fixed", background: "var(--background)" }}>
                 <colgroup>
                   <col style={{ width: "34%" }} />
                   <col style={{ width: "13%" }} />
@@ -386,7 +367,7 @@ function Dashboard() {
                   <col style={{ width: "11%" }} />
                 </colgroup>
                 <thead>
-                  <tr style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
+                  <tr style={{ background: INK }}>
                     {(
                       [
                         { key: "title", label: "Item", align: "left" },
@@ -400,20 +381,18 @@ function Dashboard() {
                       const active = sortKey === key;
                       const SortIcon = active ? (sortDir === "asc" ? ArrowUp : ArrowDown) : ArrowUpDown;
                       return (
-                        <th
-                          key={key}
-                          onClick={() => toggleSort(key)}
-                          className={`select-none px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer hover:text-foreground transition ${align === "right" ? "text-right" : "text-left"}`}
+                        <th key={key} onClick={() => toggleSort(key)}
+                          style={{ padding: "8px 14px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: active ? 700 : 400, color: active ? "#f97316" : CREAM, opacity: active ? 1 : 0.75, cursor: "pointer", textAlign: align as "left"|"right", userSelect: "none" as const, whiteSpace: "nowrap" }}
                         >
-                          <span className="inline-flex items-center gap-1">
-                            {ColIcon && <ColIcon className="h-3.5 w-3.5 shrink-0" />}
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                            {ColIcon && <ColIcon className="h-3 w-3 shrink-0" />}
                             {label}
-                            <SortIcon className="h-3 w-3 shrink-0" />
+                            <SortIcon className="h-2.5 w-2.5 shrink-0" />
                           </span>
                         </th>
                       );
                     })}
-                    <th className="px-4 py-3" />
+                    <th style={{ padding: "8px 14px" }} />
                   </tr>
                 </thead>
                 <tbody>
@@ -446,10 +425,7 @@ function Dashboard() {
 
         {tab === "messages" && (
           <div className="grid gap-4 md:grid-cols-[1fr_1.4fr]">
-            <div
-              className="overflow-hidden bg-card"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            >
+            <div className="overflow-hidden" style={{ border: `2px solid ${INK}` }}>
               {threads.length === 0 && (
                 <div className="px-5 py-16 text-center text-sm text-muted-foreground">No messages yet.</div>
               )}
@@ -457,34 +433,25 @@ function Dashboard() {
                 const listing = listings.find((l) => l.id === m.listingId);
                 const last = m.messages[m.messages.length - 1];
                 return (
-                  <button
-                    key={m.id}
-                    onClick={() => openThread(m.id)}
-                    className={`flex w-full items-start gap-4 px-5 py-4 text-left transition hover:bg-surface-elevated ${
-                      i === threads.length - 1 ? "" : ""
-                    } ${activeThread === m.id ? "bg-surface-elevated" : ""}`}
-                    style={i !== threads.length - 1 ? { borderBottom: "2px solid oklch(0.14 0.02 240)" } : undefined}
+                  <button key={m.id} onClick={() => openThread(m.id)}
+                    style={{ display: "flex", width: "100%", alignItems: "flex-start", gap: 12, padding: "14px 18px", textAlign: "left", cursor: "pointer", background: activeThread === m.id ? `${INK}08` : "transparent", borderBottom: i !== threads.length - 1 ? `1px dotted ${INK}` : undefined, border: undefined }}
+                    onMouseEnter={e => { if (activeThread !== m.id) e.currentTarget.style.background = `${INK}05`; }}
+                    onMouseLeave={e => { if (activeThread !== m.id) e.currentTarget.style.background = "transparent"; }}
                   >
-                    <div
-                      className="grid h-10 w-10 shrink-0 place-items-center bg-primary/15 font-display text-lg text-primary"
-                      style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-                    >
+                    <div style={{ width: 36, height: 36, flexShrink: 0, display: "grid", placeItems: "center", background: m.unread ? RED : INK, color: CREAM, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, border: `1.5px solid ${INK}` }}>
                       {m.from.charAt(0)}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-sm ${m.unread ? "font-bold text-foreground" : "font-semibold text-muted-foreground"}`}>
-                          {m.from}
-                        </span>
-                        {m.unread && <span className="h-1.5 w-1.5 bg-accent" />}
-                        <span className="ml-auto text-xs text-muted-foreground">{last?.time}</span>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, color: INK, opacity: m.unread ? 1 : 0.6 }}>{m.from}</span>
+                        {m.unread && <span style={{ width: 5, height: 5, background: RED, borderRadius: "50%" }} />}
+                        <span style={{ marginLeft: "auto", fontFamily: MONO, fontSize: 8, color: INK, opacity: 0.4 }}>{last?.time}</span>
                       </div>
-                      <div className="mt-0.5 truncate text-xs uppercase tracking-wider text-primary">
+                      <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: TEAL, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         re: {listing?.title ?? "Listing"}
                       </div>
-                      <p className={`mt-1 line-clamp-1 text-sm ${m.unread ? "text-foreground" : "text-muted-foreground"}`}>
-                        {last?.from === "me" ? "You: " : ""}
-                        {last?.text}
+                      <p style={{ fontFamily: MONO, fontSize: 10, color: INK, opacity: m.unread ? 0.8 : 0.45, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {last?.from === "me" ? "You: " : ""}{last?.text}
                       </p>
                     </div>
                   </button>
@@ -494,7 +461,7 @@ function Dashboard() {
 
             <div
               className="bg-card"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+              style={{ border: "2px solid oklch(0.16 0.01 60)" }}
             >
               {activeThreadObj ? (
                 <ThreadView
@@ -512,14 +479,11 @@ function Dashboard() {
         )}
 
         {tab === "sales" && (
-          <div className="grid gap-4 md:grid-cols-2">
-            <div
-              className="bg-card p-6"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            >
-              <h3 className="font-display text-2xl tracking-wide">Top performers</h3>
-              <p className="text-xs text-muted-foreground">By views, last 30 days</p>
-              <div className="mt-5 space-y-4">
+          <div className="grid gap-px md:grid-cols-2" style={{ border: `2px solid ${INK}`, background: INK }}>
+            <div style={{ background: "var(--background)", padding: "24px" }}>
+              <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Top Performers</p>
+              <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 22, color: INK, marginTop: 4 }}>By views · last 30 days</h3>
+              <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
                 {[...listings]
                   .sort((a, b) => b.views - a.views)
                   .slice(0, 4)
@@ -528,18 +492,15 @@ function Dashboard() {
                     const pct = (l.views / max) * 100;
                     return (
                       <div key={l.id}>
-                        <div className="mb-1.5 flex items-baseline justify-between gap-2">
-                          <span className="truncate text-sm font-medium text-foreground">
-                            <span className="mr-2 font-display text-primary">{i + 1}.</span>
+                        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+                          <span style={{ fontFamily: MONO, fontSize: 11, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                            <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, color: RED, marginRight: 6 }}>{i + 1}.</span>
                             {l.title}
                           </span>
-                          <span className="font-display text-lg text-primary">{l.views.toLocaleString()}</span>
+                          <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 18, color: TEAL, flexShrink: 0 }}>{l.views.toLocaleString()}</span>
                         </div>
-                        <div className="h-1.5 overflow-hidden bg-muted">
-                          <div
-                            className="h-full bg-gradient-to-r from-primary to-accent"
-                            style={{ width: `${pct}%` }}
-                          />
+                        <div style={{ height: 4, background: `${INK}15`, overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: `${pct}%`, background: INK }} />
                         </div>
                       </div>
                     );
@@ -547,13 +508,10 @@ function Dashboard() {
               </div>
             </div>
 
-            <div
-              className="bg-card p-6"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            >
-              <h3 className="font-display text-2xl tracking-wide">Recent activity</h3>
-              <p className="text-xs text-muted-foreground">Buyers interacting with your listings</p>
-              <ul className="mt-5 space-y-4 text-sm">
+            <div style={{ background: "var(--background)", padding: "24px" }}>
+              <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Recent Activity</p>
+              <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 22, color: INK, marginTop: 4 }}>Buyer interactions</h3>
+              <ul style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 0 }}>
                 <ActivityRow icon={CheckCircle2} color="text-primary" text={`Sold ${listings.find((l) => l.status === "sold")?.title ?? "an item"}`} sub="2 days ago" />
                 <ActivityRow icon={Heart} color="text-accent" text="MacBook Pro saved by 12 people today" sub="Trending — boost to top?" />
                 <ActivityRow icon={MessageCircle} color="text-primary" text={`${stats.unread} unread messages waiting`} sub="Reply within 1h for best results" />
@@ -588,7 +546,7 @@ function Dashboard() {
       {toast && (
         <div
           className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 bg-surface-elevated px-5 py-2.5 text-sm font-semibold text-foreground"
-          style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+          style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
         >
           <CheckCircle2 className="mr-2 inline h-4 w-4 text-primary" />
           {toast}
@@ -598,76 +556,13 @@ function Dashboard() {
   );
 }
 
-function StatCard({
-  icon: Icon, label, value, sub, trend, highlight, onClick,
-}: {
-  icon: React.ElementType; label: string; value: string; sub: string; trend?: string; highlight?: boolean; onClick?: () => void;
-}) {
-  const Comp: any = onClick ? "button" : "div";
-  return (
-    <Comp
-      onClick={onClick}
-      className={`relative overflow-hidden p-5 text-left transition hover:-translate-x-px hover:-translate-y-px ${
-        highlight ? "bg-accent/5" : "bg-card"
-      }`}
-      style={{
-        border: "2px solid oklch(0.14 0.02 240)",
-        boxShadow: "3px 3px 0 oklch(0.14 0.02 240)",
-      }}
-    >
-      <div className="flex items-start justify-between">
-        <div
-          className={`grid h-10 w-10 place-items-center ${highlight ? "bg-accent text-accent-foreground" : "bg-primary/15 text-primary"}`}
-          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-        >
-          <Icon className="h-5 w-5" strokeWidth={2.5} />
-        </div>
-        {trend && (
-          <span
-            className="flex items-center gap-0.5 bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary"
-            style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-          >
-            <ArrowUpRight className="h-3 w-3" /> {trend}
-          </span>
-        )}
-      </div>
-      <div className="mt-4 font-display text-4xl tracking-wide">{value}</div>
-      <div className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1 text-xs text-muted-foreground/80">{sub}</div>
-    </Comp>
-  );
-}
-
-function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`relative inline-flex items-center px-5 py-3 text-sm font-semibold transition ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-      style={
-        active
-          ? { border: "2px solid oklch(0.14 0.02 240)", borderBottom: "2px solid transparent", marginBottom: "-2px" }
-          : { borderBottom: "none" }
-      }
-    >
-      {children}
-    </button>
-  );
-}
 
 function ListingRow({
   l, onEdit, onDelete, onToggleSold, onPublish,
 }: {
   l: SellerListing; onEdit: () => void; onDelete: () => void; onToggleSold: () => void; onPublish: () => void;
 }) {
-  const INK = "oklch(0.14 0.02 240)";
-  const statusStyle =
-    l.status === "active" ? "bg-primary/15 text-primary"
-    : l.status === "sold" ? "bg-muted text-muted-foreground"
-    : "bg-accent/15 text-accent";
+  const statusColor = l.status === "active" ? TEAL : l.status === "sold" ? INK : RED;
 
   const actions = (
     <div className="flex items-center gap-1">
@@ -690,18 +585,12 @@ function ListingRow({
   );
 
   const statusBadge = l.status === "draft" ? (
-    <button
-      onClick={onPublish}
-      className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground hover:bg-accent transition"
-      style={{ border: `2px solid ${INK}` }}
-    >
+    <button onClick={onPublish}
+      style={{ padding: "3px 10px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, background: INK, color: CREAM, border: `2px solid ${INK}`, cursor: "pointer" }}>
       Publish
     </button>
   ) : (
-    <span
-      className={`inline-block w-16 py-1 text-center text-[10px] font-bold uppercase tracking-wider ${statusStyle}`}
-      style={{ border: `2px solid ${INK}` }}
-    >
+    <span style={{ display: "inline-block", padding: "2px 8px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, border: `2px solid ${statusColor}`, color: statusColor }}>
       {l.status}
     </span>
   );
@@ -746,39 +635,39 @@ function ListingRow({
       </tr>
 
       {/* Desktop row — hidden below md */}
-      <tr className="hidden md:table-row transition hover:bg-surface-elevated" style={{ borderBottom: `2px solid ${INK}` }}>
-        <td className="px-4 py-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <img src={l.image} alt={l.title} className="h-12 w-12 shrink-0 object-cover" style={{ border: `2px solid ${INK}` }} />
-            <div className="min-w-0">
-              <div className={`truncate text-sm font-semibold ${l.status === "sold" ? "text-muted-foreground line-through" : "text-foreground"}`}>{l.title}</div>
-              <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3 shrink-0" />
-                <span className="truncate">{l.location}</span>
-                <span>·</span>
-                <span>{l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}</span>
+      <tr className="hidden md:table-row" style={{ borderBottom: `1px dotted ${INK}` }}
+        onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.025)")}
+        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+      >
+        <td style={{ padding: "10px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+            <img src={l.image} alt={l.title} style={{ width: 44, height: 44, flexShrink: 0, objectFit: "cover", filter: "saturate(0.8)", border: `1.5px solid ${INK}` }} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", color: l.status === "sold" ? `${INK}60` : INK, textDecoration: l.status === "sold" ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</div>
+              <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.5, marginTop: 2, color: INK }}>
+                {l.location} · {l.status === "draft" ? "Draft" : `${l.postedDays}d ago`}
               </div>
             </div>
           </div>
         </td>
-        <td className="px-4 py-3">{statusBadge}</td>
-        <td className="px-4 py-3 text-sm text-foreground">{l.views.toLocaleString()}</td>
-        <td className="px-4 py-3 text-sm text-foreground">{l.saves.toLocaleString()}</td>
-        <td className="px-4 py-3 text-sm text-foreground">{l.messages.toLocaleString()}</td>
-        <td className="px-4 py-3 font-display text-xl text-primary">${l.price.toLocaleString()}</td>
-        <td className="px-4 py-3"><div className="flex items-center justify-end gap-1">{actions}</div></td>
+        <td style={{ padding: "10px 14px" }}>{statusBadge}</td>
+        <td style={{ padding: "10px 14px", fontFamily: MONO, fontSize: 11, color: INK }}>{l.views.toLocaleString()}</td>
+        <td style={{ padding: "10px 14px", fontFamily: MONO, fontSize: 11, color: INK }}>{l.saves.toLocaleString()}</td>
+        <td style={{ padding: "10px 14px", fontFamily: MONO, fontSize: 11, color: INK }}>{l.messages.toLocaleString()}</td>
+        <td style={{ padding: "10px 14px", fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 18, color: l.isGarageSale ? TEAL : RED }}>{l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}</td>
+        <td style={{ padding: "10px 14px" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>{actions}</div></td>
       </tr>
     </>
   );
 }
 
-function ActivityRow({ icon: Icon, color, text, sub }: { icon: React.ElementType; color: string; text: string; sub: string }) {
+function ActivityRow({ icon: Icon, text, sub }: { icon: React.ElementType; color: string; text: string; sub: string }) {
   return (
-    <li className="flex items-start gap-3">
-      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${color}`} />
+    <li style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 0", borderBottom: `1px dotted ${INK}` }}>
+      <Icon style={{ marginTop: 1, width: 14, height: 14, flexShrink: 0, color: INK, opacity: 0.5 }} />
       <div>
-        <div className="text-foreground">{text}</div>
-        <div className="text-xs text-muted-foreground">{sub}</div>
+        <div style={{ fontFamily: MONO, fontSize: 11, color: INK }}>{text}</div>
+        <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", color: TEAL, marginTop: 2 }}>{sub}</div>
       </div>
     </li>
   );
@@ -796,7 +685,7 @@ function ThreadView({
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [thread.messages.length]);
 
-  function submit(e: React.FormEvent) {
+  function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmed = draft.trim().slice(0, 1000);
     if (!trimmed) return;
@@ -805,65 +694,44 @@ function ThreadView({
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: "2px solid oklch(0.14 0.02 240)" }}>
-        <div
-          className="grid h-10 w-10 place-items-center bg-primary/15 font-display text-lg text-primary"
-          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-        >
+    <div style={{ display: "flex", height: "100%", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 18px", borderBottom: `2px solid ${INK}` }}>
+        <div style={{ width: 36, height: 36, flexShrink: 0, display: "grid", placeItems: "center", background: INK, color: CREAM, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, border: `1.5px solid ${INK}` }}>
           {thread.from.charAt(0)}
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="font-semibold text-foreground">{thread.from}</div>
-          {listing && <div className="truncate text-xs uppercase tracking-wider text-primary">re: {listing.title}</div>}
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, color: INK }}>{thread.from}</div>
+          {listing && <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: TEAL, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 2 }}>re: {listing.title}</div>}
         </div>
         {listing && (
-          <div className="flex items-center gap-2">
-            <img
-              src={listing.image}
-              alt=""
-              className="h-10 w-10 object-cover"
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            />
-            <span className="hidden font-display text-lg text-primary sm:block">${listing.price}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img src={listing.image} alt="" style={{ width: 36, height: 36, objectFit: "cover", filter: "saturate(0.7)", border: `1.5px solid ${INK}` }} />
+            <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: RED }}>${listing.price}</span>
           </div>
         )}
       </div>
 
-      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-4" style={{ maxHeight: 360 }}>
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px 18px", maxHeight: 360, display: "flex", flexDirection: "column", gap: 10 }}>
         {thread.messages.map((m) => (
-          <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[80%] px-4 py-2 text-sm ${
-                m.from === "me"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-surface-elevated text-foreground"
-              }`}
-              style={{ border: "2px solid oklch(0.14 0.02 240)" }}
-            >
+          <div key={m.id} style={{ display: "flex", justifyContent: m.from === "me" ? "flex-end" : "flex-start" }}>
+            <div style={{ maxWidth: "78%", padding: "8px 14px", background: m.from === "me" ? INK : "transparent", color: m.from === "me" ? CREAM : INK, border: `1.5px solid ${INK}`, fontFamily: MONO, fontSize: 11 }}>
               {m.text}
-              <div className={`mt-0.5 text-[10px] ${m.from === "me" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                {m.time}
-              </div>
+              <div style={{ marginTop: 3, fontSize: 8, opacity: 0.5 }}>{m.time}</div>
             </div>
           </div>
         ))}
       </div>
 
-      <form onSubmit={submit} className="flex items-center gap-2 px-3 py-3" style={{ borderTop: "2px solid oklch(0.14 0.02 240)" }}>
+      <form onSubmit={submit} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderTop: `2px solid ${INK}` }}>
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           maxLength={1000}
           placeholder="Type a reply…"
-          className="flex-1 bg-surface px-4 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          style={{ border: "2px solid oklch(0.14 0.02 240)" }}
+          style={{ flex: 1, background: "transparent", border: `2px solid ${INK}`, padding: "7px 12px", fontFamily: MONO, fontSize: 11, color: INK, outline: "none" }}
         />
-        <button
-          type="submit"
-          disabled={!draft.trim()}
-          className="grid h-10 w-10 place-items-center bg-primary text-primary-foreground transition hover:bg-accent disabled:opacity-40 hover:-translate-x-px hover:-translate-y-px"
-          style={{ border: "2px solid oklch(0.14 0.02 240)", boxShadow: "3px 3px 0 oklch(0.14 0.02 240)" }}
+        <button type="submit" disabled={!draft.trim()}
+          style={{ width: 40, height: 40, display: "grid", placeItems: "center", background: INK, color: CREAM, border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${RED}`, cursor: "pointer", opacity: draft.trim() ? 1 : 0.35 }}
         >
           <Send className="h-4 w-4" />
         </button>
@@ -907,7 +775,7 @@ function ListingEditor({
   onClose: () => void;
   onSave: (l: Pick<SellerListing, "id" | "title" | "price" | "category" | "condition" | "location" | "image" | "status" | "description">) => void;
 }) {
-  const INK = "oklch(0.14 0.02 240)";
+  const INK = "oklch(0.16 0.01 60)";
 
   // Steps: type-pick → photo-tips → form → (submit goes straight through)
   // If editing existing listing skip straight to form
@@ -929,7 +797,7 @@ function ListingEditor({
   const totalSteps = 3;
   const stepIndex = step === "type" ? 1 : step === "photo-tips" ? 2 : 3;
 
-  function submit(e: React.FormEvent) {
+  function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const t = title.trim();
     const p = Number(price);
@@ -1320,7 +1188,7 @@ function ImportModal({
   onClose: () => void;
   onImport: (data: ParsedListing) => void;
 }) {
-  const INK = "oklch(0.14 0.02 240)";
+  const INK = "oklch(0.16 0.01 60)";
   const [step, setStep] = useState<"upload" | "parsing" | "preview">("upload");
   const [preview, setPreview] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedListing | null>(null);
@@ -1485,7 +1353,7 @@ function ImportModal({
 
               <div
                 className="flex items-start gap-2 text-xs text-muted-foreground px-3 py-2.5"
-                style={{ border: `2px solid oklch(0.14 0.02 240)`, background: "oklch(0.955 0.016 84)" }}
+                style={{ border: `2px solid oklch(0.16 0.01 60)`, background: "oklch(0.955 0.016 84)" }}
               >
                 <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
                 You'll be able to edit everything before publishing. This is just a starting point.
