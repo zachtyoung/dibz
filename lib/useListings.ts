@@ -37,10 +37,17 @@ export function useListings(city: City | null): Listing[] {
   useEffect(() => {
     if (!city) { setListings([]); return; }
 
+    // Always show mock data immediately
+    setListings(getListings(city));
+
     let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
     const url = `${SUPABASE_URL}/rest/v1/listings?select=*&city_slug=eq.${encodeURIComponent(city.slug)}&is_active=eq.true&order=created_at.desc`;
 
     fetch(url, {
+      signal: controller.signal,
       headers: {
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
@@ -54,9 +61,10 @@ export function useListings(city: City | null): Listing[] {
           setListings((data as Record<string, unknown>[]).map(rowToListing));
         }
       })
-      .catch((e) => console.error("useListings fetch error:", e));
+      .catch(() => {})
+      .finally(() => clearTimeout(timeout));
 
-    return () => { cancelled = true; };
+    return () => { cancelled = true; controller.abort(); clearTimeout(timeout); };
   }, [city?.slug]);
 
   return listings;
