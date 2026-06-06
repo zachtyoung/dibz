@@ -94,48 +94,49 @@ function SaleMarker({ listing, selected, onClick }: {
 }
 
 function ListingPopup({ listing, onClose, driveTime, showDrive }: { listing: Listing; onClose: () => void; driveTime?: string; showDrive?: boolean }) {
-  const INK = "oklch(0.14 0.02 240)";
-  const MONO = "'JetBrains Mono', 'Courier New', monospace";
+  const INK   = "oklch(0.14 0.02 240)";
+  const RED   = "#c0392b";
+  const TEAL  = "oklch(0.48 0.13 178)";
+  const SERIF = "'DM Serif Display', Georgia, serif";
+  const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+  const SANS  = "'Archivo Black', system-ui, sans-serif";
+  const price = listing.isGarageSale
+    ? (listing.saleType === "estate" ? "Estate Sale" : "Garage Sale")
+    : `$${listing.price.toLocaleString()}`;
+  const priceColor = listing.isGarageSale ? (listing.saleType === "estate" ? "#b7791f" : TEAL) : RED;
+
   return (
     <InfoWindow
       position={{ lat: listing.lat, lng: listing.lng }}
       onCloseClick={onClose}
       pixelOffset={[0, listing.isGarageSale ? -42 : -46]}
     >
-      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: 160, textDecoration: "none" }}>
+      <Link href={`/listing/${listing.id}`} style={{ display: "block", width: 260, textDecoration: "none" }}>
         <img
           src={listing.image}
           alt={listing.title}
-          style={{ width: "100%", height: 90, objectFit: "cover", border: `2px solid ${INK}`, display: "block" }}
+          style={{ width: "100%", height: 150, objectFit: "cover", display: "block", borderBottom: `2px solid ${INK}` }}
         />
-        <div style={{ padding: "6px 0 2px" }}>
-          <div style={{ fontWeight: 800, fontSize: 12, color: INK, lineHeight: 1.3 }}>
+        <div style={{ padding: "10px 12px 8px" }}>
+          <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: INK, lineHeight: 1.25 }}>
             {listing.title}
           </div>
-          <div style={{ marginTop: 3, fontFamily: "Bebas Neue, Impact, sans-serif", fontSize: 16, color: "#0f6b55" }}>
-            {listing.isGarageSale
-              ? (listing.saleType === "estate" ? "Estate Sale" : "Garage Sale")
-              : `$${listing.price.toLocaleString()}`}
+          <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 22, color: priceColor, marginTop: 4, lineHeight: 1 }}>
+            {price}
           </div>
-          <div style={{ fontFamily: MONO, fontSize: 9, color: "#6b7280", marginTop: 2 }}>
+          <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, opacity: 0.5, marginTop: 6 }}>
             {listing.location}
           </div>
-          {(listing.distance || showDrive) && (
-            <div style={{ fontFamily: MONO, fontSize: 9, color: "#6b7280", marginTop: 1 }}>
+          {(listing.distance || (showDrive && driveTime)) && (
+            <div style={{ fontFamily: MONO, fontSize: 9, color: INK, opacity: 0.55, marginTop: 3, display: "flex", gap: 8 }}>
               {listing.distance && <span>{listing.distance}</span>}
-              {showDrive && (
-                <span style={{ marginLeft: listing.distance ? 4 : 0 }}>
-                  · {driveTime ?? "N/A"}
-                </span>
+              {showDrive && driveTime && driveTime !== "N/A" && (
+                <span style={{ color: TEAL, opacity: 1, fontWeight: 700 }}>· {driveTime} drive</span>
               )}
             </div>
           )}
           {listing.condition && (
-            <div style={{
-              display: "inline-block", marginTop: 3, padding: "1px 5px",
-              border: `1.5px solid ${INK}`, fontSize: 9, fontWeight: 700,
-              textTransform: "uppercase", letterSpacing: "0.05em", color: "#6b7280",
-            }}>
+            <div style={{ display: "inline-block", marginTop: 6, padding: "2px 6px", border: `1.5px solid ${INK}`, fontFamily: SANS, fontSize: 8, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: INK, opacity: 0.5 }}>
               {listing.condition}
             </div>
           )}

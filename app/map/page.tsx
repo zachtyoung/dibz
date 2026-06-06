@@ -167,13 +167,11 @@ function MapContent() {
                   <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
                     {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
                   </div>
-                  {(l.distance || locationDenied) && (
-                    <div style={{ fontFamily: MONO, fontSize: 8, opacity: 0.35, marginTop: 1 }}>
-                      {l.distance ?? ""}
-                      {(userLocation || locationDenied) && (
-                        <span style={{ marginLeft: l.distance ? 4 : 0, opacity: driveTimes[l.id] ? 1 : 0.5 }}>
-                          · {driveTimes[l.id] ?? (locationDenied ? "N/A" : "…")}
-                        </span>
+                  {l.distance && (
+                    <div style={{ fontFamily: MONO, fontSize: 8, opacity: 0.45, marginTop: 1 }}>
+                      {l.distance}
+                      {driveTimes[l.id] && (
+                        <span style={{ marginLeft: 4 }}>· {driveTimes[l.id]}</span>
                       )}
                     </div>
                   )}
