@@ -274,7 +274,7 @@ export default function Browse() {
                     <td style={{ fontFamily: MONO, fontSize: 9, opacity: 0.35, padding: "8px 8px", width: 28 }}>{String(i + 1).padStart(2, "0")}</td>
                     <td style={{ padding: "6px 8px", width: 52 }}>
                       <div style={{ width: 40, height: 40, overflow: "hidden", flexShrink: 0 }}>
-                        <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.75) contrast(1.05)", display: "block" }} />
+                        <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: undefined, display: "block" }} />
                       </div>
                     </td>
                     <td style={{ padding: "8px 8px", maxWidth: 320 }}>

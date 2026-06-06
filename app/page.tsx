@@ -256,7 +256,7 @@ export default function Landing() {
                   <article style={{ border: `2px solid ${INK}`, position: "relative", background: CREAM }}>
                     {/* Image header */}
                     <div style={{ height: 160, borderBottom: `2px solid ${INK}`, position: "relative", overflow: "hidden" }}>
-                      <img src={s.image} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.8) contrast(1.05)" }} />
+                      <img src={s.image} alt={s.title} style={{ width: "100%", height: "100%", objectFit: "cover", filter: undefined }} />
                       {/* Label badge */}
                       <div style={{
                         position: "absolute", top: 10, left: 10,

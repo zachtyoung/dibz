@@ -114,7 +114,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
             {/* Image */}
             <div style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}>
               <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                <img src={listing.image} alt={listing.title} className="h-full w-full object-cover" style={{ filter: "saturate(0.85) contrast(1.05)" }} />
+                <img src={listing.image} alt={listing.title} className="h-full w-full object-cover" className="h-full w-full object-cover" />
                 {isBlock && (
                   <div style={{ position: "absolute", left: 12, top: 12, background: isEstate ? "#b7791f" : INK, color: CREAM, padding: "3px 10px", fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
                     {isEstate ? "Estate Sale" : "Garage Sale"}
@@ -289,7 +289,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
               {relatedFinal.map((l) => (
                 <Link key={l.id} href={`/listing/${l.id}`} style={{ textDecoration: "none", display: "block", background: "var(--background)" }} className="group">
                   <div className="relative overflow-hidden" style={{ aspectRatio: "1/1" }}>
-                    <img src={l.image} alt={l.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" style={{ filter: "saturate(0.8)" }} />
+                    <img src={l.image} alt={l.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   </div>
                   <div style={{ padding: "10px 12px" }}>
                     <p style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: l.isGarageSale ? TEAL : INK }}>{l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}</p>

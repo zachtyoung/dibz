@@ -641,7 +641,7 @@ function ListingRow({
       >
         <td style={{ padding: "10px 14px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-            <img src={l.image} alt={l.title} style={{ width: 44, height: 44, flexShrink: 0, objectFit: "cover", filter: "saturate(0.8)", border: `1.5px solid ${INK}` }} />
+            <img src={l.image} alt={l.title} style={{ width: 44, height: 44, flexShrink: 0, objectFit: "cover", border: `1.5px solid ${INK}` }} />
             <div style={{ minWidth: 0 }}>
               <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", color: l.status === "sold" ? `${INK}60` : INK, textDecoration: l.status === "sold" ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</div>
               <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.5, marginTop: 2, color: INK }}>
@@ -705,7 +705,7 @@ function ThreadView({
         </div>
         {listing && (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img src={listing.image} alt="" style={{ width: 36, height: 36, objectFit: "cover", filter: "saturate(0.7)", border: `1.5px solid ${INK}` }} />
+            <img src={listing.image} alt="" style={{ width: 36, height: 36, objectFit: "cover", border: `1.5px solid ${INK}` }} />
             <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: RED }}>${listing.price}</span>
           </div>
         )}

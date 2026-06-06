@@ -540,7 +540,7 @@ export default function GarageSales() {
                 <Link href={`/listing/${s.id}`} style={{ display: "block", textDecoration: "none", color: INK }}>
                   {/* Image */}
                   <div className="relative overflow-hidden" style={{ aspectRatio: "4/3", borderBottom: `2px solid ${INK}` }}>
-                    <img src={s.image} alt={s.title} className="h-full w-full object-cover transition group-hover:scale-105" style={{ filter: "saturate(0.8) contrast(1.05)" }} />
+                    <img src={s.image} alt={s.title} className="h-full w-full object-cover transition group-hover:scale-105" style={{ filter: undefined }} />
                     {inRoute && (
                       <div style={{ position: "absolute", right: 10, top: 10, width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", background: INK, color: CREAM, fontFamily: MONO, fontSize: 11, fontWeight: 700, border: `2px solid ${CREAM}` }}>
                         {stopNum}

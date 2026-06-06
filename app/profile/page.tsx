@@ -110,7 +110,7 @@ export default function ProfilePage() {
               className="profile-listing-row"
               style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 14px", borderTop: i > 0 ? `1px dotted ${INK}` : undefined, textDecoration: "none" }}
             >
-              <img src={l.image} alt={l.title} style={{ width: 52, height: 52, flexShrink: 0, objectFit: "cover", filter: "saturate(0.8)", border: `1.5px solid ${INK}` }} />
+              <img src={l.image} alt={l.title} style={{ width: 52, height: 52, flexShrink: 0, objectFit: "cover", border: `1.5px solid ${INK}` }} />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</div>
                 <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, opacity: 0.45, marginTop: 2 }}>{l.location}</div>

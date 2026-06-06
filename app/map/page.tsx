@@ -123,7 +123,7 @@ function MapContent() {
               >
                 <span style={{ fontFamily: MONO, fontSize: 8, opacity: 0.3, flexShrink: 0, width: 20 }}>{String(i+1).padStart(2,"0")}</span>
                 <div style={{ width: 52, height: 52, flexShrink: 0, overflow: "hidden" }}>
-                  <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "saturate(0.75) contrast(1.05)", display: "block" }} />
+                  <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", filter: undefined, display: "block" }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.title}</div>
