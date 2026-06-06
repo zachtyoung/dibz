@@ -135,57 +135,69 @@ function MapContent() {
         <div style={{ borderBottom: `2px solid ${INK}`, flexShrink: 0 }}>
 
           {/* City + count */}
-          <div style={{ padding: "14px 18px 12px", borderBottom: `1px solid ${INK}`, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-            <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.75rem", lineHeight: 1, color: INK, margin: 0 }}>
+          <div style={{ padding: "14px 18px 10px", borderBottom: `1px solid ${INK}`, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+            <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.9rem", lineHeight: 1, color: INK, margin: 0 }}>
               {q ? `"${q}"` : (city?.name ?? "All Cities")}
             </h1>
-            <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 700, color: INK, opacity: 0.4, flexShrink: 0 }}>
-              {loading ? "…" : `${filtered.length}`}
+            <span style={{ fontFamily: MONO, fontSize: 10, color: INK, opacity: 0.35, flexShrink: 0, marginLeft: 10 }}>
+              {loading ? "…" : filtered.length}
             </span>
           </div>
 
-          {/* Filter panel — two columns */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: `0px` }}>
+          {/* Condition row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 0, padding: "0", borderBottom: `1px solid ${INK}` }}>
+            <span style={{
+              fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.2em",
+              color: CREAM, background: RED, padding: "10px 14px",
+              flexShrink: 0, alignSelf: "stretch", display: "flex", alignItems: "center",
+              borderRight: `1px solid ${INK}`, minWidth: 72, justifyContent: "center",
+            }}>Cond</span>
+            {(["All", ...CONDITIONS] as const).map((c, i, arr) => {
+              const active = cond === c;
+              return (
+                <button key={c} onClick={() => setCond(c)} style={{
+                  flex: 1,
+                  fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 900,
+                  padding: "10px 4px",
+                  background: active ? INK : "transparent",
+                  color: active ? CREAM : INK,
+                  border: "none",
+                  borderRight: i < arr.length - 1 ? `1px solid ${INK}40` : "none",
+                  cursor: "pointer",
+                  opacity: active ? 1 : 0.45,
+                }}>
+                  {c === "for parts" ? "Parts" : c === "like new" ? "Like New" : c.charAt(0).toUpperCase() + c.slice(1)}
+                </button>
+              );
+            })}
+          </div>
 
-            {/* Condition */}
-            <div style={{ padding: "10px 18px 12px", borderRight: `1px solid ${INK}` }}>
-              <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED, marginBottom: 8 }}>Condition</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                {(["All", ...CONDITIONS] as const).map((c) => (
-                  <button key={c} onClick={() => setCond(c)}
-                    style={{
-                      fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700,
-                      padding: "4px 9px",
-                      background: cond === c ? INK : "transparent",
-                      color: cond === c ? CREAM : INK,
-                      border: `1.5px solid ${cond === c ? INK : `${INK}50`}`,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}
-                  >{c === "for parts" ? "Parts" : c}</button>
-                ))}
-              </div>
-            </div>
-
-            {/* Radius */}
-            <div style={{ padding: "10px 18px 12px" }}>
-              <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED, marginBottom: 8 }}>Radius</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                {(["All", ...RADII] as const).map((r) => (
-                  <button key={r} onClick={() => setRadius(r)}
-                    style={{
-                      fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700,
-                      padding: "4px 9px",
-                      background: radius === r ? INK : "transparent",
-                      color: radius === r ? CREAM : INK,
-                      border: `1.5px solid ${radius === r ? INK : `${INK}50`}`,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                    }}
-                  >{r === "All" ? "Any" : `${r} mi`}</button>
-                ))}
-              </div>
-            </div>
+          {/* Radius row */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{
+              fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.2em",
+              color: CREAM, background: RED, padding: "10px 14px",
+              flexShrink: 0, alignSelf: "stretch", display: "flex", alignItems: "center",
+              borderRight: `1px solid ${INK}`, minWidth: 72, justifyContent: "center",
+            }}>Radius</span>
+            {(["All", ...RADII] as const).map((r, i, arr) => {
+              const active = radius === r;
+              return (
+                <button key={r} onClick={() => setRadius(r)} style={{
+                  flex: 1,
+                  fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 900,
+                  padding: "10px 4px",
+                  background: active ? INK : "transparent",
+                  color: active ? CREAM : INK,
+                  border: "none",
+                  borderRight: i < arr.length - 1 ? `1px solid ${INK}40` : "none",
+                  cursor: "pointer",
+                  opacity: active ? 1 : 0.45,
+                }}>
+                  {r === "All" ? "Any" : `${r} mi`}
+                </button>
+              );
+            })}
           </div>
         </div>
 
