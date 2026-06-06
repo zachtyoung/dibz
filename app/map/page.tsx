@@ -12,6 +12,8 @@ type Radius = typeof RADII[number] | "All";
 
 const INK   = "oklch(0.16 0.01 60)";
 const RED   = "#c0392b";
+const TEAL  = "oklch(0.48 0.13 178)";
+const AMBER = "oklch(0.58 0.14 60)";
 const CREAM = "oklch(0.965 0.018 85)";
 const SERIF = "'DM Serif Display', Georgia, serif";
 const MONO  = "'JetBrains Mono', 'Courier New', monospace";
@@ -203,23 +205,27 @@ function MapContent() {
                 onClick={() => setSelectedId(selectedId === l.id ? null : l.id)}
                 style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: `1px dotted ${INK}`, cursor: "pointer", background: selectedId === l.id ? `${INK}08` : "transparent", borderLeft: selectedId === l.id ? `3px solid ${RED}` : "3px solid transparent" }}
               >
-                <span style={{ fontFamily: MONO, fontSize: 10, color: INK, opacity: 0.5, flexShrink: 0, width: 22 }}>{String(i+1).padStart(2,"0")}</span>
+                <span style={{ fontFamily: MONO, fontSize: 10, color: TEAL, flexShrink: 0, width: 22 }}>{String(i+1).padStart(2,"0")}</span>
                 <div style={{ width: 52, height: 52, flexShrink: 0, overflow: "hidden" }}>
                   <img src={l.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: INK }}>{l.title}</div>
-                  <div style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em", color: INK, marginTop: 3 }}>{l.category} · {l.location.split(",")[0]}</div>
+                  <div style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 3 }}>
+                    <span style={{ color: INK, opacity: 0.6 }}>{l.category}</span>
+                    <span style={{ color: INK, opacity: 0.35, margin: "0 4px" }}>·</span>
+                    <span style={{ color: INK, opacity: 0.6 }}>{l.location.split(",")[0]}</span>
+                  </div>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
                   <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
                     {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
                   </div>
                   {l.distance && (
-                    <div style={{ fontFamily: MONO, fontSize: 10, color: INK, marginTop: 2 }}>
-                      {l.distance}
+                    <div style={{ fontFamily: MONO, fontSize: 10, marginTop: 3, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5 }}>
+                      <span style={{ color: TEAL, fontWeight: 700 }}>{l.distance}</span>
                       {driveTimes[l.id] && (
-                        <span style={{ marginLeft: 4 }}>· {driveTimes[l.id]}</span>
+                        <span style={{ color: AMBER, fontWeight: 700 }}>{driveTimes[l.id]}</span>
                       )}
                     </div>
                   )}
