@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import type { City } from "@/lib/cities";
 import type { Listing } from "@/lib/listings";
-import { getListings } from "@/lib/listings";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -30,24 +29,15 @@ function rowToListing(row: Record<string, unknown>): Listing {
 }
 
 export function useListings(city: City | null): Listing[] {
-  const [listings, setListings] = useState<Listing[]>(() =>
-    city ? getListings(city) : []
-  );
+  const [listings, setListings] = useState<Listing[]>([]);
 
   useEffect(() => {
     if (!city) { setListings([]); return; }
 
-    // Always show mock data immediately
-    setListings(getListings(city));
-
     let cancelled = false;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
     const url = `${SUPABASE_URL}/rest/v1/listings?select=*&city_slug=eq.${encodeURIComponent(city.slug)}&is_active=eq.true&order=created_at.desc`;
 
     fetch(url, {
-      signal: controller.signal,
       headers: {
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
@@ -57,14 +47,11 @@ export function useListings(city: City | null): Listing[] {
       .then((r) => r.json())
       .then((data: unknown) => {
         if (cancelled) return;
-        if (Array.isArray(data) && data.length > 0) {
-          setListings((data as Record<string, unknown>[]).map(rowToListing));
-        }
+        if (Array.isArray(data)) setListings((data as Record<string, unknown>[]).map(rowToListing));
       })
-      .catch(() => {})
-      .finally(() => clearTimeout(timeout));
+      .catch(() => {});
 
-    return () => { cancelled = true; controller.abort(); clearTimeout(timeout); };
+    return () => { cancelled = true; };
   }, [city?.slug]);
 
   return listings;
