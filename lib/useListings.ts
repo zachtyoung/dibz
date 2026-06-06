@@ -1,14 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
 import type { City } from "@/lib/cities";
 import type { Listing } from "@/lib/listings";
 import { getListings } from "@/lib/listings";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 function rowToListing(row: Record<string, unknown>): Listing {
   return {
@@ -41,19 +38,23 @@ export function useListings(city: City | null): Listing[] {
     if (!city) { setListings([]); return; }
 
     let cancelled = false;
-    supabase
-      .from("listings")
-      .select("*")
-      .eq("city_slug", city.slug)
-      .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+    const url = `${SUPABASE_URL}/rest/v1/listings?select=*&city_slug=eq.${encodeURIComponent(city.slug)}&is_active=eq.true&order=created_at.desc`;
+
+    fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((r) => r.json())
+      .then((data: unknown) => {
         if (cancelled) return;
-        if (error) { console.error("useListings error:", error.message); return; }
-        if (data && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
           setListings((data as Record<string, unknown>[]).map(rowToListing));
         }
-      });
+      })
+      .catch((e) => console.error("useListings fetch error:", e));
 
     return () => { cancelled = true; };
   }, [city?.slug]);
