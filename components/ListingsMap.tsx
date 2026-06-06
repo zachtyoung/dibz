@@ -168,8 +168,9 @@ export function ListingsMap({
   }, [selectedId, setSelectedId]);
 
   return (
+    <div style={{ width: "100%", height, filter: "saturate(0.35) sepia(0.25) contrast(0.95) brightness(1.05)", position: "relative" }}>
     <Map
-        style={{ width: "100%", height }}
+        style={{ width: "100%", height: "100%" }}
         mapId="18620e62c3fd6cbf63eb5904"
         defaultCenter={{ lat: initialCenter[0], lng: initialCenter[1] }}
         defaultZoom={zoom}
@@ -206,5 +207,6 @@ export function ListingsMap({
           />
         )}
       </Map>
+    </div>
   );
 }
