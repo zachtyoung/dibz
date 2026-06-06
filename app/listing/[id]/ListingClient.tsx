@@ -355,7 +355,7 @@ function NeighborhoodPolygon({ neighborhood }: { neighborhood: string }) {
 
 function MiniMap({ lat, lng, neighborhood }: { lat: number; lng: number; neighborhood: string }) {
   return (
-    <div style={{ width: "100%", height: "100%", filter: "saturate(0.35) sepia(0.25) contrast(0.95) brightness(1.05)" }}>
+    <div style={{ width: "100%", height: "100%" }}>
       <Map
         style={{ width: "100%", height: "100%" }}
         mapId="18620e62c3fd6cbf63eb5904"
@@ -382,7 +382,7 @@ function MiniMap({ lat, lng, neighborhood }: { lat: number; lng: number; neighbo
 
 function MiniMapWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ width: "100%", height: "100%", filter: "saturate(0.35) sepia(0.25) contrast(0.95) brightness(1.05)" }}>
+    <div style={{ width: "100%", height: "100%" }}>
       {children}
     </div>
   );

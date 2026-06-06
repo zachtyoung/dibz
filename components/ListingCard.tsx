@@ -56,7 +56,6 @@ export function ListingCard({ listing }: { listing: Listing }) {
             alt={listing.title}
             loading="lazy"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            style={{ filter: "saturate(0.75) contrast(1.05)" }}
           />
           {isBlock && (
             <div
