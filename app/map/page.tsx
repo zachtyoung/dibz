@@ -4,8 +4,9 @@ import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { ListingCard } from "@/components/ListingCard";
 import { ListingsMap } from "@/components/ListingsMap";
-import { getListings, distanceMi, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
+import { distanceMi, CATEGORIES, CONDITIONS, type Condition } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
+import { useListings } from "@/lib/useListings";
 
 const RADII = [5, 10, 25, 50] as const;
 type Radius = typeof RADII[number] | "All";
@@ -79,11 +80,11 @@ function MapContent() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.toLowerCase().trim() ?? "";
+  const rawListings = useListings(city);
   const listings = useMemo(() => {
-    const base = city ? getListings(city) : [];
-    if (!userLocation) return base;
-    return base.map((l) => ({ ...l, distance: distanceMi(userLocation[0], userLocation[1], l.lat, l.lng) }));
-  }, [city, userLocation]);
+    if (!userLocation) return rawListings;
+    return rawListings.map((l) => ({ ...l, distance: distanceMi(userLocation[0], userLocation[1], l.lat, l.lng) }));
+  }, [rawListings, userLocation]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -94,7 +95,7 @@ function MapContent() {
 
   useEffect(() => {
     if (!userLocation || !city) return;
-    const allListings = getListings(city);
+    const allListings = rawListings;
     fetchDriveTimes(userLocation, allListings.map((l) => ({ id: l.id, lat: l.lat, lng: l.lng })))
       .then(setDriveTimes);
   }, [userLocation, city]);

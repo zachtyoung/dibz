@@ -1,7 +1,6 @@
 "use client";
-import { useMemo } from "react";
-import { getListings } from "@/lib/listings";
 import { useCityContext } from "@/components/CityProvider";
+import { useListings } from "@/lib/useListings";
 import Link from "next/link";
 
 const INK = "oklch(0.16 0.01 60)";
@@ -15,7 +14,7 @@ const SANS = "'Archivo Black', 'Barlow', system-ui, sans-serif";
 
 export default function Landing() {
   const { city } = useCityContext();
-  const listings = useMemo(() => city ? getListings(city) : [], [city]);
+  const listings = useListings(city);
   const sales = listings.filter((l) => l.isGarageSale);
   const lateEdition = listings.filter((l) => !l.isGarageSale).slice(0, 8);
   const today = new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase();

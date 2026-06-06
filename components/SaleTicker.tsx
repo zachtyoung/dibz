@@ -1,14 +1,13 @@
 "use client";
-import { useMemo } from "react";
-import { getListings } from "@/lib/listings";
 import { getCityBySlug } from "@/lib/cities";
 import { useCityContext } from "@/components/CityProvider";
+import { useListings } from "@/lib/useListings";
 
 const FALLBACK = getCityBySlug("wichita-ks")!;
 
 export function SaleTicker() {
   const { city } = useCityContext();
-  const listings = useMemo(() => getListings(city ?? FALLBACK), [city]);
+  const listings = useListings(city ?? FALLBACK);
   const sales = listings.filter((l) => l.isGarageSale);
 
   if (!sales.length) return null;
