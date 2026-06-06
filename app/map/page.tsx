@@ -131,32 +131,45 @@ function MapContent() {
           </div>
         </div>
 
-        {/* Section header */}
-        <div style={{ borderBottom: `2px solid ${INK}`, padding: "12px 16px", flexShrink: 0 }}>
-          <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>§ On the Map</p>
-          <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.6rem", lineHeight: 1, marginTop: 4, color: INK }}>
-            {q ? `"${q}"` : (city?.name ?? "All Cities")}
-            <span style={{ fontFamily: MONO, fontStyle: "normal", fontWeight: 400, fontSize: "0.35em", letterSpacing: "0.15em", textTransform: "uppercase", opacity: 0.5, marginLeft: 12 }}>
-              {loading ? "…" : `${filtered.length} listings`}
-            </span>
-          </h1>
+        {/* Section header — masthead */}
+        <div style={{ borderBottom: `2px solid ${INK}`, flexShrink: 0 }}>
+          {/* City + count */}
+          <div style={{ padding: "10px 16px 8px", borderBottom: `1px dotted ${INK}` }}>
+            <p style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.35em", color: RED, margin: 0 }}>§ On the Map</p>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginTop: 3 }}>
+              <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.5rem", lineHeight: 1, color: INK, margin: 0 }}>
+                {q ? `"${q}"` : (city?.name ?? "All Cities")}
+              </h1>
+              <span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 11, color: INK, flexShrink: 0, marginLeft: 8 }}>
+                {loading ? "…" : filtered.length}
+              </span>
+            </div>
+          </div>
 
-          {/* Condition + Radius */}
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-            <div className="flex items-center gap-1.5">
-              <span style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.4, color: INK }}>Cond</span>
+          {/* Condition filter row */}
+          <div style={{ display: "flex", alignItems: "center", borderBottom: `1px dotted ${INK}` }}>
+            <span style={{ fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, color: CREAM, background: INK, padding: "0 10px", alignSelf: "stretch", display: "flex", alignItems: "center", flexShrink: 0, borderRight: `1px solid ${INK}` }}>
+              Cond
+            </span>
+            <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
               {(["All", ...CONDITIONS] as const).map((c) => (
                 <button key={c} onClick={() => setCond(c)}
-                  style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", padding: "1px 6px", background: "none", border: "none", cursor: "pointer", color: cond === c ? RED : INK, fontWeight: cond === c ? 700 : 400, borderBottom: cond === c ? `2px solid ${RED}` : "2px solid transparent" }}
+                  style={{ flex: 1, fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, padding: "7px 4px", background: cond === c ? INK : "transparent", color: cond === c ? CREAM : INK, border: "none", borderRight: `1px dotted ${INK}`, cursor: "pointer", whiteSpace: "nowrap", opacity: cond === c ? 1 : 0.55 }}
                 >{c}</button>
               ))}
             </div>
-            <div className="flex items-center gap-1.5">
-              <span style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.4, color: INK }}>Radius</span>
+          </div>
+
+          {/* Radius filter row */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, color: CREAM, background: INK, padding: "0 10px", alignSelf: "stretch", display: "flex", alignItems: "center", flexShrink: 0, borderRight: `1px solid ${INK}` }}>
+              Radius
+            </span>
+            <div style={{ display: "flex", flex: 1 }}>
               {(["All", ...RADII] as const).map((r) => (
                 <button key={r} onClick={() => setRadius(r)}
-                  style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", padding: "1px 6px", background: "none", border: "none", cursor: "pointer", color: radius === r ? RED : INK, fontWeight: radius === r ? 700 : 400, borderBottom: radius === r ? `2px solid ${RED}` : "2px solid transparent" }}
-                >{r === "All" ? "Any" : `${r} mi`}</button>
+                  style={{ flex: 1, fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, padding: "7px 4px", background: radius === r ? INK : "transparent", color: radius === r ? CREAM : INK, border: "none", borderRight: `1px dotted ${INK}`, cursor: "pointer", whiteSpace: "nowrap", opacity: radius === r ? 1 : 0.55 }}
+                >{r === "All" ? "Any" : `${r}mi`}</button>
               ))}
             </div>
           </div>
