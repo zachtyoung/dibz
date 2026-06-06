@@ -131,45 +131,63 @@ function MapContent() {
           </div>
         </div>
 
-        {/* Section header — masthead */}
+        {/* Masthead */}
         <div style={{ borderBottom: `2px solid ${INK}`, flexShrink: 0 }}>
-          {/* City + count */}
-          <div style={{ padding: "10px 16px 8px", borderBottom: `1px dotted ${INK}` }}>
-            <p style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.35em", color: RED, margin: 0 }}>§ On the Map</p>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginTop: 3 }}>
-              <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.5rem", lineHeight: 1, color: INK, margin: 0 }}>
-                {q ? `"${q}"` : (city?.name ?? "All Cities")}
-              </h1>
-              <span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 11, color: INK, flexShrink: 0, marginLeft: 8 }}>
-                {loading ? "…" : filtered.length}
-              </span>
-            </div>
+
+          {/* City + count row */}
+          <div style={{ padding: "12px 16px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, borderBottom: `1px solid ${INK}` }}>
+            <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.6rem", lineHeight: 1, color: INK, margin: 0 }}>
+              {q ? `"${q}"` : (city?.name ?? "All Cities")}
+            </h1>
+            <span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 13, color: INK, flexShrink: 0, opacity: 0.45 }}>
+              {loading ? "…" : `${filtered.length} listings`}
+            </span>
           </div>
 
-          {/* Condition filter row */}
-          <div style={{ display: "flex", alignItems: "center", borderBottom: `1px dotted ${INK}` }}>
-            <span style={{ fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, color: CREAM, background: INK, padding: "0 10px", alignSelf: "stretch", display: "flex", alignItems: "center", flexShrink: 0, borderRight: `1px solid ${INK}` }}>
-              Cond
-            </span>
-            <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-              {(["All", ...CONDITIONS] as const).map((c) => (
+          {/* Condition segmented control */}
+          <div style={{ borderBottom: `1px solid ${INK}` }}>
+            <div style={{ padding: "4px 16px 3px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED }}>Condition</div>
+            <div style={{ display: "flex" }}>
+              {(["All", ...CONDITIONS] as const).map((c, i, arr) => (
                 <button key={c} onClick={() => setCond(c)}
-                  style={{ flex: 1, fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, padding: "7px 4px", background: cond === c ? INK : "transparent", color: cond === c ? CREAM : INK, border: "none", borderRight: `1px dotted ${INK}`, cursor: "pointer", whiteSpace: "nowrap", opacity: cond === c ? 1 : 0.55 }}
-                >{c}</button>
+                  style={{
+                    flex: 1,
+                    fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 900,
+                    padding: "8px 2px",
+                    background: cond === c ? INK : "transparent",
+                    color: cond === c ? CREAM : INK,
+                    border: "none",
+                    borderRight: i < arr.length - 1 ? `1px solid ${INK}` : "none",
+                    borderTop: `1px solid ${INK}`,
+                    cursor: "pointer",
+                    opacity: cond === c ? 1 : 0.4,
+                    transition: "background 0.1s, opacity 0.1s",
+                  }}
+                >{c === "for parts" ? "Parts" : c}</button>
               ))}
             </div>
           </div>
 
-          {/* Radius filter row */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span style={{ fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900, color: CREAM, background: INK, padding: "0 10px", alignSelf: "stretch", display: "flex", alignItems: "center", flexShrink: 0, borderRight: `1px solid ${INK}` }}>
-              Radius
-            </span>
-            <div style={{ display: "flex", flex: 1 }}>
-              {(["All", ...RADII] as const).map((r) => (
+          {/* Radius segmented control */}
+          <div>
+            <div style={{ padding: "4px 16px 3px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED }}>Radius</div>
+            <div style={{ display: "flex" }}>
+              {(["All", ...RADII] as const).map((r, i, arr) => (
                 <button key={r} onClick={() => setRadius(r)}
-                  style={{ flex: 1, fontFamily: SANS, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, padding: "7px 4px", background: radius === r ? INK : "transparent", color: radius === r ? CREAM : INK, border: "none", borderRight: `1px dotted ${INK}`, cursor: "pointer", whiteSpace: "nowrap", opacity: radius === r ? 1 : 0.55 }}
-                >{r === "All" ? "Any" : `${r}mi`}</button>
+                  style={{
+                    flex: 1,
+                    fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 900,
+                    padding: "8px 2px",
+                    background: radius === r ? INK : "transparent",
+                    color: radius === r ? CREAM : INK,
+                    border: "none",
+                    borderRight: i < arr.length - 1 ? `1px solid ${INK}` : "none",
+                    borderTop: `1px solid ${INK}`,
+                    cursor: "pointer",
+                    opacity: radius === r ? 1 : 0.4,
+                    transition: "background 0.1s, opacity 0.1s",
+                  }}
+                >{r === "All" ? "Any" : `${r} mi`}</button>
               ))}
             </div>
           </div>
