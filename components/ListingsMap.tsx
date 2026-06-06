@@ -93,8 +93,9 @@ function SaleMarker({ listing, selected, onClick }: {
   );
 }
 
-function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => void }) {
+function ListingPopup({ listing, onClose, driveTime, showDrive }: { listing: Listing; onClose: () => void; driveTime?: string; showDrive?: boolean }) {
   const INK = "oklch(0.14 0.02 240)";
+  const MONO = "'JetBrains Mono', 'Courier New', monospace";
   return (
     <InfoWindow
       position={{ lat: listing.lat, lng: listing.lng }}
@@ -108,7 +109,7 @@ function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => v
           style={{ width: "100%", height: 90, objectFit: "cover", border: `2px solid ${INK}`, display: "block" }}
         />
         <div style={{ padding: "6px 0 2px" }}>
-          <div style={{ fontWeight: 800, fontSize: 12, color: "oklch(0.14 0.02 240)", lineHeight: 1.3 }}>
+          <div style={{ fontWeight: 800, fontSize: 12, color: INK, lineHeight: 1.3 }}>
             {listing.title}
           </div>
           <div style={{ marginTop: 3, fontFamily: "Bebas Neue, Impact, sans-serif", fontSize: 16, color: "#0f6b55" }}>
@@ -116,9 +117,19 @@ function ListingPopup({ listing, onClose }: { listing: Listing; onClose: () => v
               ? (listing.saleType === "estate" ? "Estate Sale" : "Garage Sale")
               : `$${listing.price.toLocaleString()}`}
           </div>
-          <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>
-            {listing.location} · {listing.distance}
+          <div style={{ fontFamily: MONO, fontSize: 9, color: "#6b7280", marginTop: 2 }}>
+            {listing.location}
           </div>
+          {(listing.distance || showDrive) && (
+            <div style={{ fontFamily: MONO, fontSize: 9, color: "#6b7280", marginTop: 1 }}>
+              {listing.distance && <span>{listing.distance}</span>}
+              {showDrive && (
+                <span style={{ marginLeft: listing.distance ? 4 : 0 }}>
+                  · {driveTime ?? "N/A"}
+                </span>
+              )}
+            </div>
+          )}
           {listing.condition && (
             <div style={{
               display: "inline-block", marginTop: 3, padding: "1px 5px",
@@ -149,6 +160,9 @@ export function ListingsMap({
   height = "100%",
   selectedId: controlledId,
   onSelectId,
+  driveTimes = {},
+  locationDenied = false,
+  userLocation,
 }: {
   listings: Listing[];
   center?: [number, number];
@@ -156,6 +170,9 @@ export function ListingsMap({
   height?: string;
   selectedId?: string | null;
   onSelectId?: (id: string | null) => void;
+  driveTimes?: Record<string, string>;
+  locationDenied?: boolean;
+  userLocation?: [number, number] | null;
 }) {
   const [internalId, setInternalId] = useState<string | null>(null);
   const selectedId = controlledId !== undefined ? controlledId : internalId;
@@ -204,6 +221,8 @@ export function ListingsMap({
           <ListingPopup
             listing={selectedListing}
             onClose={() => setSelectedId(null)}
+            driveTime={driveTimes[selectedListing.id] ?? (locationDenied ? "N/A" : undefined)}
+            showDrive={!!(userLocation || locationDenied)}
           />
         )}
       </Map>

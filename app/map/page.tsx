@@ -24,12 +24,39 @@ function distanceMiNum(lat1: number, lng1: number, lat2: number, lng2: number): 
   return m / 1609;
 }
 
+async function fetchDriveTimes(
+  origin: [number, number],
+  destinations: { id: string; lat: number; lng: number }[],
+): Promise<Record<string, string>> {
+  const CHUNK = 25;
+  const result: Record<string, string> = {};
+  for (let i = 0; i < destinations.length; i += CHUNK) {
+    const chunk = destinations.slice(i, i + CHUNK);
+    const dests = chunk.map((d) => `${d.lat},${d.lng}`).join("|");
+    try {
+      const res = await fetch(`/api/drive-time?${new URLSearchParams({ origins: `${origin[0]},${origin[1]}`, destinations: dests })}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const rows = data.rows?.[0]?.elements ?? [];
+      chunk.forEach((d, j) => {
+        const el = rows[j];
+        result[d.id] = el?.status === "OK" ? el.duration.text : "N/A";
+      });
+    } catch {
+      chunk.forEach((d) => { result[d.id] = "N/A"; });
+    }
+  }
+  return result;
+}
+
 function MapContent() {
   const { city, loading } = useCityContext();
   const [cat, setCat] = useState("All");
   const [cond, setCond] = useState<Condition | "All">("All");
   const [radius, setRadius] = useState<Radius>("All");
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [locationDenied, setLocationDenied] = useState(false);
+  const [driveTimes, setDriveTimes] = useState<Record<string, string>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const q = searchParams.get("q")?.toLowerCase().trim() ?? "";
@@ -42,9 +69,16 @@ function MapContent() {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => setUserLocation([pos.coords.latitude, pos.coords.longitude]),
-      () => {},
+      () => setLocationDenied(true),
     );
   }, []);
+
+  useEffect(() => {
+    if (!userLocation || !city) return;
+    const allListings = getListings(city);
+    fetchDriveTimes(userLocation, allListings.map((l) => ({ id: l.id, lat: l.lat, lng: l.lng })))
+      .then(setDriveTimes);
+  }, [userLocation, city]);
 
   const center: [number, number] | undefined =
     userLocation ?? (city ? [city.lat, city.lng] : undefined);
@@ -133,7 +167,16 @@ function MapContent() {
                   <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: l.isGarageSale ? (l.saleType === "estate" ? "#b7791f" : RED) : INK }}>
                     {l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}
                   </div>
-                  {l.distance && <div style={{ fontFamily: MONO, fontSize: 8, opacity: 0.35, marginTop: 1 }}>{l.distance}</div>}
+                  {(l.distance || locationDenied) && (
+                    <div style={{ fontFamily: MONO, fontSize: 8, opacity: 0.35, marginTop: 1 }}>
+                      {l.distance ?? ""}
+                      {(userLocation || locationDenied) && (
+                        <span style={{ marginLeft: l.distance ? 4 : 0, opacity: driveTimes[l.id] ? 1 : 0.5 }}>
+                          · {driveTimes[l.id] ?? (locationDenied ? "N/A" : "…")}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {selectedId === l.id && (
                     <a href={`/listing/${l.id}`} onClick={e => e.stopPropagation()}
                       style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: RED, textDecoration: "none", display: "block", marginTop: 4 }}>
@@ -149,7 +192,7 @@ function MapContent() {
 
       {/* Map */}
       <div className="relative order-1 h-[46vh] min-h-[340px] shrink-0 lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
-        <ListingsMap listings={filtered} center={center} height="100%" selectedId={selectedId} onSelectId={setSelectedId} />
+        <ListingsMap listings={filtered} center={center} height="100%" selectedId={selectedId} onSelectId={setSelectedId} driveTimes={driveTimes} locationDenied={locationDenied} userLocation={userLocation} />
       </div>
     </div>
   );

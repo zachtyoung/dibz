@@ -114,7 +114,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
             {/* Image */}
             <div style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}>
               <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
-                <img src={listing.image} alt={listing.title} className="h-full w-full object-cover" className="h-full w-full object-cover" />
+                <img src={listing.image} alt={listing.title} className="h-full w-full object-cover" />
                 {isBlock && (
                   <div style={{ position: "absolute", left: 12, top: 12, background: isEstate ? "#b7791f" : INK, color: CREAM, padding: "3px 10px", fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
                     {isEstate ? "Estate Sale" : "Garage Sale"}
