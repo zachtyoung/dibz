@@ -74,7 +74,7 @@ export default function Landing() {
       </header>
 
       {/* ── HERO: 3-col newspaper ── */}
-      <section className="mx-auto max-w-[1800px] px-6 py-10 xl:px-12 xl:py-14" style={{ borderBottom: `2px solid ${INK}` }}>
+      <section className="mx-auto max-w-[1800px] px-6 py-10 xl:px-12 xl:py-14">
         <div className="grid gap-8 md:grid-cols-12 xl:grid-cols-12">
 
           {/* Left col — Upcoming Sales */}
