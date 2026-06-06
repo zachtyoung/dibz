@@ -24,28 +24,45 @@ function distanceMiNum(lat1: number, lng1: number, lat2: number, lng2: number): 
   return m / 1609;
 }
 
+function formatDuration(seconds: number): string {
+  const m = Math.round(seconds / 60);
+  if (m < 60) return `${m} min`;
+  return `${Math.floor(m / 60)}h ${m % 60}m`;
+}
+
 async function fetchDriveTimes(
   origin: [number, number],
   destinations: { id: string; lat: number; lng: number }[],
 ): Promise<Record<string, string>> {
-  const CHUNK = 25;
+  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY!;
   const result: Record<string, string> = {};
-  for (let i = 0; i < destinations.length; i += CHUNK) {
-    const chunk = destinations.slice(i, i + CHUNK);
-    const dests = chunk.map((d) => `${d.lat},${d.lng}`).join("|");
-    try {
-      const res = await fetch(`/api/drive-time?${new URLSearchParams({ origins: `${origin[0]},${origin[1]}`, destinations: dests })}`);
-      if (!res.ok) continue;
-      const data = await res.json();
-      const rows = data.rows?.[0]?.elements ?? [];
-      chunk.forEach((d, j) => {
-        const el = rows[j];
-        result[d.id] = el?.status === "OK" ? el.duration.text : "N/A";
-      });
-    } catch {
-      chunk.forEach((d) => { result[d.id] = "N/A"; });
-    }
-  }
+  await Promise.all(
+    destinations.map(async (d) => {
+      try {
+        const res = await fetch(
+          `https://routes.googleapis.com/directions/v2:computeRoutes`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Goog-Api-Key": key,
+              "X-Goog-FieldMask": "routes.duration",
+            },
+            body: JSON.stringify({
+              origin: { location: { latLng: { latitude: origin[0], longitude: origin[1] } } },
+              destination: { location: { latLng: { latitude: d.lat, longitude: d.lng } } },
+              travelMode: "DRIVE",
+            }),
+          }
+        );
+        const data = await res.json();
+        const secs = data.routes?.[0]?.duration;
+        result[d.id] = secs ? formatDuration(parseInt(secs)) : "N/A";
+      } catch {
+        result[d.id] = "N/A";
+      }
+    })
+  );
   return result;
 }
 
