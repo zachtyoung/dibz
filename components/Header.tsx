@@ -85,10 +85,10 @@ export function Header() {
       <div style={{ height: 1, background: INK, opacity: 0.18 }} />
 
       {/* Brand row */}
-      <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-3 px-6 py-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         {/* Wordmark */}
         <div className="flex items-end gap-3">
-          <Link href="/" style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2rem,5vw,3.5rem)", color: INK, lineHeight: 1, textDecoration: "none" }}>
+          <Link href="/" style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,5vw,3.5rem)", color: INK, lineHeight: 1, textDecoration: "none" }}>
             Dibz<span style={{ color: RED }}>.</span>
           </Link>
           <span className="mb-1 hidden md:block" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.6, lineHeight: 1.5, color: INK }}>
@@ -97,9 +97,9 @@ export function Header() {
         </div>
 
         {/* Nav + actions */}
-        <div className="flex items-center gap-x-4">
-          {/* Nav links */}
-          <nav className="flex items-center gap-x-4" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
+        <div className="flex items-center gap-x-3 md:gap-x-4">
+          {/* Nav links — hidden on mobile */}
+          <nav className="hidden md:flex items-center gap-x-4" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
             {[["Browse", "/browse"], ["The Map", "/map"], ["Sales", "/garage-sales"]].map(([label, href]) => {
               const active = pathname.startsWith(href);
               return (
@@ -117,14 +117,13 @@ export function Header() {
           {/* Search toggle */}
           <button
             onClick={() => setShowSearch((v) => !v)}
-            className="hidden md:flex items-center gap-1.5 transition hover:opacity-70"
-            style={{ color: INK, background: "none", border: "none", cursor: "pointer" }}
+            style={{ color: INK, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}
             title="Search"
           >
             <Search className="h-4 w-4" />
           </button>
 
-          {/* City picker — mobile */}
+          {/* City picker — mobile only */}
           <button
             onClick={() => setPicking(true)}
             className={`flex items-center gap-1 md:hidden${flash ? " city-slam" : ""}`}
@@ -137,7 +136,7 @@ export function Header() {
           {/* Post an Ad */}
           <Link
             href="/dashboard?new=1"
-            style={{ background: INK, color: CREAM, padding: "7px 12px", fontFamily: SANS, fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", fontWeight: 900, boxShadow: `3px 3px 0 ${RED}`, whiteSpace: "nowrap", flexShrink: 0 }}
+            style={{ background: INK, color: CREAM, padding: "7px 10px", fontFamily: SANS, fontSize: 9, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", fontWeight: 900, boxShadow: `2px 2px 0 ${RED}`, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             + Post an Ad
           </Link>
