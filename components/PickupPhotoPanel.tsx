@@ -371,11 +371,11 @@ export function PickupPhotoPanel({
       {!showSubmit && !scoutEarned && (
         <button
           onClick={() => setShowSubmit(true)}
-          className="mt-2 flex w-full items-center justify-center gap-2 py-2 text-xs font-semibold text-muted-foreground transition hover:text-foreground hover:bg-surface"
-          style={{ border: `2px dashed oklch(0.40 0.025 220)` }}
+          className="mt-2 flex w-full items-center justify-center gap-2 py-2 text-xs font-semibold transition hover:bg-muted"
+          style={{ border: `2px solid oklch(0.16 0.01 60)`, fontFamily: "'JetBrains Mono', monospace", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", color: "oklch(0.16 0.01 60)" }}
         >
           <Camera className="h-3.5 w-3.5" />
-          Been here? Add a pickup photo — earn Scout badge
+          Add a pickup photo
         </button>
       )}
 
