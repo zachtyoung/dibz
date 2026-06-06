@@ -13,7 +13,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const INK = "oklch(0.14 0.02 240)";
+const INK   = "oklch(0.16 0.01 60)";
+const RED   = "#c0392b";
+const TEAL  = "oklch(0.48 0.13 178)";
+const CREAM = "oklch(0.965 0.018 85)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+const SANS  = "'Archivo Black', system-ui, sans-serif";
 const FAVS_KEY = "dibz-favorites";
 const ROUTE_KEY = "dibz-route";
 
@@ -88,106 +94,80 @@ export function ListingClient({ listing }: { listing: Listing }) {
       <Header />
 
       {/* Breadcrumb */}
-      <div className="mx-auto max-w-7xl px-4 pt-5 md:px-8">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <button onClick={() => router.back()} className="inline-flex items-center gap-1 hover:text-foreground transition">
+      <div className="mx-auto max-w-7xl px-6 pt-4" style={{ borderBottom: `1px solid ${INK}`, paddingBottom: 8, opacity: 0.6 }}>
+        <div className="flex items-center gap-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", color: INK }}>
+          <button onClick={() => router.back()} style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: INK, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em" }}>
             <ArrowLeft className="h-3 w-3" /> Back
           </button>
-          <span>/</span>
-          <Link href="/" className="hover:text-foreground transition">Browse</Link>
-          <span>/</span>
-          <span className="truncate max-w-[200px] text-foreground font-medium">{listing.title}</span>
+          <span style={{ opacity: 0.4 }}>/</span>
+          <Link href="/browse" style={{ textDecoration: "none", color: INK }}>Browse</Link>
+          <span style={{ opacity: 0.4 }}>/</span>
+          <span style={{ opacity: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 240 }}>{listing.title}</span>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 md:px-8">
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className="mx-auto max-w-7xl px-6 py-6">
+        <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:grid-flow-row grid-flow-dense">
 
           {/* ── LEFT COLUMN ── */}
           <div>
             {/* Image */}
             <div style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}>
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                <img src={listing.image} alt={listing.title} className="h-full w-full object-cover" />
+              <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
+                <img src={listing.image} alt={listing.title} className="h-full w-full object-cover" style={{ filter: "saturate(0.85) contrast(1.05)" }} />
                 {isBlock && (
-                  <span
-                    className={`absolute left-4 top-4 px-3 py-1 font-display text-sm tracking-widest ${
-                      isEstate ? "bg-amber-400 text-amber-950" : "bg-primary text-primary-foreground"
-                    }`}
-                    style={{ border: `1.5px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
-                  >
-                    {isEstate ? "ESTATE SALE" : "GARAGE SALE"}
-                  </span>
+                  <div style={{ position: "absolute", left: 12, top: 12, background: isEstate ? "#b7791f" : INK, color: CREAM, padding: "3px 10px", fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
+                    {isEstate ? "Estate Sale" : "Garage Sale"}
+                  </div>
                 )}
-                <span
-                  className="absolute bottom-4 right-4 flex items-center gap-1.5 bg-background/90 px-2.5 py-1 text-xs font-semibold text-muted-foreground backdrop-blur-sm"
-                  style={{ border: `1.5px solid ${INK}` }}
-                >
-                  <Eye className="h-3.5 w-3.5" /> 248 views
-                </span>
+                <div style={{ position: "absolute", bottom: 12, right: 12, display: "flex", alignItems: "center", gap: 5, background: "rgba(245,240,232,0.9)", padding: "3px 8px", fontFamily: MONO, fontSize: 9, letterSpacing: "0.08em", color: INK, border: `1px solid ${INK}` }}>
+                  <Eye className="h-3 w-3" /> 248 views
+                </div>
               </div>
             </div>
 
             {/* Title block */}
-            <div className="mt-6" style={{ borderBottom: `2px solid ${INK}`, paddingBottom: "1.25rem" }}>
+            <div className="mt-5 pb-5" style={{ borderBottom: `2px solid ${INK}` }}>
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h1 className="font-display text-4xl leading-tight tracking-wide md:text-5xl">
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,4vw,3rem)", lineHeight: 1.05, letterSpacing: "-0.02em", color: INK }}>
                     {listing.title}
                   </h1>
-                  <div className="mt-2 flex flex-wrap items-center gap-3">
-                    <span className={`font-display text-4xl ${isEstate ? "text-amber-600" : "text-primary"}`}>
-                      {isBlock ? "FREE ENTRY" : `$${listing.price.toLocaleString()}`}
-                    </span>
-                    <span className="px-2.5 py-0.5 text-xs font-semibold text-muted-foreground" style={{ border: `2px solid ${INK}` }}>
-                      {listing.category}
-                    </span>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
                     {listing.condition && (
-                      <span className="px-2.5 py-0.5 text-xs font-semibold text-muted-foreground" style={{ border: `2px solid ${INK}` }}>
-                        {listing.condition}
-                      </span>
+                      <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", border: `1.5px solid ${INK}`, padding: "1px 6px", color: INK, opacity: 0.6 }}>{listing.condition}</span>
                     )}
+                    <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", border: `1.5px solid ${INK}`, padding: "1px 6px", color: INK, opacity: 0.6 }}>{listing.category}</span>
                     {listing.postedHoursAgo != null && (
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" /> {timeAgo(listing.postedHoursAgo)}
-                      </span>
+                      <span style={{ fontFamily: MONO, fontSize: 9, opacity: 0.45, color: INK }}>{timeAgo(listing.postedHoursAgo)}</span>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={share}
-                    className="grid h-10 w-10 place-items-center text-muted-foreground transition hover:text-foreground hover:bg-surface"
-                    style={{ border: `2px solid ${INK}` }}
-                    title={shareLabel}
-                  >
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={share} title={shareLabel}
+                    style={{ width: 36, height: 36, display: "grid", placeItems: "center", background: "transparent", border: `2px solid ${INK}`, cursor: "pointer", color: INK }}>
                     <Share2 className="h-4 w-4" />
                   </button>
-                  <button
-                    onClick={toggleSave}
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition ${
-                      saved ? "bg-primary text-primary-foreground" : "bg-surface text-muted-foreground hover:text-foreground"
-                    }`}
-                    style={{ border: `2px solid ${INK}`, boxShadow: saved ? `2px 2px 0 ${INK}` : undefined }}
-                  >
-                    <Heart className={`h-4 w-4 ${saved ? "fill-current" : ""}`} />
+                  <button onClick={toggleSave}
+                    style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, cursor: "pointer", border: `2px solid ${INK}`, background: saved ? INK : "transparent", color: saved ? CREAM : INK, boxShadow: saved ? `2px 2px 0 ${RED}` : undefined }}>
+                    <Heart className={`h-3.5 w-3.5 ${saved ? "fill-current" : ""}`} />
                     {saved ? "Saved" : "Save"}
                   </button>
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-5 text-sm">
-                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                  <MapPin className="h-4 w-4 text-primary shrink-0" />
-                  {listing.location} · <strong className="text-foreground">{listing.distance}</strong>
+              <div className="mt-4 flex flex-wrap gap-4">
+                <span style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, opacity: 0.65, display: "flex", alignItems: "center", gap: 5 }}>
+                  <MapPin className="h-3.5 w-3.5" style={{ color: TEAL }} />
+                  {listing.location}{listing.distance ? ` · ${listing.distance}` : ""}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                  <Users className="h-4 w-4 text-primary shrink-0" />
-                  Sold by <strong className="text-foreground">{listing.seller}</strong>
+                <span style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, opacity: 0.65, display: "flex", alignItems: "center", gap: 5 }}>
+                  <Users className="h-3.5 w-3.5" style={{ color: TEAL }} />
+                  {listing.seller}
                 </span>
                 {listing.date && (
-                  <span className={`inline-flex items-center gap-1.5 font-semibold ${isEstate ? "text-amber-600" : "text-primary"}`}>
-                    <Calendar className="h-4 w-4 shrink-0" />
+                  <span style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: isEstate ? "#b7791f" : TEAL, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
+                    <Calendar className="h-3.5 w-3.5" />
                     {listing.date}
                   </span>
                 )}
@@ -195,150 +175,126 @@ export function ListingClient({ listing }: { listing: Listing }) {
             </div>
 
             {/* Description */}
-            <div className="mt-6">
-              <h2 className="font-display text-2xl tracking-wide">About this listing</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            <div className="mt-5 pb-5" style={{ borderBottom: `1px dotted ${INK}` }}>
+              <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED, marginBottom: 8 }}>§ About this listing</p>
+              <p style={{ fontFamily: "'Libre Caslon Text', Georgia, serif", fontSize: 15, lineHeight: 1.75, color: INK }}>
                 {listing.description ?? "No description provided. Message the seller for details."}
               </p>
             </div>
 
-
-            {/* Seller trust panel */}
-            {listing.sellerTrust ? (
-              <div className="mt-6 bg-card px-5 py-5" style={{ border: `2px solid ${INK}` }}>
-                <h2 className="mb-4 font-display text-xl tracking-wide">About the seller</h2>
-                <SellerTrustPanel trust={listing.sellerTrust} sellerName={listing.seller} />
-              </div>
-            ) : (
-              <div className="mt-6 flex items-center gap-4 bg-card px-5 py-4" style={{ border: `2px solid ${INK}` }}>
-                <div className="grid h-14 w-14 shrink-0 place-items-center bg-primary/15 font-display text-2xl text-primary" style={{ border: `2px solid ${INK}` }}>
-                  {listing.seller.charAt(0)}
+            {/* Seller */}
+            <div className="mt-5">
+              <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED, marginBottom: 12 }}>§ About the seller</p>
+              {listing.sellerTrust ? (
+                <div className="px-5 py-5" style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}>
+                  <SellerTrustPanel trust={listing.sellerTrust} sellerName={listing.seller} />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-bold text-foreground">{listing.seller}</p>
-                  <p className="text-xs text-muted-foreground">New seller</p>
+              ) : (
+                <div className="flex items-center gap-4 px-5 py-4" style={{ border: `2px solid ${INK}` }}>
+                  <div style={{ width: 48, height: 48, display: "grid", placeItems: "center", background: "transparent", border: `2px solid ${INK}`, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 20, color: INK, flexShrink: 0 }}>
+                    {listing.seller.charAt(0)}
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: SANS, fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: INK }}>{listing.seller}</p>
+                    <p style={{ fontFamily: MONO, fontSize: 9, opacity: 0.5, color: INK, marginTop: 2 }}>New seller</p>
+                  </div>
                 </div>
-                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* ── RIGHT COLUMN ── */}
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-            {/* Price callout */}
-            <div className="bg-card px-5 py-4" style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}>
-              <div className="flex items-baseline justify-between gap-2">
-                <span className={`font-display text-5xl tracking-wide ${isEstate ? "text-amber-600" : "text-primary"}`}>
-                  {isBlock ? "FREE" : `$${listing.price.toLocaleString()}`}
-                </span>
-                {!isBlock && (
-                  <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10" style={{ border: `1.5px solid ${INK}` }}>
-                    OBO
+          <div className="space-y-3 lg:sticky lg:top-4 lg:self-start lg:order-last order-first">
+
+            {/* Price + CTA */}
+            <div style={{ border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}` }}>
+              <div style={{ padding: "16px 20px", borderBottom: `2px solid ${INK}` }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2rem,4vw,3rem)", lineHeight: 1, color: isEstate ? "#b7791f" : isBlock ? TEAL : INK }}>
+                    {isBlock ? "Free" : `$${listing.price.toLocaleString()}`}
                   </span>
+                  {!isBlock && (
+                    <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", border: `1.5px solid ${INK}`, padding: "2px 6px", color: INK, opacity: 0.6 }}>OBO</span>
+                  )}
+                </div>
+                <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.6, color: INK, marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                  <MapPin className="h-3 w-3" style={{ color: TEAL }} /> {listing.location}{listing.distance ? ` · ${listing.distance} away` : ""}
+                </p>
+              </div>
+
+              <div style={{ padding: "14px 20px" }}>
+                {isBlock ? (
+                  <button onClick={toggleRoute}
+                    style={{ width: "100%", padding: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, cursor: "pointer", border: `2px solid ${INK}`, background: inRoute ? INK : "transparent", color: inRoute ? CREAM : INK, boxShadow: inRoute ? `2px 2px 0 ${TEAL}` : undefined }}>
+                    {inRoute ? <><Check className="h-4 w-4" /> On your route — remove</> : <><Plus className="h-4 w-4" /> Add to my route</>}
+                  </button>
+                ) : messageSent ? (
+                  <div style={{ padding: "16px", textAlign: "center", border: `2px solid ${INK}`, background: "rgba(0,0,0,0.03)" }}>
+                    <Check style={{ display: "block", margin: "0 auto 6px", color: TEAL }} className="h-5 w-5" />
+                    <p style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, color: TEAL }}>Message sent!</p>
+                    <p style={{ fontFamily: MONO, fontSize: 9, opacity: 0.5, color: INK, marginTop: 4 }}>You'll hear back soon.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={sendMessage} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <textarea
+                      id="msg-form" value={draft} onChange={(e) => setDraft(e.target.value)}
+                      rows={3} maxLength={500}
+                      placeholder={`Hi ${listing.seller.split(" ")[0]}, is this still available?`}
+                      className="w-full resize-none focus:outline-none"
+                      style={{ border: `2px solid ${INK}`, padding: "10px 12px", fontFamily: "'Libre Caslon Text', Georgia, serif", fontSize: 13, color: INK, background: "transparent" }}
+                    />
+                    <button type="submit" disabled={!draft.trim()}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "10px", fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, cursor: "pointer", border: `2px solid ${INK}`, background: INK, color: CREAM, boxShadow: `2px 2px 0 ${TEAL}`, opacity: draft.trim() ? 1 : 0.4 }}>
+                      <Send className="h-4 w-4" /> Send message
+                    </button>
+                  </form>
                 )}
               </div>
-              <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-primary" /> {listing.location} · {listing.distance} away
-              </p>
-
-              {isBlock ? (
-                <button
-                  onClick={toggleRoute}
-                  className={`mt-4 flex w-full items-center justify-center gap-2 py-3 text-sm font-bold transition ${
-                    inRoute ? "bg-primary text-primary-foreground" : "bg-surface text-foreground hover:bg-primary/10"
-                  }`}
-                  style={{ border: `2px solid ${INK}`, boxShadow: inRoute ? `2px 2px 0 ${INK}` : undefined }}
-                >
-                  {inRoute ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                  {inRoute ? "On your route — tap to remove" : "Add to my route"}
-                </button>
-              ) : messageSent ? (
-                <div className="mt-4 bg-primary/10 px-4 py-4 text-center" style={{ border: `2px solid ${INK}` }}>
-                  <Check className="mx-auto mb-1.5 h-5 w-5 text-primary" />
-                  <p className="text-sm font-bold text-primary">Message sent!</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">You'll hear back soon.</p>
-                </div>
-              ) : (
-                <form onSubmit={sendMessage} className="mt-4 space-y-2">
-                  <textarea
-                    id="msg-form"
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    rows={3}
-                    maxLength={500}
-                    placeholder={`Hi ${listing.seller.split(" ")[0]}, is this still available?`}
-                    className="w-full resize-none bg-surface px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    style={{ border: `2px solid ${INK}` }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!draft.trim()}
-                    className="flex w-full items-center justify-center gap-2 bg-primary py-2.5 text-sm font-bold text-primary-foreground transition hover:bg-accent hover:-translate-x-px hover:-translate-y-px disabled:opacity-40"
-                    style={{ border: `2px solid ${INK}`, boxShadow: `2px 2px 0 ${INK}` }}
-                  >
-                    <Send className="h-4 w-4" /> Send message
-                  </button>
-                </form>
-              )}
             </div>
 
             {/* Map */}
             <div style={{ border: `2px solid ${INK}` }}>
-              <div className="relative h-44 bg-muted overflow-hidden">
+              <div className="relative overflow-hidden" style={{ height: 160 }}>
                 <MiniMap lat={listing.lat} lng={listing.lng} neighborhood={listing.location} />
               </div>
-              <div className="flex items-center gap-2 bg-card px-4 py-3 text-sm" style={{ borderTop: `2px solid ${INK}` }}>
-                <MapPin className="h-4 w-4 shrink-0 text-primary" />
-                <span className="text-muted-foreground text-xs truncate">{listing.location}</span>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${listing.lat},${listing.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto whitespace-nowrap text-xs font-bold text-primary hover:underline"
-                >
+              <div style={{ borderTop: `2px solid ${INK}`, padding: "10px 14px", display: "flex", alignItems: "center", gap: 8 }}>
+                <MapPin className="h-3.5 w-3.5 shrink-0" style={{ color: TEAL }} />
+                <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.65, color: INK, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{listing.location}</span>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${listing.lat},${listing.lng}`} target="_blank" rel="noopener noreferrer"
+                  style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", color: TEAL, textDecoration: "none", whiteSpace: "nowrap", fontWeight: 700 }}>
                   Directions →
                 </a>
               </div>
             </div>
 
             {/* Pickup photo panel */}
-            <PickupPhotoPanel
-              lat={listing.lat}
-              lng={listing.lng}
-              isExactLocation={!!listing.isGarageSale}
-              photos={listing.pickupPhotos}
-            />
+            <PickupPhotoPanel lat={listing.lat} lng={listing.lng} isExactLocation={!!listing.isGarageSale} photos={listing.pickupPhotos} />
 
             {/* Safety tip */}
-            <div className="flex gap-3 bg-surface px-4 py-3 text-xs text-muted-foreground" style={{ border: `2px solid ${INK}` }}>
-              <Shield className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-              <span>Meet in a public place. Never send payment before seeing the item in person.</span>
+            <div style={{ border: `2px solid ${INK}`, padding: "10px 14px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+              <Shield className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: INK, opacity: 0.4 }} />
+              <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.5, color: INK, lineHeight: 1.6 }}>Meet in a public place. Never send payment before seeing the item in person.</span>
             </div>
           </div>
         </div>
 
         {/* Related */}
         {relatedFinal.length > 0 && (
-          <section className="mt-14" style={{ borderTop: `2px solid ${INK}`, paddingTop: "2rem" }}>
-            <div className="mb-5 flex items-baseline justify-between">
-              <h2 className="font-display text-3xl tracking-wide">More nearby</h2>
-              <Link href="/" className="text-xs font-semibold text-primary hover:underline">See all →</Link>
+          <section className="mt-12" style={{ borderTop: `2px solid ${INK}`, paddingTop: "1.5rem" }}>
+            <div className="mb-4 flex items-baseline justify-between pb-2" style={{ borderBottom: `1px solid ${INK}` }}>
+              <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>§ More Nearby</p>
+              <Link href="/browse" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: INK, textDecoration: "none", opacity: 0.5 }}>See all →</Link>
             </div>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-px md:grid-cols-4" style={{ background: INK }}>
               {relatedFinal.map((l) => (
-                <Link
-                  key={l.id}
-                  href={`/listing/${l.id}`}
-                  className="group flex flex-col overflow-hidden bg-card transition hover:-translate-x-px hover:-translate-y-px"
-                  style={{ border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${INK}` }}
-                >
-                  <div className="relative aspect-square overflow-hidden bg-muted">
-                    <img src={l.image} alt={l.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                <Link key={l.id} href={`/listing/${l.id}`} style={{ textDecoration: "none", display: "block", background: "var(--background)" }} className="group">
+                  <div className="relative overflow-hidden" style={{ aspectRatio: "1/1" }}>
+                    <img src={l.image} alt={l.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" style={{ filter: "saturate(0.8)" }} />
                   </div>
-                  <div className="p-3">
-                    <p className="font-display text-xl text-primary">{l.isGarageSale ? "FREE" : `$${l.price.toLocaleString()}`}</p>
-                    <p className="mt-0.5 line-clamp-2 text-xs font-semibold text-foreground">{l.title}</p>
-                    <p className="mt-1 text-[10px] text-muted-foreground">{l.distance}</p>
+                  <div style={{ padding: "10px 12px" }}>
+                    <p style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 16, color: l.isGarageSale ? TEAL : INK }}>{l.isGarageSale ? "Free" : `$${l.price.toLocaleString()}`}</p>
+                    <p style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 12, lineHeight: 1.3, color: INK, marginTop: 2 }} className="line-clamp-2">{l.title}</p>
+                    <p style={{ fontFamily: MONO, fontSize: 8, opacity: 0.45, color: INK, marginTop: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>{l.distance}</p>
                   </div>
                 </Link>
               ))}
@@ -347,8 +303,10 @@ export function ListingClient({ listing }: { listing: Listing }) {
         )}
       </div>
 
-      <footer className="mt-14 py-8 text-center text-sm text-muted-foreground" style={{ borderTop: `2px solid ${INK}` }}>
-        Built for neighbors. <span className="text-primary font-semibold">Dibz</span> — list free, sell local.
+      <footer className="mt-12 py-6 px-6" style={{ borderTop: `2px solid ${INK}` }}>
+        <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.4, color: INK }}>
+          Dibz Press · Free to list, sell local.
+        </p>
       </footer>
     </div>
   );
