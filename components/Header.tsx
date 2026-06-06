@@ -100,7 +100,7 @@ export function Header() {
         <div className="flex items-center gap-x-3 md:gap-x-4">
           {/* Nav links — hidden on mobile */}
           <nav className="hidden md:flex items-center gap-x-4" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
-            {[["Browse", "/browse"], ["The Map", "/map"], ["Sales", "/garage-sales"]].map(([label, href]) => {
+            {[["Browse", "/browse"], ["Map", "/map"], ["Sales", "/garage-sales"]].map(([label, href]) => {
               const active = pathname.startsWith(href);
               return (
                 <Link key={href} href={href} style={{

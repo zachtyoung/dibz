@@ -50,7 +50,7 @@ export default function Landing() {
           </div>
 
           <nav className="flex items-center gap-x-4 overflow-x-auto" style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 900 }}>
-            {[["01", "Browse", "/browse"], ["02", "The Map", "/map"], ["03", "Sales", "/garage-sales"]].map(([n, label, href]) => (
+            {[["01", "Browse", "/browse"], ["02", "Map", "/map"], ["03", "Sales", "/garage-sales"]].map(([n, label, href]) => (
               <Link key={href} href={href} style={{ textDecoration: "none", color: INK, borderBottom: "2px solid transparent", transition: "border-color 0.15s", whiteSpace: "nowrap" }}
                 onMouseEnter={e => (e.currentTarget.style.borderBottomColor = RED)}
                 onMouseLeave={e => (e.currentTarget.style.borderBottomColor = "transparent")}
