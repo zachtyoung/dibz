@@ -118,7 +118,7 @@ function MapContent() {
   return (
     <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
       {/* ── Sidebar ── */}
-      <aside className="order-2 flex w-full flex-col lg:order-1 lg:w-[400px] lg:max-w-[35vw]" style={{ borderRight: `2px solid ${INK}` }}>
+      <aside className="order-2 flex w-full flex-col lg:order-1 lg:w-[460px] lg:max-w-[38vw]" style={{ borderRight: `2px solid ${INK}` }}>
 
         {/* Category index bar */}
         <div style={{ borderBottom: `4px solid ${INK}`, background: INK, flexShrink: 0 }}>
@@ -134,61 +134,57 @@ function MapContent() {
         {/* Masthead */}
         <div style={{ borderBottom: `2px solid ${INK}`, flexShrink: 0 }}>
 
-          {/* City + count row */}
-          <div style={{ padding: "12px 16px", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, borderBottom: `1px solid ${INK}` }}>
-            <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.6rem", lineHeight: 1, color: INK, margin: 0 }}>
+          {/* City + count */}
+          <div style={{ padding: "14px 18px 12px", borderBottom: `1px solid ${INK}`, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+            <h1 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.75rem", lineHeight: 1, color: INK, margin: 0 }}>
               {q ? `"${q}"` : (city?.name ?? "All Cities")}
             </h1>
-            <span style={{ fontFamily: MONO, fontWeight: 700, fontSize: 13, color: INK, flexShrink: 0, opacity: 0.45 }}>
-              {loading ? "…" : `${filtered.length} listings`}
+            <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 700, color: INK, opacity: 0.4, flexShrink: 0 }}>
+              {loading ? "…" : `${filtered.length}`}
             </span>
           </div>
 
-          {/* Condition segmented control */}
-          <div style={{ borderBottom: `1px solid ${INK}` }}>
-            <div style={{ padding: "4px 16px 3px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED }}>Condition</div>
-            <div style={{ display: "flex" }}>
-              {(["All", ...CONDITIONS] as const).map((c, i, arr) => (
-                <button key={c} onClick={() => setCond(c)}
-                  style={{
-                    flex: 1,
-                    fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 900,
-                    padding: "8px 2px",
-                    background: cond === c ? INK : "transparent",
-                    color: cond === c ? CREAM : INK,
-                    border: "none",
-                    borderRight: i < arr.length - 1 ? `1px solid ${INK}` : "none",
-                    borderTop: `1px solid ${INK}`,
-                    cursor: "pointer",
-                    opacity: cond === c ? 1 : 0.4,
-                    transition: "background 0.1s, opacity 0.1s",
-                  }}
-                >{c === "for parts" ? "Parts" : c}</button>
-              ))}
-            </div>
-          </div>
+          {/* Filter panel — two columns */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: `0px` }}>
 
-          {/* Radius segmented control */}
-          <div>
-            <div style={{ padding: "4px 16px 3px", fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED }}>Radius</div>
-            <div style={{ display: "flex" }}>
-              {(["All", ...RADII] as const).map((r, i, arr) => (
-                <button key={r} onClick={() => setRadius(r)}
-                  style={{
-                    flex: 1,
-                    fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 900,
-                    padding: "8px 2px",
-                    background: radius === r ? INK : "transparent",
-                    color: radius === r ? CREAM : INK,
-                    border: "none",
-                    borderRight: i < arr.length - 1 ? `1px solid ${INK}` : "none",
-                    borderTop: `1px solid ${INK}`,
-                    cursor: "pointer",
-                    opacity: radius === r ? 1 : 0.4,
-                    transition: "background 0.1s, opacity 0.1s",
-                  }}
-                >{r === "All" ? "Any" : `${r} mi`}</button>
-              ))}
+            {/* Condition */}
+            <div style={{ padding: "10px 18px 12px", borderRight: `1px solid ${INK}` }}>
+              <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED, marginBottom: 8 }}>Condition</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {(["All", ...CONDITIONS] as const).map((c) => (
+                  <button key={c} onClick={() => setCond(c)}
+                    style={{
+                      fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700,
+                      padding: "4px 9px",
+                      background: cond === c ? INK : "transparent",
+                      color: cond === c ? CREAM : INK,
+                      border: `1.5px solid ${cond === c ? INK : `${INK}50`}`,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >{c === "for parts" ? "Parts" : c}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Radius */}
+            <div style={{ padding: "10px 18px 12px" }}>
+              <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: RED, marginBottom: 8 }}>Radius</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {(["All", ...RADII] as const).map((r) => (
+                  <button key={r} onClick={() => setRadius(r)}
+                    style={{
+                      fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700,
+                      padding: "4px 9px",
+                      background: radius === r ? INK : "transparent",
+                      color: radius === r ? CREAM : INK,
+                      border: `1.5px solid ${radius === r ? INK : `${INK}50`}`,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >{r === "All" ? "Any" : `${r} mi`}</button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
