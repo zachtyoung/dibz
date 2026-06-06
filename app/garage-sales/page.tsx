@@ -87,32 +87,28 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <div
-        className="w-full max-w-sm bg-card p-6 mx-4"
-        style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
-      >
-        <div className="mb-1 flex items-center gap-2">
-          <Route className="h-5 w-5 text-accent" />
-          <h3 className="font-display text-xl tracking-wide">Where are you starting?</h3>
+    <div style={{ position: "absolute", inset: 0, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center", background: `${CREAM}cc`, backdropFilter: "blur(4px)" }}>
+      <div style={{ width: "100%", maxWidth: 380, background: CREAM, border: `2px solid ${INK}`, boxShadow: `4px 4px 0 ${INK}`, padding: 24, margin: "0 16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <Route style={{ width: 18, height: 18, color: RED }} />
+          <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 20, color: INK, margin: 0 }}>Where are you starting?</h3>
         </div>
-        <p className="mb-5 text-sm text-muted-foreground">We'll calculate your total drive time and route from door to door.</p>
+        <p style={{ fontFamily: MONO, fontSize: 10, color: INK, marginBottom: 20, lineHeight: 1.5 }}>We'll calculate your total drive time and route from door to door.</p>
 
-        <div className="flex flex-col gap-3">
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <button
             onClick={useGeo}
             disabled={geoLoading}
-            className="flex items-center gap-3 bg-accent/10 px-4 py-3 text-sm font-semibold text-accent transition hover:bg-accent/20 disabled:opacity-60"
-            style={{ border: "2px solid oklch(0.16 0.01 60)" }}
+            style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: `${TEAL}18`, border: `2px solid ${INK}`, cursor: "pointer", fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, color: INK, opacity: geoLoading ? 0.6 : 1 }}
           >
-            {geoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Crosshair className="h-4 w-4" />}
+            {geoLoading ? <Loader2 style={{ width: 16, height: 16 }} className="animate-spin" /> : <Crosshair style={{ width: 16, height: 16 }} />}
             <span>Use my current location</span>
           </button>
 
-          {geoError && <p className="text-xs text-red-400">{geoError}</p>}
+          {geoError && <p style={{ fontFamily: MONO, fontSize: 10, color: RED }}>{geoError}</p>}
 
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <div className="h-px flex-1 bg-border" /> or <div className="h-px flex-1 bg-border" />
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: INK }}>
+            <div style={{ height: 1, flex: 1, background: INK }} /> or <div style={{ height: 1, flex: 1, background: INK }} />
           </div>
 
           <input
@@ -121,11 +117,10 @@ function StartPrompt({ onConfirm, onSkip }: { onConfirm: (loc: StartLocation) =>
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your address…"
-            className="w-full bg-surface px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            style={{ border: "2px solid oklch(0.16 0.01 60)" }}
+            style={{ width: "100%", background: "white", padding: "12px 16px", fontFamily: MONO, fontSize: 12, color: INK, border: `2px solid ${INK}`, outline: "none", boxSizing: "border-box" }}
           />
 
-          <button onClick={onSkip} className="text-center text-xs text-muted-foreground hover:text-foreground transition">
+          <button onClick={onSkip} style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: INK, background: "none", border: "none", cursor: "pointer", textAlign: "center", textDecoration: "underline" }}>
             Skip — show route without start point
           </button>
         </div>
@@ -225,7 +220,7 @@ export default function GarageSales() {
             Garage &amp; estate sales,<br />
             <span style={{ color: TEAL }}>near you.</span>
           </h1>
-          <p style={{ fontFamily: SERIF, fontSize: 16, lineHeight: 1.6, color: INK, opacity: 0.7, marginTop: 16, maxWidth: 480 }}>
+          <p style={{ fontFamily: SERIF, fontSize: 16, lineHeight: 1.6, color: INK, marginTop: 16, maxWidth: 480 }}>
             Free to post. Free to browse. Map your route, mark your stops, and go.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -261,14 +256,13 @@ export default function GarageSales() {
             <div>
               <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.35em", color: RED }}>§ Route Planner</p>
               <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "2rem", lineHeight: 1, marginTop: 4, color: INK }}>Your route</h2>
-              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.6, marginTop: 4, color: INK }}>
+              <p style={{ fontFamily: MONO, fontSize: 10, marginTop: 4, color: INK }}>
                 {startLoc ? `Starting from ${startLoc.label.split(",")[0]}` : "Add a start location for door-to-door directions"}
               </p>
             </div>
             <button
               onClick={() => setShowRoute(false)}
-              className="p-2 hover:border-accent transition"
-              style={{ border: "2px solid oklch(0.16 0.01 60)" }}
+              style={{ padding: 8, border: `2px solid ${INK}`, background: "transparent", cursor: "pointer", color: INK }}
             >
               <X className="h-4 w-4" />
             </button>
@@ -284,7 +278,7 @@ export default function GarageSales() {
               ].map(({ val, label }) => (
                 <div key={label} className="text-center" style={{ background: "var(--background)", padding: "16px 8px" }}>
                   <p style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "1.75rem", lineHeight: 1, color: INK }}>{val}</p>
-                  <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.55, marginTop: 4, color: INK }}>{label}</p>
+                  <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 4, color: INK }}>{label}</p>
                 </div>
               ))}
             </div>
@@ -311,31 +305,30 @@ export default function GarageSales() {
               <div className="mb-2">
                 {startLoc && !askingStart ? (
                   <div
-                    className="flex items-center gap-3 bg-indigo-500/10 p-3"
-                    style={{ border: "2px solid oklch(0.16 0.01 60)" }}
+                    className="flex items-center gap-3 p-3"
+                    style={{ border: `2px solid ${INK}`, background: `${TEAL}12` }}
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-indigo-500 text-white">
+                    <div style={{ width: 32, height: 32, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: TEAL, color: CREAM }}>
                       <Crosshair className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Your start</p>
-                      <p className="truncate text-sm font-medium">{startLoc.label.split(",").slice(0, 2).join(",")}</p>
+                      <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: 700, color: TEAL }}>Your start</p>
+                      <p style={{ fontFamily: MONO, fontSize: 11, color: INK, marginTop: 2 }}>{startLoc.label.split(",").slice(0, 2).join(",")}</p>
                     </div>
                     <button
                       onClick={() => { setStartLoc(null); setAskingStart(true); }}
-                      className="shrink-0 p-1 text-muted-foreground hover:text-foreground"
+                      style={{ flexShrink: 0, padding: 4, background: "none", border: "none", cursor: "pointer", color: INK }}
                       title="Change start location"
                     >
-                      <X className="h-3.5 w-3.5" />
+                      <X style={{ width: 14, height: 14 }} />
                     </button>
                   </div>
                 ) : !askingStart ? (
                   <button
                     onClick={() => setAskingStart(true)}
-                    className="flex w-full items-center gap-2 border-dashed border-border px-4 py-3 text-sm text-muted-foreground transition hover:border-accent hover:text-accent"
-                    style={{ border: "2px dashed oklch(0.16 0.01 60)" }}
+                    style={{ display: "flex", width: "100%", alignItems: "center", gap: 8, padding: "12px 16px", border: `2px dashed ${INK}`, background: "transparent", cursor: "pointer", fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: INK }}
                   >
-                    <Crosshair className="h-4 w-4" />
+                    <Crosshair style={{ width: 14, height: 14 }} />
                     Add your start location for total drive time
                   </button>
                 ) : null}
@@ -350,58 +343,48 @@ export default function GarageSales() {
                     <div key={stop.id}>
                       {/* Drive connector */}
                       {(leg || i > 0) && (
-                        <div className="flex items-center gap-2 py-2 pl-3">
-                          <div className="flex flex-col items-center">
-                            <div className="h-1 w-px bg-accent/20" />
-                            <div className="h-4 w-px bg-accent/40" />
-                            <div className="h-1 w-px bg-accent/20" />
-                          </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0 6px 12px" }}>
+                          <div style={{ width: 1, height: 24, background: INK, flexShrink: 0 }} />
                           {leg ? (
-                            <div
-                              className="flex items-center gap-1.5 bg-surface px-3 py-1 text-xs"
-                              style={{ border: "2px solid oklch(0.16 0.01 60)" }}
-                            >
-                              <Car className="h-3 w-3 text-accent" />
-                              <span className="font-semibold text-foreground">{leg.durationText}</span>
-                              <span className="text-muted-foreground">· {leg.distanceText}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1.5px solid ${INK}`, padding: "3px 10px", fontFamily: MONO, fontSize: 10 }}>
+                              <Car style={{ width: 11, height: 11, color: TEAL }} />
+                              <span style={{ fontWeight: 700, color: INK }}>{leg.durationText}</span>
+                              <span style={{ color: INK }}>· {leg.distanceText}</span>
                             </div>
                           ) : (
-                            <div className="text-xs text-muted-foreground">↓</div>
+                            <span style={{ fontFamily: MONO, fontSize: 10, color: INK }}>↓</span>
                           )}
                         </div>
                       )}
 
                       {/* Stop card */}
-                      <div
-                        className="bg-card p-3 transition hover:border-accent/40"
-                        style={{ border: "2px solid oklch(0.16 0.01 60)" }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-accent text-sm font-bold text-white">
+                      <div style={{ padding: 12, border: `2px solid ${INK}`, background: "var(--background)" }}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                          <div style={{ width: 28, height: 28, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: INK, color: CREAM, fontFamily: SANS, fontSize: 11, fontWeight: 900 }}>
                             {i + 1}
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold leading-snug">{stop.title}</p>
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <p style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 14, color: INK, lineHeight: 1.25 }}>{stop.title}</p>
                             {stop.date && (
-                              <div className="mt-1 flex items-center gap-1 text-xs text-accent">
-                                <Calendar className="h-3 w-3" />
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4, fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: TEAL, fontWeight: 700 }}>
+                                <Calendar style={{ width: 10, height: 10 }} />
                                 {stop.date}
                               </div>
                             )}
-                            <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-                              <MapPin className="h-3 w-3 shrink-0" />
-                              {stop.location} · {stop.distance}
-                            </p>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4, fontFamily: MONO, fontSize: 10, color: INK }}>
+                              <MapPin style={{ width: 10, height: 10, flexShrink: 0 }} />
+                              {stop.location}{stop.distance ? ` · ${stop.distance}` : ""}
+                            </div>
                             {stop.description && (
-                              <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{stop.description}</p>
+                              <p style={{ fontFamily: "'Libre Caslon Text', Georgia, serif", fontSize: 12, lineHeight: 1.5, color: INK, marginTop: 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{stop.description}</p>
                             )}
                           </div>
                           <button
                             onClick={() => toggleRoute(stop.id)}
-                            className="shrink-0 p-1 text-muted-foreground hover:text-red-400 transition"
+                            style={{ flexShrink: 0, padding: 4, background: "none", border: "none", cursor: "pointer", color: INK }}
                             title="Remove stop"
                           >
-                            <X className="h-3.5 w-3.5" />
+                            <X style={{ width: 14, height: 14 }} />
                           </button>
                         </div>
                       </div>
@@ -413,55 +396,42 @@ export default function GarageSales() {
                 {startLoc && (
                   <>
                     {/* Return leg connector */}
-                    <div className="flex items-center gap-2 py-2 pl-3">
-                      <div className="flex flex-col items-center">
-                        <div className="h-1 w-px bg-accent/20" />
-                        <div className="h-4 w-px bg-accent/40" />
-                        <div className="h-1 w-px bg-accent/20" />
-                      </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0 6px 12px" }}>
+                      <div style={{ width: 1, height: 24, background: INK, flexShrink: 0 }} />
                       {returnHome && steps.length >= routeSales.length ? (
-                        <div
-                          className="flex items-center gap-1.5 bg-surface px-3 py-1 text-xs"
-                          style={{ border: "2px solid oklch(0.16 0.01 60)" }}
-                        >
-                          <Car className="h-3 w-3 text-accent" />
-                          <span className="font-semibold text-foreground">{steps[steps.length - 1]?.durationText}</span>
-                          <span className="text-muted-foreground">· {steps[steps.length - 1]?.distanceText}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1.5px solid ${INK}`, padding: "3px 10px", fontFamily: MONO, fontSize: 10 }}>
+                          <Car style={{ width: 11, height: 11, color: TEAL }} />
+                          <span style={{ fontWeight: 700, color: INK }}>{steps[steps.length - 1]?.durationText}</span>
+                          <span style={{ color: INK }}>· {steps[steps.length - 1]?.distanceText}</span>
                         </div>
                       ) : (
-                        <div className="h-px w-4 bg-border" />
+                        <span style={{ fontFamily: MONO, fontSize: 10, color: INK }}>↓</span>
                       )}
                     </div>
 
                     {/* Return home toggle card */}
                     <button
                       onClick={() => setReturnHome((v) => !v)}
-                      className={`flex w-full items-center gap-3 p-3 text-left transition ${
-                        returnHome
-                          ? "bg-indigo-500/10"
-                          : "hover:bg-indigo-500/5"
-                      }`}
                       style={{
-                        border: returnHome
-                          ? "2px solid oklch(0.16 0.01 60)"
-                          : "2px dashed oklch(0.16 0.01 60)",
+                        display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 12, textAlign: "left",
+                        background: returnHome ? `${TEAL}12` : "transparent",
+                        border: returnHome ? `2px solid ${INK}` : `2px dashed ${INK}`,
+                        cursor: "pointer",
                       }}
                     >
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center text-white ${returnHome ? "bg-indigo-500" : "bg-border"}`}>
+                      <div style={{ width: 32, height: 32, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: returnHome ? TEAL : "transparent", border: `2px solid ${INK}`, color: returnHome ? CREAM : INK }}>
                         <MapPin className="h-4 w-4" />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-semibold ${returnHome ? "text-indigo-300" : "text-muted-foreground"}`}>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <p style={{ fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, color: INK }}>
                           {returnHome ? "Return home" : "Add return home"}
                         </p>
-                        <p className="truncate text-xs text-muted-foreground">
+                        <p style={{ fontFamily: MONO, fontSize: 10, color: INK, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {startLoc.label.split(",").slice(0, 2).join(",")}
                         </p>
                       </div>
-                      <div
-                        className={`h-4 w-4 shrink-0 border-2 transition ${returnHome ? "border-indigo-400 bg-indigo-400" : "border-border"}`}
-                      >
-                        {returnHome && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                      <div style={{ width: 16, height: 16, flexShrink: 0, border: `2px solid ${INK}`, background: returnHome ? INK : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {returnHome && <Check className="h-2.5 w-2.5" style={{ color: CREAM }} strokeWidth={3} />}
                       </div>
                     </button>
                   </>
@@ -474,14 +444,13 @@ export default function GarageSales() {
                   href={`https://www.google.com/maps/dir/${allStops.map((s) => `${s.lat},${s.lng}`).join("/")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 bg-accent py-3 text-sm font-bold text-white transition hover:-translate-x-px hover:-translate-y-px"
-                  style={{ border: "2px solid oklch(0.16 0.01 60)", boxShadow: "3px 3px 0 oklch(0.16 0.01 60)" }}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: INK, color: CREAM, padding: "12px", fontFamily: SANS, fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 900, border: `2px solid ${INK}`, boxShadow: `3px 3px 0 ${RED}`, textDecoration: "none" }}
                 >
                   <Navigation className="h-4 w-4" />
                   Start navigation in Google Maps
                 </a>
                 {totalMin > 0 && (
-                  <p className="text-center text-xs text-muted-foreground">
+                  <p style={{ textAlign: "center", fontFamily: MONO, fontSize: 10, color: INK, marginTop: 4 }}>
                     ~{totalTimeLabel} driving · {totalDistanceMi.toFixed(1)} mi total
                     {returnHome && startLoc ? " · round trip" : ""}
                   </p>
@@ -554,8 +523,8 @@ export default function GarageSales() {
                   <div style={{ padding: "14px 16px" }}>
                     {s.date && <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: s.saleType === "estate" ? "#b7791f" : TEAL, marginBottom: 6 }}>{s.date}</p>}
                     <h3 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 18, lineHeight: 1.25, color: INK }}>{s.title}</h3>
-                    <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.6, marginTop: 6 }}>◉ {s.location}{s.distance ? ` · ${s.distance}` : ""}</p>
-                    {s.description && <p style={{ fontFamily: "'Libre Caslon Text', Georgia, serif", fontSize: 13, lineHeight: 1.6, marginTop: 8, opacity: 0.75 }} className="line-clamp-2">{s.description}</p>}
+                    <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: INK, marginTop: 6 }}>◉ {s.location}{s.distance ? ` · ${s.distance}` : ""}</p>
+                    {s.description && <p style={{ fontFamily: "'Libre Caslon Text', Georgia, serif", fontSize: 13, lineHeight: 1.6, marginTop: 8, color: INK }} className="line-clamp-2">{s.description}</p>}
                   </div>
                 </Link>
                 <div style={{ padding: "0 16px 14px" }}>

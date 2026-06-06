@@ -1,8 +1,14 @@
 "use client";
 
-const INK = "oklch(0.14 0.02 240)";
-const TEAL = "oklch(0.52 0.14 178)";
-const DAY_ABBREVS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const INK   = "oklch(0.16 0.01 60)";
+const RED   = "#c0392b";
+const TEAL  = "oklch(0.48 0.13 178)";
+const CREAM = "oklch(0.965 0.018 85)";
+const SERIF = "'DM Serif Display', Georgia, serif";
+const MONO  = "'JetBrains Mono', 'Courier New', monospace";
+const SANS  = "'Archivo Black', system-ui, sans-serif";
+
+const DAY_ABBREVS   = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_ABBREVS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 function isoToday(): string {
@@ -21,11 +27,11 @@ function parseISO(iso: string): Date {
 }
 
 const CSS = `
-  .wstrip { border: 2px solid ${INK}; }
+  .wstrip { border: 2px solid ${INK}; margin-top: 0; }
   .wstrip-all {
-    display: block; width: 100%; padding: 8px 0;
-    font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
-    border-bottom: 2px solid ${INK}; cursor: pointer; transition: background 0.15s;
+    display: block; width: 100%; padding: 9px 0;
+    font-family: ${SANS}; font-size: 9px; font-weight: 900; letter-spacing: 0.18em; text-transform: uppercase;
+    border-bottom: 2px solid ${INK}; cursor: pointer; transition: background 0.12s;
   }
   .wstrip-grid {
     display: grid;
@@ -33,20 +39,16 @@ const CSS = `
   }
   .wstrip-cell {
     display: flex; flex-direction: column; align-items: center;
-    padding: 10px 0; cursor: pointer; border-right: 2px solid ${INK}; transition: background 0.15s;
+    padding: 10px 0; cursor: pointer; border-right: 1px solid ${INK}; transition: background 0.12s;
   }
-  /* Remove right border from last cell of each row */
   .wstrip-cell:nth-child(7n) { border-right: none; }
-  /* Second row gets top border on mobile */
-  .wstrip-cell:nth-child(n+8) { border-top: 2px solid ${INK}; }
+  .wstrip-cell:nth-child(n+8) { border-top: 1px solid ${INK}; }
 
   @media (min-width: 768px) {
     .wstrip-grid { grid-template-columns: repeat(14, 1fr); }
-    /* On desktop: all cells have right border except the very last */
-    .wstrip-cell { border-right: 2px solid ${INK}; }
-    .wstrip-cell:nth-child(7n) { border-right: 2px solid ${INK}; }
+    .wstrip-cell { border-right: 1px solid ${INK}; }
+    .wstrip-cell:nth-child(7n) { border-right: 1px solid ${INK}; }
     .wstrip-cell:last-child { border-right: none; }
-    /* No top border on desktop — single row */
     .wstrip-cell:nth-child(n+8) { border-top: none; }
   }
 `;
@@ -68,12 +70,13 @@ export function WeekStrip({
     <>
       <style>{CSS}</style>
       <div className="wstrip">
+        {/* "All upcoming" header row */}
         <button
           className="wstrip-all"
           onClick={() => onSelect(null)}
           style={{
-            background: selected === null ? TEAL : "transparent",
-            color: selected === null ? "white" : "oklch(0.40 0.025 220)",
+            background: selected === null ? INK : "transparent",
+            color: selected === null ? CREAM : INK,
           }}
         >
           All upcoming
@@ -82,9 +85,9 @@ export function WeekStrip({
         <div className="wstrip-grid">
           {days.map((iso) => {
             const d = parseISO(iso);
-            const isToday = iso === today;
+            const isToday   = iso === today;
             const isSelected = iso === selected;
-            const hasSales = saleDates.includes(iso);
+            const hasSales  = saleDates.includes(iso);
 
             return (
               <button
@@ -92,21 +95,21 @@ export function WeekStrip({
                 className="wstrip-cell"
                 onClick={() => onSelect(isSelected ? null : iso)}
                 style={{
-                  background: isSelected ? TEAL : isToday ? "oklch(0.93 0.018 82)" : "transparent",
-                  color: isSelected ? "white" : INK,
+                  background: isSelected ? INK : isToday ? `${INK}0a` : "transparent",
+                  color: isSelected ? CREAM : INK,
                 }}
               >
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", lineHeight: 1 }}>
+                <span style={{ fontFamily: MONO, fontSize: 8, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", lineHeight: 1 }}>
                   {isToday ? "Today" : DAY_ABBREVS[d.getDay()]}
                 </span>
-                <span style={{ fontFamily: "Bebas Neue, Impact, sans-serif", fontSize: 20, lineHeight: 1, marginTop: 2 }}>
+                <span style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: 22, lineHeight: 1, marginTop: 2 }}>
                   {d.getDate()}
                 </span>
-                <span style={{ fontSize: 9, opacity: 0.6, marginTop: 1 }}>
+                <span style={{ fontFamily: MONO, fontSize: 8, marginTop: 1, color: isSelected ? CREAM : INK }}>
                   {MONTH_ABBREVS[d.getMonth()]}
                 </span>
                 {hasSales && (
-                  <div style={{ marginTop: 3, width: 6, height: 6, borderRadius: "50%", background: isSelected ? "white" : TEAL }} />
+                  <div style={{ marginTop: 4, width: 5, height: 5, borderRadius: "50%", background: isSelected ? CREAM : RED }} />
                 )}
               </button>
             );
