@@ -145,18 +145,18 @@ function MapContent() {
           </div>
 
           {/* Condition row */}
-          <div style={{ borderBottom: `1px solid ${INK}`, padding: "8px 18px" }}>
-            <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: INK, opacity: 0.4, marginBottom: 6 }}>Condition</div>
-            <div style={{ display: "flex", gap: 6 }}>
+          <div style={{ borderBottom: `1px solid ${INK}`, padding: "10px 18px" }}>
+            <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", color: INK, fontWeight: 700, marginBottom: 8 }}>Condition</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {(["All", ...CONDITIONS] as const).map((c) => {
                 const active = cond === c;
                 return (
                   <button key={c} onClick={() => setCond(c)} style={{
-                    fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 900,
-                    padding: "5px 10px",
+                    fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 900,
+                    padding: "6px 12px",
                     background: active ? INK : "transparent",
                     color: active ? CREAM : INK,
-                    border: `1.5px solid ${active ? INK : `${INK}30`}`,
+                    border: `2px solid ${INK}`,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
                     flexShrink: 0,
@@ -169,18 +169,18 @@ function MapContent() {
           </div>
 
           {/* Radius row */}
-          <div style={{ padding: "8px 18px" }}>
-            <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.25em", color: INK, opacity: 0.4, marginBottom: 6 }}>Radius</div>
-            <div style={{ display: "flex", gap: 6 }}>
+          <div style={{ padding: "10px 18px" }}>
+            <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", color: INK, fontWeight: 700, marginBottom: 8 }}>Radius</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {(["All", ...RADII] as const).map((r) => {
                 const active = radius === r;
                 return (
                   <button key={r} onClick={() => setRadius(r)} style={{
-                    fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 900,
-                    padding: "5px 10px",
+                    fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 900,
+                    padding: "6px 12px",
                     background: active ? INK : "transparent",
                     color: active ? CREAM : INK,
-                    border: `1.5px solid ${active ? INK : `${INK}30`}`,
+                    border: `2px solid ${INK}`,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
                     flexShrink: 0,
