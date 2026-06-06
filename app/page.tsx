@@ -29,7 +29,7 @@ export default function Landing() {
         {/* Top strip */}
         <div style={{ borderBottom: `1px solid ${INK}` }}>
           <div
-            className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2"
+            className="mx-auto flex max-w-[1800px] items-center justify-between px-6 py-2"
             style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase" }}
           >
             <span style={{ opacity: 0.75 }}>Vol. I · No. 01</span>
@@ -39,7 +39,7 @@ export default function Landing() {
         </div>
 
         {/* Brand row */}
-        <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-6 py-4">
+        <div className="mx-auto flex max-w-[1800px] flex-wrap items-end justify-between gap-4 px-6 py-4">
           <div className="flex items-end gap-3">
             <Link href="/" style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(3rem,7vw,5rem)", color: INK, lineHeight: 1, textDecoration: "none" }}>
               Dibz<span style={{ color: RED }}>.</span>
@@ -74,11 +74,11 @@ export default function Landing() {
       </header>
 
       {/* ── HERO: 3-col newspaper ── */}
-      <section className="mx-auto max-w-7xl px-6 py-10" style={{ borderBottom: `2px solid ${INK}` }}>
-        <div className="grid gap-8 md:grid-cols-12">
+      <section className="mx-auto max-w-[1800px] px-6 py-10 xl:px-12 xl:py-14" style={{ borderBottom: `2px solid ${INK}` }}>
+        <div className="grid gap-8 md:grid-cols-12 xl:grid-cols-12">
 
           {/* Left col — Upcoming Sales */}
-          <div className="hidden md:block md:col-span-3 md:border-r-2 md:pr-6" style={{ borderColor: INK }}>
+          <div className="hidden md:block md:col-span-3 xl:col-span-3 md:border-r-2 md:pr-6 xl:pr-10" style={{ borderColor: INK }}>
             <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>▶ This Weekend</p>
             <div className="flex items-center justify-between pb-1 mt-3" style={{ borderBottom: `1px solid ${INK}` }}>
               <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.7 }}>Upcoming Sales</span>
@@ -108,14 +108,14 @@ export default function Landing() {
           </div>
 
           {/* Center headline col — no border on center itself; left/right cols carry the rules */}
-          <div className="md:col-span-6 relative" style={{ paddingLeft: 24, paddingRight: 24 }}>
+          <div className="md:col-span-6 xl:col-span-6 relative" style={{ paddingLeft: 24, paddingRight: 24 }}>
             <div className="hidden md:flex justify-between mb-2" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", opacity: 0.3 }}>
               <span>╋ trim</span><span>trim ╋</span>
             </div>
 
             {/* Giant headline — 4 lines matching Lovable exactly */}
             <div style={{ position: "relative" }}>
-              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,14vw,9rem)" }}>
+              <h1 style={{ fontFamily: SERIF, fontWeight: 700, lineHeight: 0.95, letterSpacing: "-0.02em", color: INK, fontStyle: "italic", margin: 0, fontSize: "clamp(4rem,10vw,13rem)" }}>
                 <span className="block">Scroll</span>
                 <span className="block">Less<span style={{ color: RED }}>,</span></span>
                 <span className="block">Find</span>
@@ -167,7 +167,7 @@ export default function Landing() {
           </div>
 
           {/* Right late edition col */}
-          <aside className="md:col-span-3 md:border-l-2 md:pl-6" style={{ borderColor: INK }}>
+          <aside className="md:col-span-3 xl:col-span-3 md:border-l-2 md:pl-6 xl:pl-10" style={{ borderColor: INK }}>
             <div className="flex items-center justify-between pb-2" style={{ borderBottom: `1px solid ${INK}` }}>
               <span style={{ fontFamily: SANS, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.15em" }}>Latest Edition</span>
               <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: RED, fontWeight: 700 }}>Live</span>
@@ -217,7 +217,7 @@ export default function Landing() {
       </div>
 
       {/* ── ALMANAC ── */}
-      <section className="mx-auto max-w-7xl px-6 py-12">
+      <section className="mx-auto max-w-[1800px] px-6 py-12 xl:px-12 xl:py-16">
         <p style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.3em", color: RED }}>§ The Almanac</p>
         <div className="mt-3 grid grid-cols-2 md:grid-cols-4" style={{ border: `2px solid ${INK}`, gap: 1, background: INK }}>
           {[
@@ -237,7 +237,7 @@ export default function Landing() {
 
       {/* ── THIS WEEKEND ── */}
       {sales.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 pb-12">
+        <section className="mx-auto max-w-[1800px] px-6 pb-12 xl:px-12">
           <div className="mb-6 flex items-end justify-between pb-2" style={{ borderBottom: `2px solid ${INK}` }}>
             <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.75rem,3vw,2.5rem)", lineHeight: 1 }}>
               This Weekend{city ? ` in ${city.name}` : ""}
@@ -247,8 +247,8 @@ export default function Landing() {
             </Link>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {sales.slice(0, 3).map((s, i) => {
+          <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-4">
+            {sales.slice(0, 4).map((s, i) => {
               const dotColor = i === 0 ? TEAL_HEX : i === 1 ? RED : INK;
               const saleLabel = s.saleType === "estate" ? "Estate Sale" : s.isGarageSale ? "Garage Sale" : "Multi Sale";
               return (
@@ -293,7 +293,7 @@ export default function Landing() {
 
       {/* ── HOW IT WORKS ── */}
       <section style={{ borderTop: `2px solid ${INK}`, borderBottom: `2px solid ${INK}` }}>
-        <div className="mx-auto max-w-7xl px-6 py-14">
+        <div className="mx-auto max-w-[1800px] px-6 py-14 xl:px-12 xl:py-20">
           <div className="mb-10 flex items-end justify-between">
             <h2 style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(2.5rem,5vw,3.5rem)", lineHeight: 1 }}>
               How <span style={{ color: RED }}>it</span> works.
@@ -321,7 +321,7 @@ export default function Landing() {
 
       {/* ── SATURDAY DISPATCH CTA ── */}
       <section style={{ borderBottom: `2px solid ${INK}`, position: "relative", overflow: "hidden" }}>
-        <div className="mx-auto max-w-7xl px-6 py-20 text-center">
+        <div className="mx-auto max-w-[1800px] px-6 py-20 text-center">
           <p style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.4em", color: RED }}>▼ Subscribe ▼</p>
           <h2 className="mx-auto mt-4" style={{ maxWidth: 680, fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "clamp(1.8rem,5vw,4rem)", lineHeight: 1.05 }}>
             The Saturday <span style={{ fontStyle: "normal", textShadow: `2px 2px 0 ${RED}` }}>Dispatch</span>, delivered to your inbox at 6 AM.
@@ -348,7 +348,7 @@ export default function Landing() {
 
       {/* ── FOOTER ── */}
       <footer style={{ background: INK, color: CREAM, borderTop: `2px solid ${INK}` }}>
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 py-10 md:grid-cols-4">
+        <div className="mx-auto grid max-w-[1800px] gap-6 px-6 py-10 md:grid-cols-4">
           <div>
             <div style={{ fontFamily: SERIF, fontStyle: "italic", fontWeight: 700, fontSize: "2rem", lineHeight: 1 }}>
               Dibz<span style={{ color: RED }}>.</span>
