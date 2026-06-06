@@ -112,14 +112,6 @@ export function Header() {
                 </Link>
               );
             })}
-            {/* Dashboard — desktop only */}
-            <Link href="/dashboard" className="hidden md:inline" style={{
-              textDecoration: "none", color: INK, whiteSpace: "nowrap",
-              borderBottom: pathname.startsWith("/dashboard") ? `2px solid ${RED}` : "2px solid transparent",
-              transition: "border-color 0.15s", paddingBottom: 2,
-            }}>
-              Dashboard
-            </Link>
           </nav>
 
           {/* Search toggle */}
@@ -214,12 +206,12 @@ function AvatarMenu() {
           background: "var(--background)", border: `2px solid ${INK}`,
           boxShadow: `4px 4px 0 ${INK}`, minWidth: 160, zIndex: 50,
         }}>
-          <Link href="/dashboard" onClick={() => setOpen(false)}
+          <Link href="/dashboard" onMouseDown={(e) => e.stopPropagation()} onClick={() => setOpen(false)}
             style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, textDecoration: "none", color: INK, borderBottom: `1px solid ${INK}` }}
           >
             <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
           </Link>
-          <Link href="/profile" onClick={() => setOpen(false)}
+          <Link href="/profile" onMouseDown={(e) => e.stopPropagation()} onClick={() => setOpen(false)}
             style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, textDecoration: "none", color: INK }}
           >
             <User className="h-3.5 w-3.5" /> Profile
