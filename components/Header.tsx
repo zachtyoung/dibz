@@ -76,7 +76,7 @@ export function Header() {
           style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.7, color: INK, background: "none", border: "none", cursor: "pointer" }}
         >
           <MapPin className="h-3 w-3" style={{ color: RED }} />
-          {edition}{today}
+          <span suppressHydrationWarning>{edition}{today}</span>
         </button>
         <span style={{ fontFamily: MONO, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.7, color: INK }}>
           Free Online
@@ -174,11 +174,13 @@ export function Header() {
 
 function AvatarMenu() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { user, loading } = useUser();
 
   useEffect(() => {
+    setMounted(true);
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
@@ -194,7 +196,7 @@ function AvatarMenu() {
     router.refresh();
   }
 
-  if (loading) return <div style={{ width: 32, height: 32 }} />;
+  if (!mounted || loading) return <div style={{ width: 32, height: 32 }} />;
 
   if (!user) {
     return (

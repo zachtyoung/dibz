@@ -374,7 +374,7 @@ export default function Landing() {
           ))}
         </div>
         <div style={{ borderTop: `1px solid rgba(255,255,255,0.1)`, padding: "12px 24px", textAlign: "center", fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.2em", opacity: 0.4 }}>
-          © 1996–{new Date().getFullYear()} Dibz Press · Made with newsprint &amp; nerve
+          © 1996–<span suppressHydrationWarning>{new Date().getFullYear()}</span> Dibz Press · Made with newsprint &amp; nerve
         </div>
       </footer>
 
