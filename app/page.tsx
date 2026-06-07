@@ -201,19 +201,21 @@ export default function Landing() {
       </section>
 
       {/* ── MARQUEE ── */}
-      <div style={{ background: INK, borderTop: `2px solid ${INK}`, borderBottom: `2px solid ${INK}`, overflow: "hidden" }}>
-        <div className="flex gap-10 whitespace-nowrap py-2 text-xs uppercase tracking-widest animate-[marquee_50s_linear_infinite]" style={{ color: "oklch(0.965 0.018 85)", fontFamily: "'JetBrains Mono', 'Courier New', monospace", fontSize: 12, letterSpacing: "1.2px" }}>
-          {[0, 1].map((i) => (
-            <div key={i} className="flex shrink-0 gap-10 px-5">
-              <span>✦ Neighborhood Garage Sale · Sat 9am · Orchard Breeze</span>
-              <span style={{ color: "oklch(0.52 0.14 178)" }}>✦ Estate Sale — 3 Generations · Sun Jun 9 · Fairmount</span>
-              <span>✦ Block Party Multi-Family · Sat Jun 15 · College Hill</span>
-              <span style={{ color: "oklch(0.78 0.14 82)" }}>✦ Moving Sale · Everything Must Go</span>
-              <span>✦ Free Piano · You Haul · Riverside</span>
-            </div>
-          ))}
+      {listings.length > 0 && (
+        <div style={{ background: INK, borderTop: `2px solid ${INK}`, borderBottom: `2px solid ${INK}`, overflow: "hidden" }}>
+          <div className="flex gap-10 whitespace-nowrap py-2 text-xs uppercase tracking-widest animate-[marquee_50s_linear_infinite]" style={{ color: "oklch(0.965 0.018 85)", fontFamily: "'JetBrains Mono', 'Courier New', monospace", fontSize: 12, letterSpacing: "1.2px" }}>
+            {[0, 1].map((copy) => (
+              <div key={copy} className="flex shrink-0 gap-10 px-5">
+                {listings.map((l, i) => (
+                  <span key={l.id} style={i % 3 === 1 ? { color: "oklch(0.52 0.14 178)" } : i % 3 === 2 ? { color: "oklch(0.78 0.14 82)" } : undefined}>
+                    ✦ {l.title} · {l.location.split(",")[0]}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── ALMANAC ── */}
       <section className="mx-auto max-w-[1800px] px-6 py-12 xl:px-12 xl:py-16">

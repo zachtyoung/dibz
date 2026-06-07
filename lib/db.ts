@@ -1,4 +1,17 @@
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
+
+function getClient() {
+  try {
+    return getSupabaseAdmin();
+  } catch {
+    // SERVICE_ROLE_KEY not set — fall back to anon client for read-only queries
+    const { createClient } = require("@supabase/supabase-js");
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  }
+}
 import type { Listing } from "@/lib/listings";
 
 function rowToListing(row: Record<string, unknown>): Listing {
@@ -24,7 +37,7 @@ function rowToListing(row: Record<string, unknown>): Listing {
 }
 
 export async function getListingsFromDB(citySlug: string): Promise<Listing[]> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getClient()
     .from("listings")
     .select("*")
     .eq("city_slug", citySlug)
@@ -40,7 +53,7 @@ export async function getListingsFromDB(citySlug: string): Promise<Listing[]> {
 }
 
 export async function getListingByIdFromDB(id: string): Promise<Listing | null> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getClient()
     .from("listings")
     .select("*")
     .eq("id", id)

@@ -28,6 +28,27 @@ function rowToListing(row: Record<string, unknown>): Listing {
   };
 }
 
+async function fetchFromSupabase(citySlug: string): Promise<Listing[]> {
+  const url = `${SUPABASE_URL}/rest/v1/listings?select=*&city_slug=eq.${encodeURIComponent(citySlug)}&is_active=eq.true&order=created_at.desc`;
+  const res = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw new Error(`Supabase error ${res.status}`);
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error("Unexpected response");
+  return (data as Record<string, unknown>[]).map(rowToListing);
+}
+
+async function fetchFromApi(citySlug: string): Promise<Listing[]> {
+  const res = await fetch(`/api/listings?city=${encodeURIComponent(citySlug)}`);
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
 export function useListings(city: City | null): Listing[] {
   const [listings, setListings] = useState<Listing[]>([]);
 
@@ -35,20 +56,10 @@ export function useListings(city: City | null): Listing[] {
     if (!city) { setListings([]); return; }
 
     let cancelled = false;
-    const url = `${SUPABASE_URL}/rest/v1/listings?select=*&city_slug=eq.${encodeURIComponent(city.slug)}&is_active=eq.true&order=created_at.desc`;
 
-    fetch(url, {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((r) => r.json())
-      .then((data: unknown) => {
-        if (cancelled) return;
-        if (Array.isArray(data)) setListings((data as Record<string, unknown>[]).map(rowToListing));
-      })
+    fetchFromSupabase(city.slug)
+      .catch(() => fetchFromApi(city.slug))
+      .then((data) => { if (!cancelled) setListings(data); })
       .catch(() => {});
 
     return () => { cancelled = true; };
