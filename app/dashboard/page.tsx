@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
-import { LISTINGS, CATEGORIES, CONDITIONS, type Listing, type Condition } from "@/lib/listings";
+import { CATEGORIES, CONDITIONS, type Listing, type Condition } from "@/lib/listings";
+import { useUser } from "@/lib/useUser";
 import {
   Plus,
   Eye,
@@ -59,55 +60,7 @@ type Thread = {
   messages: { id: string; from: "buyer" | "me"; text: string; time: string }[];
 };
 
-const SEED_LISTINGS: SellerListing[] = LISTINGS.slice(0, 6).map((l, i) => ({
-  ...l,
-  status: i === 2 ? "sold" : i === 5 ? "draft" : "active",
-  views: [248, 1240, 89, 3100, 412, 12][i] ?? 100,
-  saves: [12, 84, 6, 211, 28, 0][i] ?? 5,
-  messages: [3, 19, 1, 42, 7, 0][i] ?? 1,
-  postedDays: [2, 5, 11, 1, 7, 0][i] ?? 3,
-}));
 
-const SEED_THREADS: Thread[] = [
-  {
-    id: "t1",
-    from: "Jordan K.",
-    listingId: "2",
-    unread: true,
-    messages: [
-      { id: "1", from: "buyer", text: "Hey! Is this still available? Could I swing by tomorrow around 4?", time: "12m" },
-    ],
-  },
-  {
-    id: "t2",
-    from: "Priya S.",
-    listingId: "4",
-    unread: true,
-    messages: [
-      { id: "1", from: "buyer", text: "Would you take $1,300 cash today?", time: "1h" },
-    ],
-  },
-  {
-    id: "t3",
-    from: "Sam T.",
-    listingId: "1",
-    unread: false,
-    messages: [
-      { id: "1", from: "buyer", text: "Beautiful piece. Do you have more photos of the back?", time: "3h" },
-      { id: "2", from: "me", text: "Just texted you some! Let me know what you think.", time: "2h" },
-    ],
-  },
-  {
-    id: "t4",
-    from: "Renee F.",
-    listingId: "5",
-    unread: false,
-    messages: [
-      { id: "1", from: "buyer", text: "Picking up tonight at 7 — works for me!", time: "yesterday" },
-      { id: "2", from: "me", text: "Perfect, see you then 👍", time: "yesterday" },
-    ],
-  },
-];
 
 const STOCK_IMG = "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&h=800&fit=crop&auto=format&q=70";
 
@@ -122,8 +75,9 @@ export default function DashboardPage() {
 function Dashboard() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [listings, setListings] = useState<SellerListing[]>(SEED_LISTINGS);
-  const [threads, setThreads] = useState<Thread[]>(SEED_THREADS);
+  const { user } = useUser();
+  const [listings, setListings] = useState<SellerListing[]>([]);
+  const [threads, setThreads] = useState<Thread[]>([]);
   const [tab, setTab] = useState<"listings" | "messages" | "sales">("listings");
   const [filter, setFilter] = useState<"all" | Status>("all");
   const [query, setQuery] = useState("");

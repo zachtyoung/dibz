@@ -2,11 +2,11 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MapPin, LayoutDashboard, User, Search, Plus } from "lucide-react";
+import { MapPin, LayoutDashboard, User, Search, LogIn, LogOut } from "lucide-react";
 import { useCityContext } from "@/components/CityProvider";
 import { CityPrompt } from "@/components/CityPrompt";
-
-const MOCK_USER = { initials: "ZY", name: "Zach Young" };
+import { useUser } from "@/lib/useUser";
+import { createClient } from "@/lib/supabase/client";
 const INK   = "oklch(0.16 0.01 60)";
 const RED   = "#c0392b";
 const CREAM = "oklch(0.965 0.018 85)";
@@ -175,6 +175,8 @@ export function Header() {
 function AvatarMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { user, loading } = useUser();
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -184,11 +186,36 @@ function AvatarMenu() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setOpen(false);
+    router.push("/");
+    router.refresh();
+  }
+
+  if (loading) return <div style={{ width: 32, height: 32 }} />;
+
+  if (!user) {
+    return (
+      <Link
+        href="/auth/login"
+        style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: SANS, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 900, color: INK, textDecoration: "none" }}
+      >
+        <LogIn className="h-4 w-4" />
+        <span className="hidden md:inline">Sign In</span>
+      </Link>
+    );
+  }
+
+  const name = (user.user_metadata?.display_name as string) || user.email || "";
+  const initials = name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
+
   return (
     <div ref={ref} style={{ position: "relative", flexShrink: 0 }}>
       <button
         onClick={() => setOpen((o) => !o)}
-        title={MOCK_USER.name}
+        title={name}
         style={{
           width: 32, height: 32, display: "grid", placeItems: "center",
           fontFamily: MONO, fontSize: 11, fontWeight: 700, color: INK,
@@ -196,7 +223,7 @@ function AvatarMenu() {
           boxShadow: `2px 2px 0 ${INK}`, cursor: "pointer", letterSpacing: "0.05em",
         }}
       >
-        {MOCK_USER.initials}
+        {initials}
       </button>
 
       {open && (
@@ -211,10 +238,15 @@ function AvatarMenu() {
             <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
           </Link>
           <Link href="/profile" onMouseDown={(e) => e.stopPropagation()} onClick={() => setOpen(false)}
-            style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, textDecoration: "none", color: INK }}
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, textDecoration: "none", color: INK, borderBottom: `1px solid ${INK}` }}
           >
             <User className="h-3.5 w-3.5" /> Profile
           </Link>
+          <button onMouseDown={(e) => e.stopPropagation()} onClick={handleSignOut}
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", fontFamily: SANS, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 900, color: INK, background: "none", border: "none", cursor: "pointer", width: "100%" }}
+          >
+            <LogOut className="h-3.5 w-3.5" /> Sign Out
+          </button>
         </div>
       )}
     </div>

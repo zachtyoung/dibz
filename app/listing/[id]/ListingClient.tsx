@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Map, AdvancedMarker, Polygon } from "@vis.gl/react-google-maps";
 import Link from "next/link";
 import { Header } from "@/components/Header";
-import { LISTINGS, timeAgo, type Listing } from "@/lib/listings";
+import { timeAgo, type Listing } from "@/lib/listings";
 import { SellerTrustPanel, StarRating } from "@/components/SellerBadges";
 import { PickupPhotoPanel } from "@/components/PickupPhotoPanel";
 import {
@@ -23,7 +23,7 @@ const SANS  = "'Archivo Black', system-ui, sans-serif";
 const FAVS_KEY = "dibz-favorites";
 const ROUTE_KEY = "dibz-route";
 
-export function ListingClient({ listing }: { listing: Listing }) {
+export function ListingClient({ listing, related: relatedProp = [] }: { listing: Listing; related?: Listing[] }) {
   const router = useRouter();
   const { id } = listing;
 
@@ -85,9 +85,7 @@ export function ListingClient({ listing }: { listing: Listing }) {
   const isBlock = listing.isGarageSale;
   const isEstate = listing.saleType === "estate";
 
-  const related = LISTINGS.filter((l) => l.id !== id && l.category === listing.category).slice(0, 4);
-  const fallback = LISTINGS.filter((l) => l.id !== id && !related.find((r) => r.id === l.id)).slice(0, 4 - related.length);
-  const relatedFinal = [...related, ...fallback].slice(0, 4);
+  const relatedFinal = relatedProp.slice(0, 4);
 
   return (
     <div className="min-h-screen">

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LISTINGS } from "@/lib/listings";
+import { getListingByIdFromDB, getListingsFromDB } from "@/lib/db";
 import { ListingClient } from "./ListingClient";
 
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const listing = LISTINGS.find((l) => l.id === id);
+  const listing = await getListingByIdFromDB(id);
   if (!listing) return { title: "Listing not found — Dibz" };
 
   const price = listing.isGarageSale ? "Free entry" : `$${listing.price.toLocaleString()}`;
@@ -33,20 +33,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export async function generateStaticParams() {
-  return LISTINGS.map((l) => ({ id: l.id }));
-}
-
 export default async function ListingPage({ params }: Props) {
   const { id } = await params;
-  const listing = LISTINGS.find((l) => l.id === id);
+  const listing = await getListingByIdFromDB(id);
   if (!listing) notFound();
+
+  const cityListings = await getListingsFromDB(listing.location.toLowerCase().replace(/\s+/g, "-"));
+  const related = cityListings
+    .filter((l) => l.id !== id)
+    .sort((a, b) => (a.category === listing.category ? -1 : 1) - (b.category === listing.category ? -1 : 1))
+    .slice(0, 4);
 
   const isGarageSale = listing.isGarageSale;
   const price = isGarageSale ? 0 : listing.price;
   const availability = "https://schema.org/InStock";
 
-  /* JSON-LD Product schema — Google Shopping + rich results */
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": isGarageSale ? "Event" : "Product",
@@ -90,7 +91,7 @@ export default async function ListingPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ListingClient listing={listing} />
+      <ListingClient listing={listing} related={related} />
     </>
   );
 }
