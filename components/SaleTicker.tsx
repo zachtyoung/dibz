@@ -7,7 +7,7 @@ const FALLBACK = getCityBySlug("wichita-ks")!;
 
 export function SaleTicker() {
   const { city } = useCityContext();
-  const listings = useListings(city ?? FALLBACK);
+  const { listings } = useListings(city ?? FALLBACK);
   const sales = listings.filter((l) => l.isGarageSale);
 
   if (!sales.length) return null;

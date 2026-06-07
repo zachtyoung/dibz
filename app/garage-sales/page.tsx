@@ -134,7 +134,7 @@ export default function GarageSales() {
   const router = useRouter();
   const { city, loading } = useCityContext();
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const rawListings = useListings(city);
+  const { listings: rawListings } = useListings(city);
   const listings = useMemo(() => {
     if (!userLocation) return rawListings;
     return rawListings.map((l) => ({ ...l, distance: distanceMi(userLocation[0], userLocation[1], l.lat, l.lng) }));

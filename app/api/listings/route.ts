@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getListingsFromDB } from "@/lib/db";
 
+export const revalidate = 60;
+
 export async function GET(req: NextRequest) {
   const city = req.nextUrl.searchParams.get("city");
   if (!city) return NextResponse.json({ error: "city required" }, { status: 400 });

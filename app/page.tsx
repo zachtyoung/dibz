@@ -12,9 +12,29 @@ const BODY = "'Libre Caslon Text', Georgia, serif";
 const MONO = "'JetBrains Mono', 'Courier New', monospace";
 const SANS = "'Archivo Black', 'Barlow', system-ui, sans-serif";
 
+function ListingSkeleton() {
+  return (
+    <li style={{ borderBottom: `1px dotted ${INK}`, paddingTop: 9, paddingBottom: 9 }}>
+      <div style={{ height: 9, width: "40%", background: INK, opacity: 0.08, marginBottom: 6, borderRadius: 2 }} />
+      <div style={{ height: 13, width: "85%", background: INK, opacity: 0.12, marginBottom: 4, borderRadius: 2 }} />
+      <div style={{ height: 9, width: "55%", background: INK, opacity: 0.08, borderRadius: 2 }} />
+    </li>
+  );
+}
+
+function SaleSkeleton() {
+  return (
+    <li style={{ borderBottom: `1px dotted ${INK}`, paddingTop: 8, paddingBottom: 8 }}>
+      <div style={{ height: 8, width: "35%", background: INK, opacity: 0.08, marginBottom: 5, borderRadius: 2 }} />
+      <div style={{ height: 14, width: "80%", background: INK, opacity: 0.12, marginBottom: 4, borderRadius: 2 }} />
+      <div style={{ height: 8, width: "50%", background: INK, opacity: 0.08, borderRadius: 2 }} />
+    </li>
+  );
+}
+
 export default function Landing() {
   const { city } = useCityContext();
-  const listings = useListings(city);
+  const { listings, loading } = useListings(city);
   const sales = listings.filter((l) => l.isGarageSale);
   const lateEdition = listings.filter((l) => !l.isGarageSale).slice(0, 8);
   const today = new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).toUpperCase();
@@ -84,7 +104,9 @@ export default function Landing() {
               <Link href="/garage-sales" style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", color: RED, textDecoration: "none" }}>All →</Link>
             </div>
             <ol className="mt-2">
-              {sales.slice(0, 5).map((s, i) => (
+              {loading
+                ? Array.from({ length: 3 }).map((_, i) => <SaleSkeleton key={i} />)
+                : sales.slice(0, 5).map((s, i) => (
                 <li key={s.id} style={{ borderBottom: `1px dotted ${INK}`, paddingTop: 8, paddingBottom: 8 }}>
                   <Link href={`/listing/${s.id}`} style={{ textDecoration: "none", color: INK, display: "block" }}>
                     <div style={{ fontFamily: MONO, fontSize: 8, textTransform: "uppercase", letterSpacing: "0.08em", color: RED, marginBottom: 2 }}>
@@ -101,8 +123,8 @@ export default function Landing() {
                 </li>
               ))}
             </ol>
-            {sales.length === 0 && (
-              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.4, marginTop: 12 }}>No sales yet — pick a city above.</p>
+            {!loading && sales.length === 0 && city && (
+              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.4, marginTop: 12 }}>No sales yet in {city.name}.</p>
             )}
           </div>
 
@@ -172,16 +194,16 @@ export default function Landing() {
               <span style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.15em", color: RED, fontWeight: 700 }}>Live</span>
             </div>
             <ol className="mt-2">
-              {lateEdition.map((l, i) => (
+              {loading
+                ? Array.from({ length: 6 }).map((_, i) => <ListingSkeleton key={i} />)
+                : lateEdition.map((l, i) => (
                 <li key={l.id} style={{ borderBottom: `1px dotted ${INK}`, paddingTop: 9, paddingBottom: 9 }}>
                   <Link href={`/listing/${l.id}`} style={{ textDecoration: "none", color: INK, display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      {/* № label */}
                       <div style={{ fontFamily: MONO, fontSize: 9, opacity: 0.8, letterSpacing: "0.05em", marginBottom: 2 }}>
                         № {String(i + 1).padStart(2, "0")} ·{" "}
                         <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 14, fontWeight: 700, opacity: 1, letterSpacing: "-0.01em" }}>{l.title}</span>
                       </div>
-                      {/* Category · location */}
                       <div style={{ fontFamily: MONO, fontSize: 9, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.85 }}>
                         {l.isGarageSale ? (l.saleType === "estate" ? "Estate" : "Garage") : l.category} · {l.location.split(",")[0]}
                       </div>
@@ -193,8 +215,8 @@ export default function Landing() {
                 </li>
               ))}
             </ol>
-            {lateEdition.length === 0 && (
-              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.4, marginTop: 12 }}>No listings yet — pick a city above.</p>
+            {!loading && lateEdition.length === 0 && city && (
+              <p style={{ fontFamily: MONO, fontSize: 10, opacity: 0.4, marginTop: 12 }}>No listings yet in {city.name}.</p>
             )}
           </aside>
         </div>
